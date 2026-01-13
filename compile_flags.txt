@@ -1,0 +1,9 @@
+
+-xc++
+-std=c++11
+-Iinclude
+-Ithirdparty/imgui
+-Ithirdparty/imgui/backends
+-Ithirdparty/glm
+-Isrc
+-Wall
