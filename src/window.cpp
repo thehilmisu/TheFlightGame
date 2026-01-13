@@ -185,7 +185,6 @@ float Window::getZfar()
 	return currentZfar;
 }
 
-// Instance implementations
 void Window::setKeyImpl(int key, KeyState keystate)
 {
 	keystates[key] = keystate;
@@ -271,7 +270,6 @@ void Window::handleKeyInput(GLFWwindow* window, int key, int scancode, int actio
 		setKey(key, JUST_PRESSED);
 	else if(action == GLFW_RELEASE)
 		setKey(key, RELEASED);
-  std::cout << "Key input: " << key << " Scancode: " << scancode << " Action: " << action << " Mods: " << mods << std::endl;
 }
 
 void Window::handleMouseInput(GLFWwindow* window, int button, int action, int mods)

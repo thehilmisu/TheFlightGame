@@ -6,7 +6,7 @@
 #include "game.h"
 #include "gfx.h"
 #include "camera.h"
-
+#include <iostream>
 
 // glm::vec3 getCameraFollowPos(const game::Transform &playertransform)
 // {
@@ -44,32 +44,28 @@ int main() {
     // game::update_camera(
     //     glm::vec3(0.0f, HEIGHT * SCALE * 0.5f, 0.0f)
     // );
-    unsigned int fps = 0;
-    float dt = 0.0f;
-	float totalTime = 0.0f;
+  	float totalTime = 0.0f;
     unsigned int chunksPerSecond = 0; //Number of chunks drawn per second	
+    bool draw_debug_gui = true;
     
     while (!window.shouldClose() && window.isRunnning()) {
-        //glClearColor(0.1f, 0.1f, 0.1f, 1.0f);
-        float start = glfwGetTime();
-        
-        window.clearInputState();
+        window.pollEvents();
 
-        gui.newFrame();        
-        
+        gui.newFrame();
+
         window.updatePerspectiveMat(FOVY, ZNEAR, ZFAR, window.getWidth(), window.getHeight());
 
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
         //Draw terrain
         unsigned int drawCount = gfx::displayTerrain(chunktables, MAX_LOD, LOD_SCALE);
         chunksPerSecond += drawCount;
-        //Display trees	
-        gfx::displayDecorations(decorations, totalTime);	
+        //Display trees
+        gfx::displayDecorations(decorations, totalTime);
         //Display plane
         //if(!player.crashed)
-        //    gfx::displayPlayerPlane(totalTime, player.transform);		
+        //    gfx::displayPlayerPlane(totalTime, player.transform);
         //Display water
-        gfx::displayWater(totalTime);	
+        gfx::displayWater(totalTime);
         //Draw skybox
         gfx::displaySkybox();
         //Display explosions
@@ -79,15 +75,16 @@ int main() {
         // if(player.crashed && !paused && player.deathtimer > 2.5f)
         //     gui::displayDeathScreen(0);
 
-        gui.drawUI();
+        if (window.getKeyState(GLFW_KEY_TAB) == JUST_PRESSED) draw_debug_gui = !draw_debug_gui;
+        window.getCamera().rotateCamera(window.getMouseDX(), window.getMouseDY(), 1.0f);
 
-        // Render
+        if (draw_debug_gui){
+          gui.drawUI();
+        }
         gui.render();
-        // End Of Render
 
-        
         window.swapBuffers();
-        window.pollEvents();
+        window.updateKeyStates();
     }
 
     return 0;
