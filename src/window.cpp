@@ -21,7 +21,7 @@ Window::Window(){
   }
 	glfwMakeContextCurrent(mWindow);
 	glfwSwapInterval(1);
-	glfwSetWindowSizeCallback(mWindow, handleWindowResize);
+	glfwSetFramebufferSizeCallback(mWindow, framebuffer_size_callback);
 	glfwSetKeyCallback(mWindow, handleKeyInput);
 	glfwSetCursorPosCallback(mWindow, cursorPosCallback);
 	glfwSetMouseButtonCallback(mWindow, handleMouseInput);
@@ -31,8 +31,6 @@ Window::Window(){
   if(!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress)) {
     std::cerr << "Failed to initialize GLAD";
   }
-
-  glfwSetFramebufferSizeCallback(mWindow, framebuffer_size_callback);
 
   cam = Camera(glm::vec3(0.0f, 360.0f, 0.0f));
   mousex = 0.0;
@@ -57,6 +55,7 @@ Window::~Window() {
 }
 
 void Window::framebuffer_size_callback(GLFWwindow* window, int width, int height){
+  (void)window;
   getInstance().onResize(width, height);
 }
 
@@ -74,7 +73,6 @@ void Window::onResize(int width, int height){
   mHeight = height;
 
   glViewport(0, 0, width, height);
-  std::cout << "Window size changed " << width << ", " << height << std::endl;
 
   updatePerspectiveMat(currentFovy, currentZnear, currentZfar, width, height);
 }

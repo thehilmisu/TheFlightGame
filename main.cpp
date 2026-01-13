@@ -28,6 +28,20 @@ int main() {
     Window& window = Window::getInstance();
     Gui& gui = Gui::getInstance();
 
+    window.initMousePos();
+    window.getCamera().pitch = -0.5f;
+
+    glEnable(GL_DEPTH_TEST);
+    glDepthFunc(GL_LESS);
+    glEnable(GL_CULL_FACE);
+    glCullFace(GL_BACK);
+    glClearColor(0.5f, 0.7f, 1.0f, 1.0f);
+
+    int fbWidth, fbHeight;
+    glfwGetFramebufferSize(glfwGetCurrentContext(), &fbWidth, &fbHeight);
+    glViewport(0, 0, fbWidth, fbHeight);
+    window.updatePerspectiveMat(FOVY, ZNEAR, ZFAR, fbWidth, fbHeight);
+
     game::loadAssets();
     game::initUniforms();
 
@@ -53,8 +67,6 @@ int main() {
 
         gui.newFrame();
 
-        window.updatePerspectiveMat(FOVY, ZNEAR, ZFAR, window.getWidth(), window.getHeight());
-
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
         //Draw terrain
         unsigned int drawCount = gfx::displayTerrain(chunktables, MAX_LOD, LOD_SCALE);
@@ -76,7 +88,26 @@ int main() {
         //     gui::displayDeathScreen(0);
 
         if (window.getKeyState(GLFW_KEY_TAB) == JUST_PRESSED) draw_debug_gui = !draw_debug_gui;
-        window.getCamera().rotateCamera(window.getMouseDX(), window.getMouseDY(), 1.0f);
+
+        Camera& cam = window.getCamera();
+        cam.rotateCamera(window.getMouseDX(), window.getMouseDY(), 1.0f);
+
+        // WASD movement
+        cam.movementDirection = NONE;
+        cam.strafeDirection = NONE;
+        cam.flyingDirection = NONE;
+
+        if (window.keyIsHeld(window.getKeyState(GLFW_KEY_W))) cam.movementDirection = FORWARD;
+        if (window.keyIsHeld(window.getKeyState(GLFW_KEY_S))) cam.movementDirection = BACKWARD;
+        if (window.keyIsHeld(window.getKeyState(GLFW_KEY_A))) cam.strafeDirection = STRAFE_LEFT;
+        if (window.keyIsHeld(window.getKeyState(GLFW_KEY_D))) cam.strafeDirection = STRAFE_RIGHT;
+        if (window.keyIsHeld(window.getKeyState(GLFW_KEY_SPACE))) cam.flyingDirection = FLY_UP;
+        if (window.keyIsHeld(window.getKeyState(GLFW_KEY_LEFT_SHIFT))) cam.flyingDirection = FLY_DOWN;
+
+        float moveSpeed = 500.0f;
+        float dt = 0.016f; // ~60fps
+        cam.position += cam.velocity() * moveSpeed * dt;
+        cam.fly(dt, moveSpeed);
 
         if (draw_debug_gui){
           gui.drawUI();
