@@ -60,6 +60,15 @@ void Window::framebuffer_size_callback(GLFWwindow* window, int width, int height
   getInstance().onResize(width, height);
 }
 
+void Window::handleWindowResizeImpl(GLFWwindow* window, int w, int h){
+  (void)window;
+  onResize(w, h);
+}
+
+void Window::handleWindowResize(GLFWwindow* window, int w, int h){
+  getInstance().handleWindowResizeImpl(window, w, h);
+}
+
 void Window::onResize(int width, int height){
   mWidth = width;
   mHeight = height;
@@ -80,24 +89,46 @@ void Window::updatePerspectiveMat(float fovy, float znear, float zfar, int w, in
 	currentZfar = zfar;
 }
 
-double Window::getMouseX()
+// Instance implementations
+double Window::getMouseXImpl()
 {
     return mousex;
 }
 
-double Window::getMouseY()
+double Window::getMouseYImpl()
 {
   return mousey;
 }
 
-double Window::getMouseDX()
+double Window::getMouseDXImpl()
 {
   return mousedx;
 }
 
-double Window::getMouseDY()
+double Window::getMouseDYImpl()
 {
   return mousedy;
+}
+
+// Static wrappers
+double Window::getMouseX()
+{
+    return getInstance().getMouseXImpl();
+}
+
+double Window::getMouseY()
+{
+  return getInstance().getMouseYImpl();
+}
+
+double Window::getMouseDX()
+{
+  return getInstance().getMouseDXImpl();
+}
+
+double Window::getMouseDY()
+{
+  return getInstance().getMouseDYImpl();
 }
 
 double Window::getScrollSpeed()
@@ -105,16 +136,28 @@ double Window::getScrollSpeed()
   return scrollspeed;
 }
 
-void Window::setMousePos(double x, double y)
+// Instance implementations
+void Window::setMousePosImpl(double x, double y)
 {
   mousex = x;
   mousey = y;
 }
 
-void Window::setMouseDiff(double dx, double dy)
+void Window::setMouseDiffImpl(double dx, double dy)
 {
   mousedx = dx;
   mousedy = dy;
+}
+
+// Static wrappers
+void Window::setMousePos(double x, double y)
+{
+  getInstance().setMousePosImpl(x, y);
+}
+
+void Window::setMouseDiff(double dx, double dy)
+{
+  getInstance().setMouseDiffImpl(dx, dy);
 }
 
 Camera& Window::getCamera()
@@ -142,19 +185,36 @@ float Window::getZfar()
 	return currentZfar;
 }
 
-void Window::setKey(int key, KeyState keystate)
+// Instance implementations
+void Window::setKeyImpl(int key, KeyState keystate)
 {
 	keystates[key] = keystate;
 }
 
-void Window::setButton(int button, KeyState buttonstate)
+void Window::setButtonImpl(int button, KeyState buttonstate)
 {
 	mousebuttonstates[button] = buttonstate;
 }
 
-void Window::setScrollSpeed(double yoff)
+void Window::setScrollSpeedImpl(double yoff)
 {
 	scrollspeed = yoff;
+}
+
+// Static wrappers
+void Window::setKey(int key, KeyState keystate)
+{
+	getInstance().setKeyImpl(key, keystate);
+}
+
+void Window::setButton(int button, KeyState buttonstate)
+{
+	getInstance().setButtonImpl(button, buttonstate);
+}
+
+void Window::setScrollSpeed(double yoff)
+{
+	getInstance().setScrollSpeedImpl(yoff);
 }
 
 void Window::updateKeyStates()
@@ -197,7 +257,7 @@ glm::mat4 Window::getPerspective()
 void Window::cursorPosCallback(GLFWwindow* window, double x, double y)
 {
   (void)window;
-	int cursorMode = glfwGetInputMode(mWindow, GLFW_CURSOR);
+	// int cursorMode = glfwGetInputMode(mWindow, GLFW_CURSOR);
 	double dx = x - getMouseX();
 	double dy = y - getMouseY();
 	setMousePos(x, y);

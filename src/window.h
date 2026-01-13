@@ -47,12 +47,12 @@ public:
   int getWidth() const { return mWidth; }
   int getHeight() const { return mHeight; }
 
-  double getMouseX();
-  double getMouseY();
-  double getMouseDX();
-  double getMouseDY();
-  void setMousePos(double x, double y);
-  void setMouseDiff(double dx, double dy);
+  static double getMouseX();
+  static double getMouseY();
+  static double getMouseDX();
+  static double getMouseDY();
+  static void setMousePos(double x, double y);
+  static void setMouseDiff(double dx, double dy);
   Camera& getCamera();
   void updatePerspectiveMat(float fovy, float znear, float zfar, int w, int h);
   glm::mat4 getPerspective();
@@ -60,9 +60,9 @@ public:
   float getAspect();
   float getZnear();
   float getZfar();
-  void setKey(int key, KeyState keystate);
-  void setButton(int button, KeyState buttonstate);
-  void setScrollSpeed(double yoff);
+  static void setKey(int key, KeyState keystate);
+  static void setButton(int button, KeyState buttonstate);
+  static void setScrollSpeed(double yoff);
   double getScrollSpeed();
   void updateKeyStates();
   void clearInputState();
@@ -92,6 +92,17 @@ private:
   // Callbacks to events
   static void framebuffer_size_callback(GLFWwindow* window, int width, int height);
   void onResize(int width, int height);
-  
+
+  // Private instance method implementations for static wrappers
+  double getMouseXImpl();
+  double getMouseYImpl();
+  double getMouseDXImpl();
+  double getMouseDYImpl();
+  void setMousePosImpl(double x, double y);
+  void setMouseDiffImpl(double dx, double dy);
+  void setKeyImpl(int key, KeyState keystate);
+  void setButtonImpl(int button, KeyState buttonstate);
+  void setScrollSpeedImpl(double yoff);
+  void handleWindowResizeImpl(GLFWwindow* window, int w, int h);
 };
 #endif 

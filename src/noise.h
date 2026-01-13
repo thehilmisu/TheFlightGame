@@ -1,8 +1,10 @@
 #ifndef NOISE_H
 #define NOISE_H
-namespace rng {	
+#include <array>
+
+namespace rng {
 	//Array that represents a random permutation of 0 -> 255
-	typedef int permutation256[256];	
+	typedef std::array<int, 256> permutation256;
 	void createPermutation(permutation256 &p, int seed);
 }
 

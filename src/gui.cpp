@@ -14,8 +14,14 @@ Gui::Gui() {
 
   ImGui::StyleColorsDark();
 
+  #if defined(__APPLE__)
+    const char* glsl_version = "#version 150";
+  #else
+    const char* glsl_version = "#version 130";
+  #endif
+
   ImGui_ImplGlfw_InitForOpenGL(glfwGetCurrentContext(), true);
-  ImGui_ImplOpenGL3_Init("#version 130");
+  ImGui_ImplOpenGL3_Init(glsl_version);
   
 }
 

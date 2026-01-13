@@ -31,12 +31,22 @@ ifeq ($(OS),Windows_NT)
     CLEAN_CMD = rm $(BUILD_DIR)/$(TARGET)
     FIX_PATH = $(subst /,\,$1)
 else
-    # --- Linux/Other Settings ---
-	# Target executable name
 	TARGET = app
-    LDFLAGS = -Llib -lglfw3 -lGL -lX11 -lpthread -lXrandr -lXi -ldl
-    CLEAN_CMD = rm -f $(BUILD_DIR)/$(TARGET)
-    FIX_PATH = $1
+    UNAME_S := $(shell uname -s)
+    ifeq ($(UNAME_S),Darwin)
+        # --- macOS Settings ---
+        LIBDIRS = -L/opt/homebrew/lib \
+		          -L/usr/local/lib
+		          
+        LDFLAGS = $(LIBDIRS) -lglfw -framework OpenGL -framework Cocoa -framework IOKit -framework CoreVideo
+        CLEAN_CMD = rm -f $(BUILD_DIR)/$(TARGET)
+        FIX_PATH = $1
+    else
+        # --- Linux Settings ---
+        LDFLAGS = -Llib -lglfw3 -lGL -lX11 -lpthread -lXrandr -lXi -ldl
+        CLEAN_CMD = rm -f $(BUILD_DIR)/$(TARGET)
+        FIX_PATH = $1
+    endif
 endif
 
 # Compiler settings
