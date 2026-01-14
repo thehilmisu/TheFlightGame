@@ -19,26 +19,28 @@ constexpr float MINIMAP_SIZE = 80.0f;
 namespace gobjs = gameobjects;
 
 namespace gfx {
-	void displaySkybox() 
+	void displaySkybox()
 	{
 		Window& window = Window::getInstance();
 		Camera& cam = window.getCamera();
 
-		//Draw skybox
+		//Draw skybox - render at max depth so it appears behind everything
+		glDepthFunc(GL_LEQUAL);
 		glCullFace(GL_FRONT);
-		TEXTURES->bindTexture("skybox", GL_TEXTURE0);	
+		TEXTURES->bindTexture("skybox", GL_TEXTURE0);
 		ShaderProgram& skyboxShader = SHADERS->getShader("skybox");
 		skyboxShader.use();
-		
+
 		//Uniforms
 		skyboxShader.uniformInt("skybox", 0);
 		skyboxShader.uniformMat4x4("persp", window.getPerspective());
-		glm::mat4 skyboxView = glm::mat4(glm::mat3(cam.viewMatrix()));	
+		glm::mat4 skyboxView = glm::mat4(glm::mat3(cam.viewMatrix()));
 		skyboxShader.uniformMat4x4("view", skyboxView);
 
 		VAOS->bind("cube");
 		VAOS->draw();
 		glCullFace(GL_BACK);
+		glDepthFunc(GL_LESS);
 	}
 
 	void displayWater(float totalTime)
