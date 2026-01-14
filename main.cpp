@@ -8,21 +8,6 @@
 #include "camera.h"
 #include <iostream>
 
-// glm::vec3 getCameraFollowPos(const game::Transform &playertransform)
-// {
-// 	glm::vec3 offset = playertransform.rotate(glm::vec3(0.0f, 28.0f, -60.0f));
-// 	return playertransform.position + offset;
-// }
-
-// void updateCamera(game::Transform transform)
-// {
-// 	Camera& cam = Window::getInstance().getCamera();
-// 	//Update camera
-// 	cam.position = game::getCameraFollowPos(transform);
-// 	cam.yaw = -(transform.rotation.y + glm::radians(180.0f));
-// 	cam.pitch = transform.rotation.x;
-// }
-
 int main() {
     
     Window& window = Window::getInstance();
@@ -86,6 +71,9 @@ int main() {
         //gui::displayFPSCounter(fps);
         // if(player.crashed && !paused && player.deathtimer > 2.5f)
         //     gui::displayDeathScreen(0);
+
+        // to make the terrain infinite
+        game::generateNewChunks(permutations, chunktables, decorations);
 
         if (window.getKeyState(GLFW_KEY_TAB) == JUST_PRESSED) draw_debug_gui = !draw_debug_gui;
 
