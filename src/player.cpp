@@ -15,7 +15,7 @@ namespace gameobjects {
 	Player::Player(glm::vec3 position) {
 		transform.position = position;
 		transform.rotation = glm::vec3(0.0f);
-		transform.scale = glm::vec3(1.0f);
+		transform.scale = glm::vec3(2.7f);
 		xRotationDirection = RX_NONE;
 		yRotationDirection = RY_NONE;
 		crashed = false;

@@ -5,6 +5,12 @@
 	"path" = "assets/models/plane.obj";
 }
 
+# Second Plane model (a26)
+"plane_douglas" {
+	"path" = "assets/models/douglas.obj";
+}
+
+
 # Propeller model
 "propeller" {
 	"path" = "assets/models/propeller.obj";

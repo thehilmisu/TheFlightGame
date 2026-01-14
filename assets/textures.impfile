@@ -44,6 +44,13 @@
 	"flip" = "true";
 }
 
+# texture for second  plane (a26)
+"plane_douglas" {
+	"target" = "texture2d";
+	"path" = "assets/textures/gltf_embedded_1.jpeg";
+	"flip" = "false";
+}
+
 # texture for enemy plane
 "enemy_plane" {
 	"target" = "texture2d";

@@ -63,6 +63,11 @@ vec4 getcolor()
 
 	vec4 color1 = texture(terraintexture, tc + uv1);
 	vec4 color2 = texture(terraintexture, tc + uv2);
+
+ 	// Darken grass specifically (when sampling from 0.25 region)
+  	if (uv1.x == 0.25) color1.rgb *= 0.7;
+  	if (uv2.x == 0.25) color2.rgb *= 0.7;
+
 	color1.a = 0.0;
 	color2.a = 0.0;
 

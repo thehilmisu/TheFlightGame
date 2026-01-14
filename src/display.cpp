@@ -1,5 +1,6 @@
 #include "game.h"
 #include "assets.h"
+#include "glm/ext/matrix_transform.hpp"
 #include "window.h"
 #include "infworld.h"
 #include <glad/glad.h>
@@ -202,17 +203,18 @@ namespace gfx {
 		//Display plane body
 		glm::mat4 transformMat = transform.getTransformMat();
 		glm::mat4 normal = glm::mat3(glm::transpose(glm::inverse(transformMat)));
-		TEXTURES->bindTexture("plane", GL_TEXTURE0);	
+		TEXTURES->bindTexture("plane_douglas", GL_TEXTURE0);	
 		shader.uniformFloat("specularfactor", 0.5f);	
 		shader.uniformMat4x4("transform", transformMat);
 		shader.uniformMat3x3("normalmat", normal);
-		VAOS->bind("plane");
+		VAOS->bind("plane_douglas");
 		VAOS->draw();
 
 		//Display propeller
 		TEXTURES->bindTexture("propeller", GL_TEXTURE0);
 		glm::mat4 propellerTransform = glm::mat4(1.0f);
-		propellerTransform = glm::translate(glm::mat4(1.0f), glm::vec3(0.0f, 0.0f, 13.888f));
+		propellerTransform = glm::translate(glm::mat4(1.0f), glm::vec3(0.0f, 0.0f, 5.888f));
+		propellerTransform = glm::scale(propellerTransform, glm::vec3(0.5f, 0.5f, 0.5f));
 		float rotation = totalTime * 16.0f;
 		propellerTransform = glm::rotate(propellerTransform, rotation, glm::vec3(0.0f, 0.0f, 1.0f));
 		propellerTransform = transformMat * propellerTransform;
