@@ -22,6 +22,10 @@ Gui::Gui() {
 
   ImGui_ImplGlfw_InitForOpenGL(glfwGetCurrentContext(), true);
   ImGui_ImplOpenGL3_Init(glsl_version);
+
+  dItems.playerPosition = glm::vec3(0.0f);
+  dItems.cameraPosition = glm::vec3(0.0f);
+  dItems.bulletCount = 0;
   
 }
 
@@ -63,6 +67,21 @@ void Gui::drawUI() {
     
     ImGuiIO &io = ImGui::GetIO(); (void)io;
     ImGui::Text("FPS : %.1f", io.Framerate);
+    ImGui::Separator();
+    ImGui::Text("Player Position");
+    ImGui::Text("(x: %.1f, y: %.1f, z:%.1f)",
+                dItems.playerPosition.x,
+                dItems.playerPosition.y,
+                dItems.playerPosition.z);
+    ImGui::Separator();
+    ImGui::Text("Camera Position");
+    ImGui::Text("(x: %.1f, y: %.1f, z:%.1f)",
+                dItems.cameraPosition.x,
+                dItems.cameraPosition.y,
+                dItems.cameraPosition.z);
+    ImGui::Separator();
+    ImGui::Text("Bullet Count : %d", dItems.bulletCount);
+    
     
 
     ImGui::End();

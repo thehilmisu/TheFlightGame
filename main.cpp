@@ -94,6 +94,9 @@ int main() {
 					printf("Just crashed \n");
 				}
         player.update(dt);
+        gui.dItems.playerPosition = player.transform.position;
+        gui.dItems.cameraPosition = window.getCamera().position;
+        gui.dItems.bulletCount = bullets.size();
 
         //Shoot bullets
 				KeyState leftbutton = window.getButtonState(GLFW_MOUSE_BUTTON_LEFT);
