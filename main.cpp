@@ -20,7 +20,6 @@ int main() {
     glDepthFunc(GL_LESS);
     glEnable(GL_CULL_FACE);
     glCullFace(GL_BACK);
-    glClearColor(0.5f, 0.7f, 1.0f, 1.0f);
 
     int fbWidth, fbHeight;
     glfwGetFramebufferSize(glfwGetCurrentContext(), &fbWidth, &fbHeight);
@@ -82,6 +81,15 @@ int main() {
         game::generateNewChunks(permutations, chunktables, decorations);
 
         totalTime += dt;
+        bool justcrashed = player.crashed;
+				player.checkIfCrashed(dt, permutations);
+				justcrashed = player.crashed ^ justcrashed;
+				//Update explosions
+				if(justcrashed) {
+					// explosions.push_back(gobjs::Explosion(player.transform.position));
+					// SNDSRC->playid("explosion", player.transform.position);	
+					printf("Just crashed \n");
+				}
         player.update(dt);
         
         if (window.getKeyState(GLFW_KEY_TAB) == JUST_PRESSED) draw_debug_gui = !draw_debug_gui;
