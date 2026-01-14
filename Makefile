@@ -6,7 +6,7 @@ SRC = main.cpp src/glad.c src/window.cpp src/gui.cpp src/shader.cpp \
 	  src/noise.cpp src/stb_image_impl.c src/fast_obj.c src/gfx.cpp \
 	  src/geometry.cpp src/infworld.cpp src/chunktable.cpp src/chunkdecorations.cpp \
 	  src/assets.cpp src/importfile.cpp src/camera.cpp src/game.cpp src/plants.cpp \
-	  src/display.cpp \
+	  src/display.cpp src/player.cpp src/update.cpp \
 	  thirdparty/imgui/imgui.cpp \
 	  thirdparty/imgui/imgui_draw.cpp \
 	  thirdparty/imgui/imgui_widgets.cpp \

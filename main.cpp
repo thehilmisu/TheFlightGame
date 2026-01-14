@@ -40,14 +40,18 @@ int main() {
     decorations.genDecorations(permutations);
     gfx::generateDecorationOffsets(decorations);
 
-    // game::update_camera(
-    //     glm::vec3(0.0f, HEIGHT * SCALE * 0.5f, 0.0f)
-    // );
+    //Gameobjects
+		gameobjects::Player player(glm::vec3(0.0f, HEIGHT * SCALE * 0.5f, 0.0f));
+
   	float totalTime = 0.0f;
+  	float dt = 0.0f;
     unsigned int chunksPerSecond = 0; //Number of chunks drawn per second	
     bool draw_debug_gui = true;
+
+    game::updateCamera(player);
     
     while (!window.shouldClose() && window.isRunnning()) {
+        float startTime = glfwGetTime();
         window.pollEvents();
 
         gui.newFrame();
@@ -59,8 +63,8 @@ int main() {
         //Display trees
         gfx::displayDecorations(decorations, totalTime);
         //Display plane
-        //if(!player.crashed)
-        //    gfx::displayPlayerPlane(totalTime, player.transform);
+        if(!player.crashed)
+           gfx::displayPlayerPlane(totalTime, player.transform);
         //Display water
         gfx::displayWater(totalTime);
         //Draw skybox
@@ -72,30 +76,15 @@ int main() {
         // if(player.crashed && !paused && player.deathtimer > 2.5f)
         //     gui::displayDeathScreen(0);
 
+
+        game::updateCamera(player, dt);
         // to make the terrain infinite
         game::generateNewChunks(permutations, chunktables, decorations);
 
+        totalTime += dt;
+        player.update(dt);
+        
         if (window.getKeyState(GLFW_KEY_TAB) == JUST_PRESSED) draw_debug_gui = !draw_debug_gui;
-
-        Camera& cam = window.getCamera();
-        cam.rotateCamera(window.getMouseDX(), window.getMouseDY(), 1.0f);
-
-        // WASD movement
-        cam.movementDirection = NONE;
-        cam.strafeDirection = NONE;
-        cam.flyingDirection = NONE;
-
-        if (window.keyIsHeld(window.getKeyState(GLFW_KEY_W))) cam.movementDirection = FORWARD;
-        if (window.keyIsHeld(window.getKeyState(GLFW_KEY_S))) cam.movementDirection = BACKWARD;
-        if (window.keyIsHeld(window.getKeyState(GLFW_KEY_A))) cam.strafeDirection = STRAFE_LEFT;
-        if (window.keyIsHeld(window.getKeyState(GLFW_KEY_D))) cam.strafeDirection = STRAFE_RIGHT;
-        if (window.keyIsHeld(window.getKeyState(GLFW_KEY_SPACE))) cam.flyingDirection = FLY_UP;
-        if (window.keyIsHeld(window.getKeyState(GLFW_KEY_LEFT_SHIFT))) cam.flyingDirection = FLY_DOWN;
-
-        float moveSpeed = 500.0f;
-        float dt = 0.016f; // ~60fps
-        cam.position += cam.velocity() * moveSpeed * dt;
-        cam.fly(dt, moveSpeed);
 
         if (draw_debug_gui){
           gui.drawUI();
@@ -104,6 +93,7 @@ int main() {
 
         window.swapBuffers();
         window.updateKeyStates();
+        dt = glfwGetTime() - startTime;
     }
 
     return 0;
