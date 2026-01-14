@@ -41,6 +41,7 @@ int main() {
 
     //Gameobjects
 		gameobjects::Player player(glm::vec3(0.0f, HEIGHT * SCALE * 0.5f, 0.0f));
+		std::vector<gameobjects::Bullet> bullets;
 
   	float totalTime = 0.0f;
   	float dt = 0.0f;
@@ -64,6 +65,8 @@ int main() {
         //Display plane
         if(!player.crashed)
            gfx::displayPlayerPlane(totalTime, player.transform);
+        //Display bullets
+        gfx::displayBullets(bullets);
         //Display water
         gfx::displayWater(totalTime);
         //Draw skybox
@@ -91,6 +94,26 @@ int main() {
 					printf("Just crashed \n");
 				}
         player.update(dt);
+
+        //Shoot bullets
+				KeyState leftbutton = window.getButtonState(GLFW_MOUSE_BUTTON_LEFT);
+				KeyState spacebar = window.getKeyState(GLFW_KEY_SPACE);
+				if(player.shoottimer <= 0.0f && 
+				   (window.keyIsHeld(spacebar) || window.keyIsHeld(leftbutton)) &&
+				   !player.crashed) {
+					// SNDSRC->playid("shoot", player.transform.position);
+					player.resetShootTimer();
+					bullets.push_back(gameobjects::Bullet(player, glm::vec3(-8.5f, -0.75f, 8.5f)));
+					bullets.push_back(gameobjects::Bullet(player, glm::vec3(8.5f, -0.75f, 8.5f)));
+				}
+				//Update bullets
+				game::checkBulletDist(bullets, player);
+				game::updateBullets(bullets, dt);
+				game::checkForBulletTerrainCollision(bullets, permutations);
+				// checkForHit(bullets, balloons, 24.0f);
+				// checkForHit(bullets, blimps, 32.0f);
+				// checkForHit(bullets, ufos, 14.0f);
+				// checkForHit(bullets, planes, 12.0f);
         
         if (window.getKeyState(GLFW_KEY_TAB) == JUST_PRESSED) draw_debug_gui = !draw_debug_gui;
 

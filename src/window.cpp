@@ -43,9 +43,7 @@ Window::Window(){
   currentZfar = 0.0f;
 
   scrollspeed = 0.0f;
-                  
-  
-}
+ }
 
 Window::~Window() {
   if(mWindow) {
