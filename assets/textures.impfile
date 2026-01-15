@@ -121,6 +121,13 @@
 	"flip" = "false";
 }
 
+# score background
+"score_background" {
+	"target" = "texture2d";
+	"path" = "assets/textures/skor-bg.png";
+	"flip" = "false";
+}
+
 # cubemap for skybox
 "skybox" {
 	"target" = "cubemap";

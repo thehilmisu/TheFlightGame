@@ -278,6 +278,7 @@ namespace gfx {
 		const game::Transform &playertransform
 	);
 	void displayCrosshair(const game::Transform &playertransform);
+	void displayHUDBackGrounds();
 }
 
 namespace gui {

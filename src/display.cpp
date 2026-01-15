@@ -504,6 +504,9 @@ namespace gfx {
 		glm::mat4 screenMat = 
 			glm::scale(glm::mat4(1.0f), glm::vec3(2.0f / float(w), 2.0f / float(h), 0.0f));
 
+		glEnable(GL_BLEND);
+    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+
 		VAOS->bind("quad");
 		SHADERS->use("textured2d");
 		TEXTURES->bindTexture("crosshair", GL_TEXTURE0);
@@ -525,5 +528,38 @@ namespace gfx {
 		transform = glm::rotate(transform, glm::radians(90.0f), glm::vec3(1.0f, 0.0f, 0.0f));
 		texture2dshader.uniformMat4x4("transform", transform);
 		VAOS->draw();
+		
+		glDisable(GL_BLEND);
 	}
+
+	void displayHUDBackGrounds()
+  {
+  		Window& window = Window::getInstance();
+
+      int w, h;
+      w = window.getWidth();
+      h = window.getHeight();
+
+      glm::mat4 screenMat =
+          glm::scale(glm::mat4(1.0f), glm::vec3(2.0f / float(w), 2.0f / float(h), 0.0f));
+
+			glEnable(GL_BLEND);
+      glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+      
+      VAOS->bind("quad");
+      SHADERS->use("textured2d");
+      TEXTURES->bindTexture("score_background", GL_TEXTURE0);
+      ShaderProgram& texture2dshader = SHADERS->getShader("textured2d");
+      texture2dshader.uniformMat4x4("screen", screenMat);
+
+      glm::mat4 transform = glm::mat4(1.0f);
+      transform = glm::translate(transform, glm::vec3(90.0f, 40.0f, 0.0f));
+      transform = glm::translate(transform, glm::vec3(-float(w) / 2.0f, -float(h) / 2.0f, 0.0f));
+      transform = glm::scale(transform, glm::vec3(80.0f, 20.0f, 0.0f)); 
+      transform = glm::rotate(transform, glm::radians(90.0f), glm::vec3(1.0f, 0.0f, 0.0f));
+      texture2dshader.uniformMat4x4("transform", transform);
+      VAOS->draw();
+
+      glDisable(GL_BLEND);
+  }
 }

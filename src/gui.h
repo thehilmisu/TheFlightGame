@@ -13,6 +13,16 @@ struct DebugItems{
   int bulletCount;
 };
 
+struct HUDItems {
+  unsigned int health;
+  unsigned int maxHealth;
+  float speed;
+  unsigned int bulletCount;
+  float altitude;
+  unsigned int score;
+  bool crashed;
+};
+
 class Gui {
 
 public:
@@ -28,7 +38,9 @@ public:
   void render();
 
   void drawUI();
+  void drawHUD();
   DebugItems dItems;
+  HUDItems hudItems;
 
 private:
   Gui();

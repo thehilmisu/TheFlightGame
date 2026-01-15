@@ -45,7 +45,8 @@ int main() {
 
   	float totalTime = 0.0f;
   	float dt = 0.0f;
-    unsigned int chunksPerSecond = 0; //Number of chunks drawn per second	
+    unsigned int chunksPerSecond = 0; //Number of chunks drawn per second
+    unsigned int score = 0; //Player score
     bool draw_debug_gui = true;
 
     game::updateCamera(player);
@@ -71,6 +72,12 @@ int main() {
         gfx::displayWater(totalTime);
         //Draw skybox
         gfx::displaySkybox();
+
+
+        //Draw HUD Backgorunds
+        gfx::displayCrosshair(player.transform);
+        gfx::displayHUDBackGrounds();
+        
         //Display explosions
         //gfx::displayExplosions(explosions);
         //User Interface
@@ -98,6 +105,15 @@ int main() {
         gui.dItems.cameraPosition = window.getCamera().position;
         gui.dItems.bulletCount = bullets.size();
 
+        // Update HUD data
+        gui.hudItems.health = player.health;
+        gui.hudItems.maxHealth = 50;
+        gui.hudItems.speed = player.speed;
+        gui.hudItems.bulletCount = bullets.size();
+        gui.hudItems.altitude = player.transform.position.y;
+        gui.hudItems.score = score;
+        gui.hudItems.crashed = player.crashed;
+
         //Shoot bullets
 				KeyState leftbutton = window.getButtonState(GLFW_MOUSE_BUTTON_LEFT);
 				KeyState spacebar = window.getKeyState(GLFW_KEY_SPACE);
@@ -123,6 +139,7 @@ int main() {
         if (draw_debug_gui){
           gui.drawUI();
         }
+        gui.drawHUD();
         gui.render();
 
         window.swapBuffers();
