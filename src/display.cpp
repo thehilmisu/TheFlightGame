@@ -546,6 +546,7 @@ namespace gfx {
 			glEnable(GL_BLEND);
       glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
       
+      // Altitude Background (Bottom Left)
       VAOS->bind("quad");
       SHADERS->use("textured2d");
       TEXTURES->bindTexture("score_background", GL_TEXTURE0);
@@ -558,6 +559,21 @@ namespace gfx {
       transform = glm::scale(transform, glm::vec3(80.0f, 20.0f, 0.0f)); 
       transform = glm::rotate(transform, glm::radians(90.0f), glm::vec3(1.0f, 0.0f, 0.0f));
       texture2dshader.uniformMat4x4("transform", transform);
+      VAOS->draw();
+
+			// Health Background (Top Left)
+      VAOS->bind("quad");
+      SHADERS->use("textured2d");
+      TEXTURES->bindTexture("score_background", GL_TEXTURE0);
+      ShaderProgram& texture2dshader_ = SHADERS->getShader("textured2d");
+      texture2dshader_.uniformMat4x4("screen", screenMat);
+
+      glm::mat4 transform_ = glm::mat4(1.0f);
+      transform_ = glm::translate(transform_, glm::vec3(125.0f, float(h) - 65.0f, 0.0f));
+      transform_ = glm::translate(transform_, glm::vec3(-float(w) / 2.0f, -float(h) / 2.0f, 0.0f));
+      transform_ = glm::scale(transform_, glm::vec3(125.0f, 45.0f, 0.0f)); 
+      transform_ = glm::rotate(transform_, glm::radians(90.0f), glm::vec3(1.0f, 0.0f, 0.0f));
+      texture2dshader_.uniformMat4x4("transform", transform_);
       VAOS->draw();
 
       glDisable(GL_BLEND);
