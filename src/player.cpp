@@ -2,7 +2,8 @@
 #include "window.h"
 // #include "audio.hpp"
 
-constexpr unsigned int DEFAULT_HEALTH = 50;
+constexpr unsigned int DEFAULT_HEALTH = 100;
+constexpr float DEFAULT_FUEL = 100.0f;
 constexpr float DAMAGE_COOLDOWN = 0.2f;
 constexpr float DAMAGE_TIMER = 1.0f;
 constexpr float ROTATION_Z_SPEED = 0.5f;
@@ -10,6 +11,7 @@ constexpr float MAX_ROTATION_Z = glm::radians(15.0f);
 constexpr float ROTATION_Y_SPEED = 0.8f;
 constexpr float ROTATION_X_SPEED = 0.6f;
 constexpr float MAX_ROTATION_X = glm::radians(70.0f);
+constexpr float FUEL_CONSUMPTION_RATE = 2.0f;
 
 namespace gameobjects {
 	Player::Player(glm::vec3 position) {
@@ -21,6 +23,7 @@ namespace gameobjects {
 		crashed = false;
 		speed = SPEED;
 		health = DEFAULT_HEALTH;
+		fuel = DEFAULT_FUEL;
 	}
 
 	void Player::damage(unsigned int amount) 
@@ -94,6 +97,8 @@ namespace gameobjects {
 		damagecooldown -= dt;
 		damagetimer -= dt;
 
+		fuel -= dt * FUEL_CONSUMPTION_RATE;
+
 		Window& window = Window::getInstance();
 
 		//Turn left/right
@@ -115,8 +120,9 @@ namespace gameobjects {
 			xRotationDirection = Player::RX_NONE;
 
 		//Rotate with mouse
+#if 0
 		rotateWithMouse(dt);
-
+#endif
 		//Rotate on the y axis
 		if(yRotationDirection == Player::RY_RIGHT) {
 			transform.rotation.z += dt * ROTATION_Z_SPEED;

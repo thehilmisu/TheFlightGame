@@ -412,6 +412,9 @@ namespace gfx {
 		glm::mat4 screenMat = 
 			glm::scale(glm::mat4(1.0f), glm::vec3(2.0f / float(w), 2.0f / float(h), 0.0f));
 
+		glEnable(GL_BLEND);
+		glDisable(GL_DEPTH_TEST);
+    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 		VAOS->bind("quad");
 		SHADERS->use("minimap");
 	
@@ -438,6 +441,8 @@ namespace gfx {
 		transform = glm::rotate(transform, glm::radians(90.0f), glm::vec3(1.0f, 0.0f, 0.0f));
 		texture2dshader.uniformMat4x4("transform", transform);
 		VAOS->draw();
+		glDisable(GL_BLEND);
+		glEnable(GL_DEPTH_TEST);
 	}
 
 	void displayEnemyMarkers(

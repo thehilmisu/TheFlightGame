@@ -103,6 +103,7 @@ namespace gameobjects {
 		float deathtimer = 0.0f; //Keeps track of how long the player has been dead
 		float shoottimer = 0.0f;
 		float speed = 0.0f;
+		float fuel = 0.0f;
 		//This is used to keep track of the time left for displaying a red screen
 		//to indicate to the player that they took damage
 		float damagetimer = 0.0f;

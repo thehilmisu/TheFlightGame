@@ -15,7 +15,7 @@ struct DebugItems{
 
 struct HUDItems {
   unsigned int health;
-  unsigned int maxHealth;
+  float fuel;
   float speed;
   unsigned int bulletCount;
   float altitude;

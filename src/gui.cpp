@@ -4,6 +4,7 @@
 #include "imgui_impl_glfw.h"
 #include "imgui_impl_opengl3.h"
 #include <glm/glm.hpp>
+#include "colors.h"
 
 Gui::Gui() {
 
@@ -26,6 +27,8 @@ Gui::Gui() {
   dItems.playerPosition = glm::vec3(0.0f);
   dItems.cameraPosition = glm::vec3(0.0f);
   dItems.bulletCount = 0;
+
+  hudItems.fuel = 100.0f;
   
 }
 
@@ -97,64 +100,77 @@ void Gui::drawHUD(){
   ImGuiWindowFlags hudFlags =
       ImGuiWindowFlags_NoDecoration |
       ImGuiWindowFlags_NoInputs |
-      ImGuiWindowFlags_NoBackground |
+      // ImGuiWindowFlags_NoBackground |
       ImGuiWindowFlags_NoSavedSettings;
 
-  // TOP-LEFT: Health + Speed
+  // TOP-CENTER: FUEL
   {
-    ImGui::SetNextWindowPos(ImVec2(viewport->WorkPos.x + padding,
+    ImGui::SetNextWindowPos(ImVec2(viewport->GetCenter().x - 150.0f,
                                    viewport->WorkPos.y + padding));
 
-    if (ImGui::Begin("HUD_TopLeft", nullptr, hudFlags)) {
+    if (ImGui::Begin("HUD_TopCenter", nullptr, hudFlags)) {
       ImGui::SetWindowFontScale(1.2f);
 
-      // Health bar with color coding
-      float healthPercent = hudItems.health / float(hudItems.maxHealth);
-      ImVec4 healthColor;
-      if (healthPercent > 0.6f)
-        healthColor = ImVec4(0.0f, 1.0f, 0.0f, 1.0f); // Green
-      else if (healthPercent > 0.3f)
-        healthColor = ImVec4(1.0f, 1.0f, 0.0f, 1.0f); // Yellow
+      // fuel bar with color coding
+      float fuelPercent = hudItems.fuel / 100.0f;
+      ImVec4 fuelBarColor;
+      if (fuelPercent > 0.6f)
+        fuelBarColor = COLOR_GREEN; // Green
+      else if (fuelPercent > 0.3f)
+        fuelBarColor = COLOR_YELLOW; // Yellow
       else
-        healthColor = ImVec4(1.0f, 0.0f, 0.0f, 1.0f); // Red
+        fuelBarColor = COLOR_RED; // Red
 
-      ImGui::Text("HP: %u/%u", hudItems.health, hudItems.maxHealth);
-      ImGui::PushStyleColor(ImGuiCol_PlotHistogram, healthColor);
-      ImGui::ProgressBar(healthPercent, ImVec2(200, 20));
+      ImGui::Text("Fuel : ");
+      ImGui::SameLine();
+      ImGui::PushStyleColor(ImGuiCol_PlotHistogram, fuelBarColor);
+      ImGui::ProgressBar(fuelPercent, ImVec2(300, 20));
       ImGui::PopStyleColor();
-
-      // Speed
-      ImGui::Text("Speed: %.1f", hudItems.speed);
 
       ImGui::End();
     }
   }
-
+ 
   // TOP-RIGHT: Score + Ammo
   {
-    ImGui::SetNextWindowPos(ImVec2(viewport->WorkPos.x + viewport->WorkSize.x - 220,
+    ImGui::SetNextWindowPos(ImVec2(viewport->WorkSize.x - 300,
                                    viewport->WorkPos.y + padding));
 
     if (ImGui::Begin("HUD_TopRight", nullptr, hudFlags)) {
       ImGui::SetWindowFontScale(1.2f);
 
       ImGui::Text("Score: %u", hudItems.score);
-      ImGui::Text("Ammo: %u", hudItems.bulletCount);
 
       ImGui::End();
     }
   }
 
-  // BOTTOM-LEFT: Altitude
+  // BOTTOM-RIGHT: Altitude
   {
-    ImGui::SetNextWindowPos(ImVec2(viewport->WorkPos.x + padding,
-                                   viewport->WorkPos.y + viewport->WorkSize.y - 60));
+    ImGui::SetNextWindowPos(ImVec2(viewport->WorkSize.x - 300.0f + padding,
+                                   viewport->WorkPos.y + viewport->WorkSize.y - 120));
 
     if (ImGui::Begin("HUD_BottomLeft", nullptr, hudFlags)) {
       ImGui::SetWindowFontScale(1.2f);
 
       ImGui::Text("Altitude: %.1f", hudItems.altitude);
+      ImGui::Text("Speed: %.1f", hudItems.speed);
 
+      // health bar with color coding
+      float healthPercent = hudItems.health / 100.0f;
+      ImVec4 healthBarColor;
+      if (healthPercent > 0.6f)
+        healthBarColor = COLOR_GREEN; // Green
+      else if (healthPercent > 0.3f)
+        healthBarColor = COLOR_YELLOW; // Yellow
+      else
+        healthBarColor = COLOR_RED; // Red
+        
+      ImGui::Text("Health : ");
+      ImGui::SameLine();
+      ImGui::PushStyleColor(ImGuiCol_PlotHistogram, healthBarColor);
+      ImGui::ProgressBar(healthPercent, ImVec2(150, 20));
+      ImGui::PopStyleColor();
       ImGui::End();
     }
   }

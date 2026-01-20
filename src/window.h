@@ -87,7 +87,7 @@ private:
   int mWidth = 800;
   int mHeight = 600;
   bool mIsRunning = true;
-  std::string mTitle = "OpenGL";
+  std::string mTitle = "River Raid 3D";
   
   // Callbacks to events
   static void framebuffer_size_callback(GLFWwindow* window, int width, int height);
