@@ -19,10 +19,8 @@ const glm::vec3 LIGHT = glm::normalize(glm::vec3(-1.0f));
 
 namespace game {
 	enum GameMode {
-		CASUAL,
-		FIGHT,
+		ARCADE,
 		CREDITS,
-		HIGH_SCORE_SCREEN,
 		SETTINGS,
 		NONE_SELECTED,
 	};
@@ -78,7 +76,7 @@ namespace game {
 	//and some of those things will shoot back at you so you must try to
 	//destroy as many things as possible before being shot down yourself
 	//returns the final score the player acheives
-	unsigned int fightModeGameLoop();
+	void arcadeModeGameLoop();
 	//Main menu
 	//Returns the game mode selected
 	game::GameMode mainMenu();

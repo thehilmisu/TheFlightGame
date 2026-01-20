@@ -294,7 +294,10 @@ bool Window::keyIsHeld(KeyState keystate)
 {
 	return keystate == JUST_PRESSED || keystate == HELD;
 }
-                
+
+void Window::setCursorInputMode(int mode){
+	glfwSetInputMode(mWindow, GLFW_CURSOR, mode);
+}                
             
       
     

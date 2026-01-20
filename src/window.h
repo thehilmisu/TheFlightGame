@@ -77,6 +77,7 @@ public:
   //Initializes mouse position
   void initMousePos();
   bool keyIsHeld(KeyState keystate);
+  void setCursorInputMode(int mode);
 
                                    
 private:
