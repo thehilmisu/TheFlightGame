@@ -126,6 +126,7 @@ namespace game {
           gui.drawUI();
         }
         gui.drawHUD();
+
         gui.render();
 
         window.swapBuffers();

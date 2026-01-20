@@ -1,5 +1,6 @@
 #include "game.h"
 #include "window.h"
+#include "gui.h"
 // #include <AL/al.h>
 
 namespace gobjs = gameobjects;
@@ -8,11 +9,9 @@ namespace game {
 	game::GameMode mainMenu()
 	{
 		Window& window = Window::getInstance();
-		bool showCredits = false;
-		// std::vector<std::string> credits = gui::readTextFile("assets/credit cs; c
-
+		Gui& gui = Gui::getInstance();
+		
 		window.setCursorInputMode(GLFW_CURSOR_NORMAL);
-		// glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_NORMAL);
 
 		window.getCamera().pitch = 0.0f;
 		window.getCamera().yaw = 0.0f;
@@ -25,6 +24,7 @@ namespace game {
 		while(!window.shouldClose()) {
 			float start = glfwGetTime();
 
+			gui.newFrame();
 
 			//Update perspective matrix
 			window.updatePerspectiveMat(FOVY, ZNEAR, ZFAR, window.getWidth(), window.getHeight());
@@ -35,15 +35,11 @@ namespace game {
 			//Display skybox
 			gfx::displaySkybox();
 
-			// game::GameMode selected = gui::displayMainMenu();
-			game::GameMode selected = NONE_SELECTED;
-			// if(showCredits) {
-			// 	bool close = gui::displayCredits(credits);
-			// 	if(close)
-			// 		showCredits = false;
-			// }
+			game::GameMode selected = gui.drawMainMenu();
 
-			player.transform.rotation.y += 3.14f * dt;
+			player.transform.rotation.y += 2.0f * dt;
+
+			gui.render();
 
 			window.updateKeyStates();
 			glEnable(GL_CULL_FACE);
@@ -59,7 +55,7 @@ namespace game {
 			case ARCADE:
 				return selected;
 			case CREDITS:
-				showCredits = true;
+				break;
 			default:
 				break;
 			}
@@ -71,7 +67,7 @@ namespace game {
 	}
 
 	// void highScoreTableScreen(const HighScoreTable &highscores)
-	// {
+	// {tty-cmd{"ok": true, "data": "18"}\x
 	// 	State* state = State::get();
 
 	// 	glfwSetInputMode(state->getWindow(), GLFW_CURSOR, GLFW_CURSOR_NORMAL);

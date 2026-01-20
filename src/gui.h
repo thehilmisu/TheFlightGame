@@ -1,6 +1,7 @@
 #ifndef GUI_H
 #define GUI_H
 
+#include "game.h"
 #include "glm/ext/vector_float3.hpp"
 #include "imgui.h"
 #include "imgui_impl_glfw.h"
@@ -39,6 +40,7 @@ public:
 
   void drawUI();
   void drawHUD();
+  game::GameMode drawMainMenu();
   DebugItems dItems;
   HUDItems hudItems;
 

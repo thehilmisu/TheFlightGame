@@ -1,5 +1,6 @@
 #include "gui.h"
 #include "GLFW/glfw3.h"
+#include "game.h"
 #include "imgui.h"
 #include "imgui_impl_glfw.h"
 #include "imgui_impl_opengl3.h"
@@ -93,7 +94,57 @@ void Gui::drawUI() {
   ImGui::PopStyleVar();
 }
 
+
+game::GameMode Gui::drawMainMenu(){
+  
+  game::GameMode mode = game::NONE_SELECTED;
+  // Set the menu to be centered on the screen
+   ImGui::SetNextWindowPos(ImVec2(150.0f, 500.0f), ImGuiCond_Always, ImVec2(0.5f, 0.5f));
+   ImGui::SetNextWindowSize(ImVec2(300, 400));
+  
+   // Use flags to remove the typical window frame for a cleaner "Game Menu" look
+   ImGuiWindowFlags window_flags = ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoBackground;
+  
+   if (ImGui::Begin("GameMainMenu", nullptr, window_flags)) {
+       ImGui::PushStyleVar(ImGuiStyleVar_FrameRounding, 5.0f); // Round the buttons
+  
+       // Title Text
+       ImGui::SetWindowFontScale(2.0f);
+       float text_width = ImGui::CalcTextSize("River Raid 3D").x;
+       ImGui::SetCursorPosX((ImGui::GetWindowSize().x - text_width) * 0.5f);
+       ImGui::Text("River Raid 3D");
+       ImGui::SetWindowFontScale(1.0f);
+  
+       ImGui::Spacing(); ImGui::Separator(); ImGui::Spacing();
+  
+       if (ImGui::Button("NEW GAME", ImVec2(-1.0f, 50.0f))) {
+           // Start game logic
+           mode = game::ARCADE;
+       }
+  
+       if (ImGui::Button("LOAD GAME", ImVec2(-1.0f, 50.0f))) {
+           // Load menu logic
+       }
+  
+       if (ImGui::Button("OPTIONS", ImVec2(-1.0f, 50.0f))) {
+           // Settings logic
+       }
+  
+       ImGui::Spacing();
+  
+       if (ImGui::Button("EXIT", ImVec2(-1.0f, 50.0f))) {
+           // Close app logic
+       }
+  
+       ImGui::PopStyleVar();
+       ImGui::End();
+     }
+
+     return mode;
+}
+
 void Gui::drawHUD(){
+
   ImGuiViewport* viewport = ImGui::GetMainViewport();
   const float padding = 10.0f;
 
@@ -193,4 +244,5 @@ void Gui::drawHUD(){
       ImGui::End();
     }
   }
+
 }

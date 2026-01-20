@@ -213,7 +213,7 @@ namespace gfx {
 		//Display propeller
 		TEXTURES->bindTexture("propeller", GL_TEXTURE0);
 		glm::mat4 propellerTransform = glm::mat4(1.0f);
-		propellerTransform = glm::translate(glm::mat4(1.0f), glm::vec3(0.0f, 0.0f, 5.888f));
+		propellerTransform = glm::translate(glm::mat4(1.0f), glm::vec3(0.0f, 0.0f, 4.0f));
 		propellerTransform = glm::scale(propellerTransform, glm::vec3(0.5f, 0.5f, 0.5f));
 		float rotation = totalTime * 16.0f;
 		propellerTransform = glm::rotate(propellerTransform, rotation, glm::vec3(0.0f, 0.0f, 1.0f));
