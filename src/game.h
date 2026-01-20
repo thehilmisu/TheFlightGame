@@ -25,6 +25,10 @@ namespace game {
 		NONE_SELECTED,
 	};
 
+	enum PauseMenuActions {
+		NONE,
+		EXIT,
+	};
 
 	struct Transform {
 		glm::vec3 position;
@@ -98,6 +102,10 @@ namespace gameobjects {
 			RX_DOWN,
 			RX_NONE,
 		} xRotationDirection;
+		enum {
+			Plane1,
+			Plane2,
+		}mPlayerObj;
 		float deathtimer = 0.0f; //Keeps track of how long the player has been dead
 		float shoottimer = 0.0f;
 		float speed = 0.0f;
@@ -119,6 +127,8 @@ namespace gameobjects {
 		void update(float dt);
 		void resetShootTimer();
 		void checkIfCrashed(float dt, const infworld::worldseed &permutations);
+		void setPlayerObj(int obj);
+		int getPlayerObj() { return mPlayerObj; }
 	};
 
 	struct Explosion {

@@ -116,16 +116,24 @@ namespace game {
   				// checkForHit(bullets, blimps, 32.0f);
   				// checkForHit(bullets, ufos, 14.0f);
   				// checkForHit(bullets, planes, 12.0f);
+          gui.drawHUD();
         
+        }
+        else{
+          int action = gui.drawPauseMenu();
+          switch (action) {
+            case EXIT:
+              window.setIsRunning(false);
+              break;
+           }
         }
         
         if (window.getKeyState(GLFW_KEY_TAB) == JUST_PRESSED) draw_debug_gui = !draw_debug_gui;
-        if (window.getKeyState(GLFW_KEY_P) == JUST_PRESSED) paused = !paused;
+        if (window.getKeyState(GLFW_KEY_ESCAPE) == JUST_PRESSED) paused = !paused;
 
         if (draw_debug_gui){
           gui.drawUI();
         }
-        gui.drawHUD();
 
         gui.render();
 

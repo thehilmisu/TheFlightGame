@@ -24,6 +24,11 @@ namespace gameobjects {
 		speed = SPEED;
 		health = DEFAULT_HEALTH;
 		fuel = DEFAULT_FUEL;
+		mPlayerObj = Plane1;
+	}
+
+	void Player::setPlayerObj(int obj){
+		mPlayerObj = (obj ? Plane1 : Plane2);
 	}
 
 	void Player::damage(unsigned int amount) 
