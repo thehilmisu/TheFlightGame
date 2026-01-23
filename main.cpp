@@ -11,7 +11,6 @@
 int main() {
     
     Window& window = Window::getInstance();
-    Gui& gui = Gui::getInstance();
 
     window.initMousePos();
     window.getCamera().pitch = -0.5f;
@@ -31,21 +30,17 @@ int main() {
 
     while (!window.shouldClose() && window.isRunnning()) {
 
-        // gui.newFrame();
-        game::GameMode mode = game::mainMenu();
-
-
-        switch(mode){
-            case game::SETTINGS:
+        game::MainMenuActions action = game::mainMenu();
+        switch(action){
+            case game::OPTIONS:
 
                 break;
-            case game::ARCADE:
+            case game::START_GAME:
                 game::arcadeModeGameLoop();
                 break;
             default:
                 break;
         }
-        // gui.render();
     }
 
     return 0;

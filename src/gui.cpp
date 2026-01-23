@@ -141,9 +141,9 @@ game::PauseMenuActions  Gui::drawPauseMenu() {
   return action;  
 }
 
-game::GameMode Gui::drawMainMenu(){
+game::MainMenuActions Gui::drawMainMenu(){
   
-   game::GameMode mode = game::NONE_SELECTED;
+   game::MainMenuActions action = game::NONE_SELECTED;
 
    ImGui::SetNextWindowPos(ImVec2(150.0f, 500.0f), ImGuiCond_Always, ImVec2(0.5f, 0.5f));
    ImGui::SetNextWindowSize(ImVec2(300, 400));
@@ -164,8 +164,7 @@ game::GameMode Gui::drawMainMenu(){
        ImGui::Spacing(); ImGui::Separator(); ImGui::Spacing();
   
        if (ImGui::Button("NEW GAME", ImVec2(-1.0f, 50.0f))) {
-           // Start game logic
-           mode = game::ARCADE;
+           action = game::START_GAME;
        }
   
        if (ImGui::Button("LOAD GAME", ImVec2(-1.0f, 50.0f))) {
@@ -182,18 +181,20 @@ game::GameMode Gui::drawMainMenu(){
            // Close app logic
        }
 
-
        ImGui::Spacing();
   
-       if (ImGui::Button("Change Plane", ImVec2(-1.0f, 50.0f))) {
-           // int temp_plane_index = gameobjects::Player::getPlayer cObj();
+       if (ImGui::Button("<<", ImVec2(-1.0f, 50.0f))) {
+         action = game::CHANGE_PLANE_MINUS;
        }
-  
+       if (ImGui::Button(">>", ImVec2(-1.0f, 50.0f))) {
+         action = game::CHANGE_PLANE_PLUS;
+       }
+       
        ImGui::PopStyleVar();
        ImGui::End();
      }
 
-     return mode;
+     return action;
 }
 
 void Gui::drawHUD(){

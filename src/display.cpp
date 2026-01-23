@@ -188,7 +188,7 @@ namespace gfx {
 		return drawCount;
 	}
 
-	void displayPlayerPlane(float totalTime, const game::Transform &transform)
+	void displayPlayerPlane(float totalTime, const game::Transform &transform, const std::string& plane_model)
 	{
 		Window& window = Window::getInstance();
 		Camera& cam = window.getCamera();
@@ -203,11 +203,11 @@ namespace gfx {
 		//Display plane body
 		glm::mat4 transformMat = transform.getTransformMat();
 		glm::mat4 normal = glm::mat3(glm::transpose(glm::inverse(transformMat)));
-		TEXTURES->bindTexture("plane_douglas", GL_TEXTURE0);	
+		TEXTURES->bindTexture(plane_model, GL_TEXTURE0);	
 		shader.uniformFloat("specularfactor", 0.5f);	
 		shader.uniformMat4x4("transform", transformMat);
 		shader.uniformMat3x3("normalmat", normal);
-		VAOS->bind("plane_douglas");
+		VAOS->bind(plane_model);
 		VAOS->draw();
 
 		//Display propeller

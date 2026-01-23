@@ -18,13 +18,14 @@ constexpr int RANGE = 4;
 const glm::vec3 LIGHT = glm::normalize(glm::vec3(-1.0f));
 
 namespace game {
-	enum GameMode {
-		ARCADE,
-		CREDITS,
-		SETTINGS,
+	enum MainMenuActions {
 		NONE_SELECTED,
+		START_GAME,
+		OPTIONS,
+		CREDITS,
+		CHANGE_PLANE_MINUS,
+		CHANGE_PLANE_PLUS,
 	};
-
 	enum PauseMenuActions {
 		NONE,
 		EXIT,
@@ -83,7 +84,7 @@ namespace game {
 	void arcadeModeGameLoop();
 	//Main menu
 	//Returns the game mode selected
-	game::GameMode mainMenu();
+	game::MainMenuActions mainMenu();
 	//High Score Table screen
 
 }
@@ -102,10 +103,6 @@ namespace gameobjects {
 			RX_DOWN,
 			RX_NONE,
 		} xRotationDirection;
-		enum {
-			Plane1,
-			Plane2,
-		}mPlayerObj;
 		float deathtimer = 0.0f; //Keeps track of how long the player has been dead
 		float shoottimer = 0.0f;
 		float speed = 0.0f;
@@ -118,6 +115,8 @@ namespace gameobjects {
 		unsigned int health;
 		Player(glm::vec3 position);
 
+		std::vector<std::string> model_name;
+		int current_model;
 		void damage(unsigned int amount);
 		//Returns the percentage of health left, rounded down
 		unsigned int hpPercent();
@@ -127,8 +126,9 @@ namespace gameobjects {
 		void update(float dt);
 		void resetShootTimer();
 		void checkIfCrashed(float dt, const infworld::worldseed &permutations);
-		void setPlayerObj(int obj);
-		int getPlayerObj() { return mPlayerObj; }
+		void setPlayerObj(int current);
+		std::string getPlayerObj() { return model_name[current_model]; }
+		int getCurrentIndex() { return current_model; }
 	};
 
 	struct Explosion {
@@ -274,7 +274,7 @@ namespace gfx {
 	void displayDecorations(infworld::DecorationTable &decorations, float totalTime);
 	unsigned int displayTerrain(infworld::ChunkTable *chunktables, int maxlod, float lodscale);	
 	void generateDecorationOffsets(infworld::DecorationTable &decorations);
-	void displayPlayerPlane(float totalTime, const game::Transform &transform);
+	void displayPlayerPlane(float totalTime, const game::Transform &transform, const std::string& plane_model);
 	void displayExplosions(const std::vector<gameobjects::Explosion> &explosions);
 	void displayBalloons(const std::vector<gameobjects::Enemy> &balloons);
 	void displayBlimps(const std::vector<gameobjects::Enemy> &blimps);
@@ -302,7 +302,7 @@ namespace gui {
 	//Returns the action taken by the user on the death screen
 	void displayDeathScreen(unsigned int finalscore);
 	//returns the selected game mode
-	game::GameMode displayMainMenu();
+	game::MainMenuActions displayMainMenu();
 	//Display credits
 	//returns true if user closed out of credits, false otherwise
 	bool displayCredits(const std::vector<std::string> &credits);

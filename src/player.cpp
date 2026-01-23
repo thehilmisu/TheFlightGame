@@ -24,11 +24,13 @@ namespace gameobjects {
 		speed = SPEED;
 		health = DEFAULT_HEALTH;
 		fuel = DEFAULT_FUEL;
-		mPlayerObj = Plane1;
+		model_name.push_back("plane");
+		model_name.push_back("plane_douglas");
+		current_model = 0;
 	}
 
-	void Player::setPlayerObj(int obj){
-		mPlayerObj = (obj ? Plane1 : Plane2);
+	void Player::setPlayerObj(int current){
+		current_model = current;
 	}
 
 	void Player::damage(unsigned int amount) 

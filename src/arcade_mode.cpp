@@ -47,7 +47,7 @@ namespace game {
         gfx::displayDecorations(decorations, totalTime);
         //Display plane
         if(!player.crashed)
-           gfx::displayPlayerPlane(totalTime, player.transform);
+           gfx::displayPlayerPlane(totalTime, player.transform, player.getPlayerObj());
         //Display bullets
         gfx::displayBullets(bullets);
         //Display water

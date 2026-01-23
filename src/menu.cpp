@@ -6,7 +6,7 @@
 namespace gobjs = gameobjects;
 
 namespace game {
-	game::GameMode mainMenu()
+	game::MainMenuActions mainMenu()
 	{
 		Window& window = Window::getInstance();
 		Gui& gui = Gui::getInstance();
@@ -31,11 +31,12 @@ namespace game {
 
 			glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-			gfx::displayPlayerPlane(totalTime, player.transform);
+			gfx::displayPlayerPlane(totalTime, player.transform, player.getPlayerObj());
+
 			//Display skybox
 			gfx::displaySkybox();
 
-			game::GameMode selected = gui.drawMainMenu();
+			game::MainMenuActions selected = gui.drawMainMenu();
 
 			player.transform.rotation.y += 2.0f * dt;
 
@@ -51,13 +52,27 @@ namespace game {
 			totalTime += dt;
 
 			switch(selected) {
-			case SETTINGS: //Fall through
-			case ARCADE:
-				return selected;
-			case CREDITS:
-				break;
-			default:
-				break;
+				case OPTIONS: //Fall through
+				case START_GAME:
+					return selected;
+				case CREDITS:
+					break;
+				case CHANGE_PLANE_MINUS:{
+						int c = player.getCurrentIndex();
+						c--;
+						if (c < 0 ) c = 0;
+						player.setPlayerObj(c);
+						break;
+					}
+				case CHANGE_PLANE_PLUS:{
+						int c = player.getCurrentIndex();
+						c++;
+						if (c > 1 ) c = 1;
+						player.setPlayerObj(c);
+						break;
+					}
+				default:
+					break;
 			}
 
 			dt = glfwGetTime() - start;

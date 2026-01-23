@@ -1,9 +1,12 @@
-
 -xc++
--std=c++11
+-std=c++17
+-Iinclude/fast_obj
 -Iinclude
+-Iinclude/stb_image
+-Iinclude/KHR
+-Iinclude/GLFW
 -Ithirdparty/imgui
 -Ithirdparty/imgui/backends
+-Ithirdparty/glm/glm
 -Ithirdparty/glm
 -Isrc
--Wall
