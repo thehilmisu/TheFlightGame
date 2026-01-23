@@ -1,5 +1,5 @@
 #pragma once
-
+#include <iostream>
 #include "infworld.h"
 
 //Constants
@@ -21,14 +21,17 @@ namespace game {
 	enum MainMenuActions {
 		NONE_SELECTED,
 		START_GAME,
+		LOAD_GAME,
 		OPTIONS,
 		CREDITS,
 		CHANGE_PLANE_MINUS,
 		CHANGE_PLANE_PLUS,
+		EXIT_GAME,
 	};
 	enum PauseMenuActions {
 		NONE,
 		EXIT,
+		EXIT_TO_MAINMENU,
 	};
 
 	struct Transform {
@@ -72,10 +75,6 @@ namespace game {
 		infworld::DecorationTable &decorations
 	);
 
-	//This is the game loop for "Casual Mode"
-	//In casual mode, you simply fly your plane around to explore the world
-	//and avoid crashing into the terrain
-	void casualModeGameLoop();
 	//This is the game loop for "Fight Mode"
 	//In fight mode, there are other things in the sky you need to shoot down
 	//and some of those things will shoot back at you so you must try to
@@ -85,7 +84,8 @@ namespace game {
 	//Main menu
 	//Returns the game mode selected
 	game::MainMenuActions mainMenu();
-	//High Score Table screen
+  // Exit the Game
+  void exitGame();
 
 }
 
@@ -288,23 +288,4 @@ namespace gfx {
 	);
 	void displayCrosshair(const game::Transform &playertransform);
 	void displayHUDBackGrounds();
-}
-
-namespace gui {
-	std::vector<std::string> readTextFile(const char *path);
-	void displayFPSCounter(unsigned int fps);
-	void displayHUD(unsigned int score, float speed, unsigned int health);
-	//If the player got hit, then display a semi-transparent red background
-	//on top of the screen to show that
-	void displayDamage(float damagetimer);
-	//Returns action taken by the user on the pause menu
-	std::string displayPauseMenu();
-	//Returns the action taken by the user on the death screen
-	void displayDeathScreen(unsigned int finalscore);
-	//returns the selected game mode
-	game::MainMenuActions displayMainMenu();
-	//Display credits
-	//returns true if user closed out of credits, false otherwise
-	bool displayCredits(const std::vector<std::string> &credits);
-	
 }

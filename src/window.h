@@ -85,8 +85,8 @@ private:
   ~Window();
 
   GLFWwindow* mWindow;
-  int mWidth = 800;
-  int mHeight = 600;
+  int mWidth = 1080;
+  int mHeight = 720;
   bool mIsRunning = true;
   std::string mTitle = "River Raid 3D";
   

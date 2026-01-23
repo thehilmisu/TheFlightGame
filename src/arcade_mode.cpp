@@ -20,9 +20,14 @@ namespace game {
     decorations.genDecorations(permutations);
     gfx::generateDecorationOffsets(decorations);
 
+    std::minstd_rand0 lcg;
+		lcg.seed(randSeed);
+		
     //Gameobjects
 		gameobjects::Player player(glm::vec3(0.0f, HEIGHT * SCALE * 0.5f, 0.0f));
 		std::vector<gameobjects::Bullet> bullets;
+		std::vector<gameobjects::Enemy> balloons;
+		std::vector<gameobjects::Explosion> explosions;
 
   	float totalTime = 0.0f;
   	float dt = 0.0f;
@@ -30,6 +35,9 @@ namespace game {
     unsigned int score = 0; //Player score
     bool draw_debug_gui = false;
     bool paused = false;
+
+    TimerManager timers;
+    timers.addTimer("spawn_balloon", 0.0f, 20.0f);
 
     game::updateCamera(player);
     
@@ -48,6 +56,8 @@ namespace game {
         //Display plane
         if(!player.crashed)
            gfx::displayPlayerPlane(totalTime, player.transform, player.getPlayerObj());
+        //Display balloons
+        gfx::displayBalloons(balloons);
         //Display bullets
         gfx::displayBullets(bullets);
         //Display water
@@ -56,19 +66,14 @@ namespace game {
         gfx::displaySkybox();
 
         if (!paused) {
+
+          timers.update(dt);
           
           //Draw HUD Backgorunds
           gfx::displayCrosshair(player.transform);
           gfx::displayMiniMapBackground();
+          gfx::displayEnemyMarkers(balloons, player.transform);
         
-          //Display explosions
-          //gfx::displayExplosions(explosions);
-          //User Interface
-          //gui::displayFPSCounter(fps);
-          // if(player.crashed && !paused && player.deathtimer > 2.5f)
-          //     gui::displayDeathScreen(0);
-
-
           game::updateCamera(player, dt);
           // to make the terrain infinite
           game::generateNewChunks(permutations, chunktables, decorations);
@@ -112,10 +117,19 @@ namespace game {
   				game::checkBulletDist(bullets, player);
   				game::updateBullets(bullets, dt);
   				game::checkForBulletTerrainCollision(bullets, permutations);
-  				// checkForHit(bullets, balloons, 24.0f);
+  				checkForHit(bullets, balloons, 24.0f);
   				// checkForHit(bullets, blimps, 32.0f);
   				// checkForHit(bullets, ufos, 14.0f);
   				// checkForHit(bullets, planes, 12.0f);
+
+          // Spawn Balloons
+          if(timers.getTimer("spawn_balloon")) spawnBalloons(player, balloons, lcg, permutations);
+          // Update Balloons
+          for( auto &balloon : balloons) balloon.updateBalloon(dt);
+
+          //Destroy any enemies that are too far away or have run out of health
+  				destroyEnemies(player, balloons, explosions, 1.0f, 24.0f, score);
+  				
           gui.drawHUD();
         
         }

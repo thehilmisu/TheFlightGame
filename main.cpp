@@ -1,47 +1,51 @@
-#include <glad/glad.h>
-#include <GLFW/glfw3.h>
-#include "window.h"
-#include "infworld.h"
+#include "camera.h"
 #include "game.h"
 #include "gfx.h"
-#include "camera.h"
-#include <iostream>
 #include "gui.h"
+#include "infworld.h"
+#include "window.h"
+#include <GLFW/glfw3.h>
+#include <glad/glad.h>
+#include <iostream>
 
 int main() {
-    
-    Window& window = Window::getInstance();
 
-    window.initMousePos();
-    window.getCamera().pitch = -0.5f;
+  Window &window = Window::getInstance();
 
-    glEnable(GL_DEPTH_TEST);
-    glDepthFunc(GL_LESS);
-    glEnable(GL_CULL_FACE);
-    glCullFace(GL_BACK);
+  window.initMousePos();
+  window.getCamera().pitch = -0.5f;
 
-    int fbWidth, fbHeight;
-    glfwGetFramebufferSize(glfwGetCurrentContext(), &fbWidth, &fbHeight);
-    glViewport(0, 0, fbWidth, fbHeight);
-    window.updatePerspectiveMat(FOVY, ZNEAR, ZFAR, fbWidth, fbHeight);
+  glEnable(GL_DEPTH_TEST);
+  glDepthFunc(GL_LESS);
+  glEnable(GL_CULL_FACE);
+  glCullFace(GL_BACK);
 
-    game::loadAssets();
-    game::initUniforms();
+  int fbWidth, fbHeight;
+  glfwGetFramebufferSize(glfwGetCurrentContext(), &fbWidth, &fbHeight);
+  glViewport(0, 0, fbWidth, fbHeight);
+  window.updatePerspectiveMat(FOVY, ZNEAR, ZFAR, fbWidth, fbHeight);
 
-    while (!window.shouldClose() && window.isRunnning()) {
+  game::loadAssets();
+  game::initUniforms();
 
-        game::MainMenuActions action = game::mainMenu();
-        switch(action){
-            case game::OPTIONS:
+  while (!window.shouldClose() && window.isRunnning()) {
 
-                break;
-            case game::START_GAME:
-                game::arcadeModeGameLoop();
-                break;
-            default:
-                break;
-        }
+    game::MainMenuActions action = game::mainMenu();
+    std::cout << "action : " << action << std::endl;
+    switch (action) {
+    case game::OPTIONS:
+
+      break;
+    case game::START_GAME:
+      game::arcadeModeGameLoop();
+      break;
+    case game::EXIT_GAME:
+      game::exitGame();
+      break;
+    default:
+      break;
     }
+  }
 
-    return 0;
+  return 0;
 }
