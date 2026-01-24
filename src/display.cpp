@@ -4,7 +4,8 @@
 #include "infworld.h"
 #include "window.h"
 #include <glad/glad.h>
-#include <glm/gtc/matrix_transform.hpp>
+#include <glm/gtc/matrix_transform.hpp>
+
 
 // Just debug colors for different terrain LOD levels
 constexpr glm::vec3 TERRAIN_LOD_COLORS[] = {
@@ -432,6 +433,8 @@ void displayMiniMapBackground() {
   glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
   VAOS->bind("quad");
   SHADERS->use("minimap");
+
+
 
   // Display minimap background
   ShaderProgram &minimapshader = SHADERS->getShader("minimap");

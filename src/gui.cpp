@@ -87,6 +87,12 @@ void Gui::drawUI() {
   ImGui::PopStyleVar();
 }
 
+game::DeathMenuActions Gui::drawDeathMenu() {
+  game::DeathMenuActions action = game::DEATH_NONE;
+
+  return action;
+}
+
 game::PauseMenuActions Gui::drawPauseMenu() {
   game::PauseMenuActions action = game::NONE;
 
@@ -113,16 +119,16 @@ game::PauseMenuActions Gui::drawPauseMenu() {
     ImGui::Separator();
     ImGui::Spacing();
 
-    if (ImGui::Button("NEW GAME", ImVec2(-1.0f, 50.0f))) {
-      // Start game logic
+    if (ImGui::Button("RESUME GAME", ImVec2(-1.0f, 50.0f))) {
+      action = game::RESUME;
     }
 
     if (ImGui::Button("LOAD GAME", ImVec2(-1.0f, 50.0f))) {
       // Load menu logic
     }
 
-    if (ImGui::Button("OPTIONS", ImVec2(-1.0f, 50.0f))) {
-      // Settings logic
+    if (ImGui::Button("EXIT TO MAIN MENU", ImVec2(-1.0f, 50.0f))) {
+      action = game::EXIT_TO_MAINMENU;
     }
 
     ImGui::Spacing();

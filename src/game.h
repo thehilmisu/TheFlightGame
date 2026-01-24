@@ -30,8 +30,15 @@ namespace game {
 	};
 	enum PauseMenuActions {
 		NONE,
+		RESUME,
 		EXIT,
 		EXIT_TO_MAINMENU,
+	};
+	enum DeathMenuActions {
+		DEATH_NONE,
+		TRY_AGAIN,
+		DEATH_EXIT,
+		DEATH_EXIT_TO_MAINMENU,
 	};
 
 	struct Transform {
@@ -80,7 +87,7 @@ namespace game {
 	//and some of those things will shoot back at you so you must try to
 	//destroy as many things as possible before being shot down yourself
 	//returns the final score the player acheives
-	void arcadeModeGameLoop();
+	game::PauseMenuActions arcadeModeGameLoop();
 	//Main menu
 	//Returns the game mode selected
 	game::MainMenuActions mainMenu();

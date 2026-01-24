@@ -42,6 +42,7 @@ public:
   void drawHUD();
   game::MainMenuActions drawMainMenu();
   game::PauseMenuActions drawPauseMenu();
+  game::DeathMenuActions drawDeathMenu();
   DebugItems dItems;
   HUDItems hudItems;
 

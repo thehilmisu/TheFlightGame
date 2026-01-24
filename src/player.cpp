@@ -91,7 +91,10 @@ void Player::update(float dt) {
   damagecooldown -= dt;
   damagetimer -= dt;
 
+  // Fuel Consumption
   fuel -= dt * FUEL_CONSUMPTION_RATE;
+  if (fuel < 0.0f)
+    fuel = 0.0f;
 
   Window &window = Window::getInstance();
 

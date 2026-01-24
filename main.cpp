@@ -2,6 +2,7 @@
 #include "game.h"
 #include "gfx.h"
 #include "gui.h"
+#include "imgui.h"
 #include "infworld.h"
 #include "window.h"
 #include <GLFW/glfw3.h>
@@ -11,6 +12,7 @@
 int main() {
 
   Window &window = Window::getInstance();
+  Gui &gui = Gui::getInstance();
 
   window.initMousePos();
   window.getCamera().pitch = -0.5f;
@@ -37,7 +39,10 @@ int main() {
 
       break;
     case game::START_GAME:
-      game::arcadeModeGameLoop();
+      if (game::arcadeModeGameLoop() == game::EXIT_TO_MAINMENU) {
+          gui.render();
+          action = game::mainMenu();
+        }
       break;
     case game::EXIT_GAME:
       game::exitGame();

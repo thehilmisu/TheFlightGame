@@ -5,7 +5,7 @@
 
 namespace game {
 
-  void arcadeModeGameLoop() {
+  game::PauseMenuActions arcadeModeGameLoop() {
       
     Window& window = Window::getInstance();
     Gui& gui = Gui::getInstance();
@@ -136,7 +136,7 @@ namespace game {
 
           // Spawn Barrels
           if(timers.getTimer("spawn_barrel")) spawnBarrels(player, barrels, lcg, permutations);
-          // Update Bans
+          // Update Barrels
           for( auto &barrel : barrels) barrel.updateBarrel(dt);
           //Destroy any enemies that are too far away or have run out of health
   				destroyProps(player, barrels, explosions, 1.0f, 24.0f, score);
@@ -144,12 +144,23 @@ namespace game {
           gui.drawHUD();
         
         }
+        //paused
         else{
-          int action = gui.drawPauseMenu();
+          game::PauseMenuActions action = gui.drawPauseMenu();
           switch (action) {
             case EXIT:
               window.setIsRunning(false);
               break;
+            case EXIT_TO_MAINMENU:
+              return action;
+              break;
+            case RESUME:
+              paused = false;
+              break;
+            case NONE:
+              break;
+            default:
+            break;
            }
         }
         
@@ -167,7 +178,7 @@ namespace game {
         dt = glfwGetTime() - startTime;
     }
 
-    
+    return NONE;
   }
 
 }
