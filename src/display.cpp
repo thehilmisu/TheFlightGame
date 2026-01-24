@@ -226,6 +226,9 @@ void displayExplosions(const std::vector<gobjs::Explosion> &explosions) {
 
   Window &window = Window::getInstance();
 
+  glEnable(GL_BLEND);
+  glDisable(GL_DEPTH_TEST);
+  glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
   glDisable(GL_CULL_FACE);
   glDepthMask(GL_FALSE);
   VAOS->bind("quad");
@@ -244,6 +247,8 @@ void displayExplosions(const std::vector<gobjs::Explosion> &explosions) {
   }
   glDepthMask(GL_TRUE);
   glEnable(GL_CULL_FACE);
+  glDisable(GL_BLEND);
+  glEnable(GL_DEPTH_TEST);
 }
 
 void displayBalloons(const std::vector<gameobjects::Enemy> &balloons) {

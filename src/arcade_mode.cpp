@@ -78,6 +78,7 @@ namespace game {
           gfx::displayMiniMapBackground();
           gfx::displayEnemyMarkers(balloons, player.transform);
           // gfx::displayPropMarkers(barrels, player.transform);
+          gfx::displayExplosions(explosions);
         
           game::updateCamera(player, dt);
           // to make the terrain infinite
@@ -89,11 +90,12 @@ namespace game {
   				justcrashed = player.crashed ^ justcrashed;
   				//Update explosions
   				if(justcrashed) {
-  					// explosions.push_back(gobjs::Explosion(player.transform.position));
+  					explosions.push_back(gameobjects::Explosion(player.transform.position));
   					// SNDSRC->playid("explosion", player.transform.position);	
   					printf("Just crashed \n");
   				}
           player.update(dt);
+          updateExplosions(explosions, player.transform.position, dt);
           gui.dItems.playerPosition = player.transform.position;
           gui.dItems.cameraPosition = window.getCamera().position;
           gui.dItems.bulletCount = bullets.size();
