@@ -35,3 +35,8 @@
 "bullet" {
 	"path" = "assets/models/bullet.obj";
 }
+
+# Barrel model
+"barrel" {
+	"path" = "assets/models/barrel.obj";
+}

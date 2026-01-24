@@ -28,6 +28,7 @@ namespace game {
 		std::vector<gameobjects::Bullet> bullets;
 		std::vector<gameobjects::Enemy> balloons;
 		std::vector<gameobjects::Explosion> explosions;
+		std::vector<gameobjects::Props> barrels;
 
   	float totalTime = 0.0f;
   	float dt = 0.0f;
@@ -38,6 +39,7 @@ namespace game {
 
     TimerManager timers;
     timers.addTimer("spawn_balloon", 0.0f, 20.0f);
+    timers.addTimer("spawn_barrel", 0.0f, 20.0f);
 
     game::updateCamera(player);
     
@@ -58,6 +60,8 @@ namespace game {
            gfx::displayPlayerPlane(totalTime, player.transform, player.getPlayerObj());
         //Display balloons
         gfx::displayBalloons(balloons);
+        //Display barrels
+        gfx::displayBarrels(barrels);
         //Display bullets
         gfx::displayBullets(bullets);
         //Display water
@@ -73,6 +77,7 @@ namespace game {
           gfx::displayCrosshair(player.transform);
           gfx::displayMiniMapBackground();
           gfx::displayEnemyMarkers(balloons, player.transform);
+          // gfx::displayPropMarkers(barrels, player.transform);
         
           game::updateCamera(player, dt);
           // to make the terrain infinite
@@ -126,9 +131,15 @@ namespace game {
           if(timers.getTimer("spawn_balloon")) spawnBalloons(player, balloons, lcg, permutations);
           // Update Balloons
           for( auto &balloon : balloons) balloon.updateBalloon(dt);
-
           //Destroy any enemies that are too far away or have run out of health
   				destroyEnemies(player, balloons, explosions, 1.0f, 24.0f, score);
+
+          // Spawn Barrels
+          if(timers.getTimer("spawn_barrel")) spawnBarrels(player, barrels, lcg, permutations);
+          // Update Bans
+          for( auto &barrel : barrels) barrel.updateBarrel(dt);
+          //Destroy any enemies that are too far away or have run out of health
+  				destroyProps(player, barrels, explosions, 1.0f, 24.0f, score);
   				
           gui.drawHUD();
         

@@ -185,9 +185,31 @@ namespace gameobjects {
 		float rotation,
 		const infworld::worldseed &permutations
 	);
+
+	struct Props {
+			//How many points the player gets if they kill the enemy
+			unsigned int scorevalue;
+			game::Transform transform;
+			std::unordered_map<std::string, float> values;
+			int hitpoints;
+			Props(glm::vec3 position, int hp, unsigned int scoreval);
+			void updateBarrel(float dt);
+			float getVal(const std::string &key) const;
+			void setVal(const std::string &key, float v);
+
+	};
+	
+	Props spawnBarrel(const glm::vec3 &position, const infworld::worldseed &permutations);
 }
 
 namespace game {
+	//Spawns barrels around the player
+	void spawnBarrels(
+		gameobjects::Player &player,
+		std::vector<gameobjects::Props> &barrels,
+		std::minstd_rand0 &lcg,
+		const infworld::worldseed &permutations
+	);
 	//Spawns balloons around the player
 	void spawnBalloons(
 		gameobjects::Player &player,
@@ -231,8 +253,23 @@ namespace game {
 		float explosionscale,
 		const glm::vec3 &extents
 	);
+	void destroyProps(
+		gameobjects::Player &player,
+		std::vector<gameobjects::Props> &props,
+		std::vector<gameobjects::Explosion> &explosions,
+		float explosionscale,
+		float crashdist,
+		unsigned int &score
+	);
+	void checkForCollision(
+		gameobjects::Player &player,
+		std::vector<gameobjects::Props> &enemies,
+		const glm::vec3 &extents
+	);
 	//Check for collision among enemies
 	void checkForCollision(std::vector<gameobjects::Enemy> &enemies, float hitdist);
+	//Check for collision among props
+	void checkForCollision(std::vector<gameobjects::Props> &props, float hitdist);
 	//Returns the position the camera should be following
 	glm::vec3 getCameraFollowPos(const Transform &playertransform);
 	//Have the camera follow the player	
@@ -277,6 +314,7 @@ namespace gfx {
 	void displayPlayerPlane(float totalTime, const game::Transform &transform, const std::string& plane_model);
 	void displayExplosions(const std::vector<gameobjects::Explosion> &explosions);
 	void displayBalloons(const std::vector<gameobjects::Enemy> &balloons);
+	void displayBarrels(const std::vector<gameobjects::Props> &barrels);
 	void displayBlimps(const std::vector<gameobjects::Enemy> &blimps);
 	void displayUfos(const std::vector<gameobjects::Enemy> &ufos);
 	void displayPlanes(float totalTime, const std::vector<gameobjects::Enemy> &planes);
