@@ -40,3 +40,8 @@
 "barrel" {
 	"path" = "assets/models/barrel.obj";
 }
+
+# Barrel model
+"warship" {
+	"path" = "assets/models/warship.obj";
+}

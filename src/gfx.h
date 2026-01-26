@@ -60,6 +60,8 @@ namespace mesh {
 	Model createFrustumModel(unsigned int prec, float radius1, float radius2);
 	//Makes a plane model
 	Model createPlaneModel(unsigned int subdivision);
+	//Makes a cube model with normals and texture coordinates
+	Model createCubeModel();
 	//Transforms a model using a transformation matrix
 	void transformModel(Model &model, const glm::mat4 &transform);
 	//Transforms texture coordinates of a model

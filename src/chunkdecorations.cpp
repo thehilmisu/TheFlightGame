@@ -52,7 +52,7 @@ namespace infworld {
 		unsigned int index,
 		std::minstd_rand0 &lcg
 	) {
-		float chunksz = chunkscale * 2.0f * float(PREC) / float(PREC + 1);	
+		float chunksz = chunkscale * 2.0f * float(PREC) / float(PREC + 1);
 		float posx = float(z) * chunksz;
 		float posz = float(x) * chunksz;
 		unsigned int amount = (unsigned int)(lcg()) % n;
@@ -61,15 +61,22 @@ namespace infworld {
 			float x = float((unsigned int)(lcg()) % PREC) / float(PREC) - 0.5f;
 			float z = float((unsigned int)(lcg()) % PREC) / float(PREC) - 0.5f;
 			x *= chunksz;
-			z *= chunksz;	
+			z *= chunksz;
 			x += posx;
 			z += posz;
-			float y = getHeight(z, x, permutations);	
-			y *= HEIGHT;
+			float y;
+			// Place water cubes at water level (y=0), not at terrain height
+			if(type == WATER_CUBE) {
+				y = 0.5f; // Water level is at y=0, place slightly above
+			} else {
+				y = getHeight(z, x, permutations);
+				y *= HEIGHT;
+				y -= 0.5f;
+			}
 			x *= float(PREC) / float(PREC + 1);
 			z *= float(PREC) / float(PREC + 1);
 			decorations.at(index).push_back({
-				glm::vec3(x, y - 0.5f, z),
+				glm::vec3(x, y, z),
 				type,
 			});
 		}
@@ -83,6 +90,7 @@ namespace infworld {
 		lcg.seed(seed);
 		genDecorations(permutations, PINE_TREE, 120, pos.x, pos.z, index, lcg);
 		genDecorations(permutations, TREE, 36, pos.x, pos.z, index, lcg);
+		genDecorations(permutations, WATER_CUBE, 12, pos.x, pos.z, index, lcg);
 
 		decorations.at(index).erase(std::remove_if(
 			decorations.at(index).begin(),
@@ -109,6 +117,15 @@ namespace infworld {
 			[](Decoration d) {
 				float y = d.position.y / HEIGHT;
 				return d.type == PINE_TREE && (y < 0.04f || y > 0.3f);
+			}
+		), decorations.at(index).end());
+
+		decorations.at(index).erase(std::remove_if(
+			decorations.at(index).begin(),
+			decorations.at(index).end(),
+			[](Decoration d) {
+				float y = d.position.y / HEIGHT;
+				return d.type == WATER_CUBE && y >= 0.02f;
 			}
 		), decorations.at(index).end());
 	}
