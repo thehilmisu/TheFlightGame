@@ -88,6 +88,8 @@ namespace game {
 	//destroy as many things as possible before being shot down yourself
 	//returns the final score the player acheives
 	game::PauseMenuActions arcadeModeGameLoop();
+	//Development Purposes
+	game::PauseMenuActions devModeGameLoop();
 	//Main menu
 	//Returns the game mode selected
 	game::MainMenuActions mainMenu();

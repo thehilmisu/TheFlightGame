@@ -36,7 +36,10 @@ int main() {
     std::cout << "action : " << action << std::endl;
     switch (action) {
     case game::OPTIONS:
-
+      if (game::devModeGameLoop() == game::EXIT_TO_MAINMENU) {
+        gui.render();
+        action = game::mainMenu();
+      }
       break;
     case game::START_GAME:
       if (game::arcadeModeGameLoop() == game::EXIT_TO_MAINMENU) {
