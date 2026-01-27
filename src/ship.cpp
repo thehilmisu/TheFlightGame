@@ -3,7 +3,7 @@
 namespace gobjs = gameobjects;
 
 namespace gameobjects {
-void Enemy::updateShip(float dt) {
+void Enemy::updateShip(float dt, const Player &player, std::vector<Bullet> &bullets) {
   // Ships bob up and down on the water
   if (transform.position.y > values.at("maxy")) {
     transform.position.y = values.at("maxy");
@@ -14,6 +14,25 @@ void Enemy::updateShip(float dt) {
   }
 
   transform.position.y += 8.0f * dt * values.at("direction");
+
+  // Shoot rockets at the player
+  float shootTimer = getVal("shoottimer");
+  shootTimer += dt;
+  setVal("shoottimer", shootTimer);
+
+  if (shootTimer > 3.0f) { // Shoot every 3 seconds
+    setVal("shoottimer", 0.0f);
+
+    // Aim at player
+    glm::vec3 toPlayer = player.transform.position - transform.position;
+    toPlayer = glm::normalize(toPlayer);
+
+    // Set rotation to face player
+    transform.rotation.y = atan2f(toPlayer.x, toPlayer.z);
+
+    // Spawn rocket
+    bullets.push_back(Bullet(transform, 0.0f, glm::vec3(0.0f, 5.0f, 0.0f)));
+  }
 }
 
 Enemy spawnShip(const glm::vec3 &position,
@@ -40,6 +59,7 @@ Enemy spawnShip(const glm::vec3 &position,
   ship.setVal("miny", miny);
   ship.setVal("maxy", maxy);
   ship.setVal("direction", direction);
+  ship.setVal("shoottimer", 0.0f);
   return ship;
 }
 } // namespace gameobjects

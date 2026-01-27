@@ -81,6 +81,7 @@ namespace game {
           gfx::displayCrosshair(player.transform);
           gfx::displayMiniMapBackground();
           gfx::displayEnemyMarkers(balloons, player.transform);
+          gfx::displayEnemyMarkers(ships, player.transform);
           // gfx::displayPropMarkers(barrels, player.transform);
           gfx::displayExplosions(explosions);
         
@@ -144,7 +145,7 @@ namespace game {
           // Spawn Ships
           if(timers.getTimer("spawn_ship")) spawnShips(player, ships, lcg, permutations);
           // Update Ships
-          for( auto &ship : ships) ship.updateShip(dt);
+          for( auto &ship : ships) ship.updateShip(dt, player, bullets);
           //Destroy any enemies that are too far away or have run out of health
   				destroyEnemies(player, ships, explosions, 1.0f, 24.0f, score);
 
