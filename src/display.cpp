@@ -14,7 +14,7 @@ constexpr glm::vec3 TERRAIN_LOD_COLORS[] = {
     glm::vec3(1.0f, 0.0f, 1.0f),
 };
 
-constexpr float MINIMAP_SIZE = 80.0f;
+constexpr float MINIMAP_SIZE = 100.0f;
 
 namespace gobjs = gameobjects;
 
@@ -302,6 +302,34 @@ void displayBarrels(const std::vector<gameobjects::Props> &barrels) {
   glEnable(GL_CULL_FACE);
 }
 
+void displayShips(const std::vector<gameobjects::Enemy> &ships) {
+  if (ships.empty())
+    return;
+  Window &window = Window::getInstance();
+  Camera &cam = window.getCamera();
+
+  glDisable(GL_CULL_FACE);
+  VAOS->bind("warship");
+  SHADERS->use("textured");
+  TEXTURES->bindTexture("barrel", GL_TEXTURE0);
+  ShaderProgram &shader = SHADERS->getShader("textured");
+  shader.uniformMat4x4("persp", window.getPerspective());
+  shader.uniformMat4x4("view", cam.viewMatrix());
+  shader.uniformFloat("specularfactor", 0.3f);
+  shader.uniformVec3("lightdir", LIGHT);
+  shader.uniformVec3("camerapos", cam.position);
+
+  for (const auto &ship : ships) {
+    glm::mat4 transform = ship.transform.getTransformMat();
+    transform = glm::scale(transform, glm::vec3(14.0f, 14.0f, 14.0f));
+    glm::mat3 normal = glm::mat3(glm::transpose(glm::inverse(transform)));
+    shader.uniformMat4x4("transform", transform);
+    shader.uniformMat3x3("normalmat", normal);
+    VAOS->draw();
+  }
+  glEnable(GL_CULL_FACE);
+}
+
 void displayBlimps(const std::vector<gameobjects::Enemy> &blimps) {
   if (blimps.empty())
     return;
@@ -439,15 +467,13 @@ void displayMiniMapBackground() {
   VAOS->bind("quad");
   SHADERS->use("minimap");
 
-
-
   // Display minimap background
   ShaderProgram &minimapshader = SHADERS->getShader("minimap");
   minimapshader.uniformMat4x4("screen", screenMat);
   glm::mat4 transform(1.0f);
-  transform = glm::translate(transform, glm::vec3(100.0f, 100.0f, 0.0f));
+  transform = glm::translate(transform, glm::vec3(100.0f, -100.0f, 0.0f));
   transform = glm::translate(
-      transform, glm::vec3(-float(w) / 2.0f, -float(h) / 2.0f, 0.0f));
+      transform, glm::vec3(-float(w) / 2.0f, float(h) / 2.0f, 0.0f));
   transform =
       glm::scale(transform, glm::vec3(MINIMAP_SIZE, MINIMAP_SIZE, 0.0f));
   transform =
@@ -461,9 +487,9 @@ void displayMiniMapBackground() {
   ShaderProgram &texture2dshader = SHADERS->getShader("textured2d");
   texture2dshader.uniformMat4x4("screen", screenMat);
   transform = glm::mat4(1.0f);
-  transform = glm::translate(transform, glm::vec3(100.0f, 100.0f, 0.0f));
+  transform = glm::translate(transform, glm::vec3(100.0f, -100.0f, 0.0f));
   transform = glm::translate(
-      transform, glm::vec3(-float(w) / 2.0f, -float(h) / 2.0f, 0.0f));
+      transform, glm::vec3(-float(w) / 2.0f, float(h) / 2.0f, 0.0f));
   transform = glm::scale(transform, glm::vec3(8.0f, 8.0f, 0.0f));
   transform =
       glm::rotate(transform, glm::radians(90.0f), glm::vec3(1.0f, 0.0f, 0.0f));
@@ -519,9 +545,9 @@ void displayEnemyMarkers(const std::vector<gameobjects::Enemy> &enemies,
     float x = MINIMAP_SIZE * cosf(angle) * dist;
     float y = MINIMAP_SIZE * sinf(angle) * dist;
     transform = glm::translate(transform, glm::vec3(x, y, 0.0f));
-    transform = glm::translate(transform, glm::vec3(100.0f, 100.0f, 0.0f));
+    transform = glm::translate(transform, glm::vec3(100.0f, -100.0f, 0.0f));
     transform = glm::translate(
-        transform, glm::vec3(-float(w) / 2.0f, -float(h) / 2.0f, 0.0f));
+        transform, glm::vec3(-float(w) / 2.0f, float(h) / 2.0f, 0.0f));
     transform = glm::scale(transform, glm::vec3(8.0f, 8.0f, 0.0f));
     transform = glm::rotate(transform, glm::radians(90.0f),
                             glm::vec3(1.0f, 0.0f, 0.0f));

@@ -5,7 +5,7 @@ TARGET = RiverRaid3D.exe
 SRC = main.cpp src/glad.c src/window.cpp src/gui.cpp src/shader.cpp \
 	  src/noise.cpp src/stb_image_impl.c src/fast_obj.c src/gfx.cpp \
 	  src/geometry.cpp src/infworld.cpp src/chunktable.cpp src/chunkdecorations.cpp \
-	  src/assets.cpp src/importfile.cpp src/camera.cpp src/game.cpp src/plants.cpp src/arcade_mode.cpp src/menu.cpp src/balloon.cpp src/enemies.cpp src/props.cpp src/barrel.cpp \
+	  src/assets.cpp src/importfile.cpp src/camera.cpp src/game.cpp src/plants.cpp src/arcade_mode.cpp src/menu.cpp src/balloon.cpp src/ship.cpp src/enemies.cpp src/props.cpp src/barrel.cpp src/dev_mode.cpp \
 	  src/display.cpp src/player.cpp src/update.cpp \
 	  thirdparty/imgui/imgui.cpp \
 	  thirdparty/imgui/imgui_draw.cpp \
@@ -28,7 +28,7 @@ BUILD_DIR = build
 ifeq ($(OS),Windows_NT)
     # --- Windows Settings (MinGW) ---
     LDFLAGS = -Llib-mingw-w64 -pthread -lglfw3 -lopengl32 -lgdi32 -luser32 -lshell32
-    CLEAN_CMD = rm $(BUILD_DIR)/$(TARGET)
+    CLEAN_CMD = rm $(BUILD_DIR)/*
     FIX_PATH = $(subst /,\,$1)
 else
 	TARGET = RiverRaid3D
@@ -39,12 +39,12 @@ else
 		          -L/usr/local/lib
 		          
         LDFLAGS = $(LIBDIRS) -lglfw -framework OpenGL -framework Cocoa -framework IOKit -framework CoreVideo
-        CLEAN_CMD = rm -f $(BUILD_DIR)/$(TARGET)
+        CLEAN_CMD = rm -f $(BUILD_DIR)/*
         FIX_PATH = $1
     else
         # --- Linux Settings ---
         LDFLAGS = -Llib -lglfw3 -lGL -lX11 -lpthread -lXrandr -lXi -ldl
-        CLEAN_CMD = rm -f $(BUILD_DIR)/$(TARGET)
+        CLEAN_CMD = rm -f $(BUILD_DIR)/*
         FIX_PATH = $1
     endif
 endif

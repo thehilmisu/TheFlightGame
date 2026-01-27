@@ -214,7 +214,7 @@ namespace mesh {
 
 	Model createPlaneModel(unsigned int subdivision)
 	{
-		Model plane;	
+		Model plane;
 
 		for(int i = 0; i <= subdivision + 2; i++) {
 			for(int j = 0; j <= subdivision + 2; j++) {
@@ -241,6 +241,102 @@ namespace mesh {
 		}
 
 		return plane;
+	}
+
+	Model createCubeModel()
+	{
+		Model cube;
+
+		// Front face (+Z)
+		cube.vertices.push_back(glm::vec3(-0.5f, -0.5f, 0.5f));
+		cube.vertices.push_back(glm::vec3(0.5f, -0.5f, 0.5f));
+		cube.vertices.push_back(glm::vec3(0.5f, 0.5f, 0.5f));
+		cube.vertices.push_back(glm::vec3(-0.5f, 0.5f, 0.5f));
+		for(int i = 0; i < 4; i++) {
+			cube.normals.push_back(glm::vec3(0.0f, 0.0f, 1.0f));
+		}
+		cube.texturecoords.push_back(glm::vec2(0.0f, 0.0f));
+		cube.texturecoords.push_back(glm::vec2(1.0f, 0.0f));
+		cube.texturecoords.push_back(glm::vec2(1.0f, 1.0f));
+		cube.texturecoords.push_back(glm::vec2(0.0f, 1.0f));
+
+		// Back face (-Z)
+		cube.vertices.push_back(glm::vec3(0.5f, -0.5f, -0.5f));
+		cube.vertices.push_back(glm::vec3(-0.5f, -0.5f, -0.5f));
+		cube.vertices.push_back(glm::vec3(-0.5f, 0.5f, -0.5f));
+		cube.vertices.push_back(glm::vec3(0.5f, 0.5f, -0.5f));
+		for(int i = 0; i < 4; i++) {
+			cube.normals.push_back(glm::vec3(0.0f, 0.0f, -1.0f));
+		}
+		cube.texturecoords.push_back(glm::vec2(0.0f, 0.0f));
+		cube.texturecoords.push_back(glm::vec2(1.0f, 0.0f));
+		cube.texturecoords.push_back(glm::vec2(1.0f, 1.0f));
+		cube.texturecoords.push_back(glm::vec2(0.0f, 1.0f));
+
+		// Top face (+Y)
+		cube.vertices.push_back(glm::vec3(-0.5f, 0.5f, 0.5f));
+		cube.vertices.push_back(glm::vec3(0.5f, 0.5f, 0.5f));
+		cube.vertices.push_back(glm::vec3(0.5f, 0.5f, -0.5f));
+		cube.vertices.push_back(glm::vec3(-0.5f, 0.5f, -0.5f));
+		for(int i = 0; i < 4; i++) {
+			cube.normals.push_back(glm::vec3(0.0f, 1.0f, 0.0f));
+		}
+		cube.texturecoords.push_back(glm::vec2(0.0f, 0.0f));
+		cube.texturecoords.push_back(glm::vec2(1.0f, 0.0f));
+		cube.texturecoords.push_back(glm::vec2(1.0f, 1.0f));
+		cube.texturecoords.push_back(glm::vec2(0.0f, 1.0f));
+
+		// Bottom face (-Y)
+		cube.vertices.push_back(glm::vec3(-0.5f, -0.5f, -0.5f));
+		cube.vertices.push_back(glm::vec3(0.5f, -0.5f, -0.5f));
+		cube.vertices.push_back(glm::vec3(0.5f, -0.5f, 0.5f));
+		cube.vertices.push_back(glm::vec3(-0.5f, -0.5f, 0.5f));
+		for(int i = 0; i < 4; i++) {
+			cube.normals.push_back(glm::vec3(0.0f, -1.0f, 0.0f));
+		}
+		cube.texturecoords.push_back(glm::vec2(0.0f, 0.0f));
+		cube.texturecoords.push_back(glm::vec2(1.0f, 0.0f));
+		cube.texturecoords.push_back(glm::vec2(1.0f, 1.0f));
+		cube.texturecoords.push_back(glm::vec2(0.0f, 1.0f));
+
+		// Right face (+X)
+		cube.vertices.push_back(glm::vec3(0.5f, -0.5f, 0.5f));
+		cube.vertices.push_back(glm::vec3(0.5f, -0.5f, -0.5f));
+		cube.vertices.push_back(glm::vec3(0.5f, 0.5f, -0.5f));
+		cube.vertices.push_back(glm::vec3(0.5f, 0.5f, 0.5f));
+		for(int i = 0; i < 4; i++) {
+			cube.normals.push_back(glm::vec3(1.0f, 0.0f, 0.0f));
+		}
+		cube.texturecoords.push_back(glm::vec2(0.0f, 0.0f));
+		cube.texturecoords.push_back(glm::vec2(1.0f, 0.0f));
+		cube.texturecoords.push_back(glm::vec2(1.0f, 1.0f));
+		cube.texturecoords.push_back(glm::vec2(0.0f, 1.0f));
+
+		// Left face (-X)
+		cube.vertices.push_back(glm::vec3(-0.5f, -0.5f, -0.5f));
+		cube.vertices.push_back(glm::vec3(-0.5f, -0.5f, 0.5f));
+		cube.vertices.push_back(glm::vec3(-0.5f, 0.5f, 0.5f));
+		cube.vertices.push_back(glm::vec3(-0.5f, 0.5f, -0.5f));
+		for(int i = 0; i < 4; i++) {
+			cube.normals.push_back(glm::vec3(-1.0f, 0.0f, 0.0f));
+		}
+		cube.texturecoords.push_back(glm::vec2(0.0f, 0.0f));
+		cube.texturecoords.push_back(glm::vec2(1.0f, 0.0f));
+		cube.texturecoords.push_back(glm::vec2(1.0f, 1.0f));
+		cube.texturecoords.push_back(glm::vec2(0.0f, 1.0f));
+
+		// Indices for all 6 faces
+		for(int i = 0; i < 6; i++) {
+			int offset = i * 4;
+			cube.indices.push_back(offset + 0);
+			cube.indices.push_back(offset + 1);
+			cube.indices.push_back(offset + 2);
+			cube.indices.push_back(offset + 0);
+			cube.indices.push_back(offset + 2);
+			cube.indices.push_back(offset + 3);
+		}
+
+		return cube;
 	}
 
 	void transformModel(Model &model, const glm::mat4 &transform)
@@ -546,6 +642,7 @@ namespace gfx {
 				data
 			);	
 			glGenerateMipmap(GL_TEXTURE_2D);
+			printf("Texture loaded successfully : %s \n", path);
 		}
 		else
 			fprintf(stderr, "Failed to open: %s\n", path);

@@ -74,8 +74,8 @@ namespace game {
 		//Textures
 		TEXTURES->importFromFile("assets/textures.impfile");
 		//Shaders
-		SHADERS->importFromFile("assets/shaders.impfile");	
-		//Fonts	
+		SHADERS->importFromFile("assets/shaders.impfile");
+		//Fonts
 		FONTS->importFromFile("assets/fonts.impfile");
 		//Audio
 		//SFX->importFromFile("assets/sfx.impfile");

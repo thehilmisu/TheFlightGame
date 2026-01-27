@@ -28,7 +28,8 @@ Gui::Gui() {
 
   dItems.playerPosition = glm::vec3(0.0f);
   dItems.cameraPosition = glm::vec3(0.0f);
-  dItems.bulletCount = 0;
+  dItems.shipCount = 0;
+  dItems.balloonCount = 0;
 
   hudItems.fuel = 100.0f;
 }
@@ -79,7 +80,9 @@ void Gui::drawUI() {
     ImGui::Text("(x: %.1f, y: %.1f, z:%.1f)", dItems.cameraPosition.x,
                 dItems.cameraPosition.y, dItems.cameraPosition.z);
     ImGui::Separator();
-    ImGui::Text("Bullet Count : %d", dItems.bulletCount);
+    ImGui::Text("Ship Count : %d", dItems.shipCount);
+    ImGui::Separator();
+    ImGui::Text("Balloon Count : %d", dItems.balloonCount);
 
     ImGui::End();
   }

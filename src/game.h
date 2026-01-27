@@ -170,6 +170,7 @@ namespace gameobjects {
 		Enemy(glm::vec3 position, int hp, unsigned int scoreval);
 		void updateBalloon(float dt);
 		void updateBlimp(float dt);
+		void updateShip(float dt);
 		void updateUfo(float dt, const infworld::worldseed &permutations);
 		void updatePlane(
 			float dt,
@@ -184,6 +185,7 @@ namespace gameobjects {
 
 	Enemy spawnBalloon(const glm::vec3 &position, const infworld::worldseed &permutations);
 	Enemy spawnBlimp(const glm::vec3 &position, float rotation);
+	Enemy spawnShip(const glm::vec3 &position, const infworld::worldseed &permutations);
 	Enemy spawnUfo(
 		const glm::vec3 &position,
 		float rotation,
@@ -207,7 +209,7 @@ namespace gameobjects {
 			void setVal(const std::string &key, float v);
 
 	};
-	
+
 	Props spawnBarrel(const glm::vec3 &position, const infworld::worldseed &permutations);
 }
 
@@ -223,6 +225,13 @@ namespace game {
 	void spawnBalloons(
 		gameobjects::Player &player,
 		std::vector<gameobjects::Enemy> &balloons,
+		std::minstd_rand0 &lcg,
+		const infworld::worldseed &permutations
+	);
+	//Spawns ships around the player
+	void spawnShips(
+		gameobjects::Player &player,
+		std::vector<gameobjects::Enemy> &ships,
 		std::minstd_rand0 &lcg,
 		const infworld::worldseed &permutations
 	);
@@ -324,6 +333,7 @@ namespace gfx {
 	void displayExplosions(const std::vector<gameobjects::Explosion> &explosions);
 	void displayBalloons(const std::vector<gameobjects::Enemy> &balloons);
 	void displayBarrels(const std::vector<gameobjects::Props> &barrels);
+	void displayShips(const std::vector<gameobjects::Enemy> &ships);
 	void displayBlimps(const std::vector<gameobjects::Enemy> &blimps);
 	void displayUfos(const std::vector<gameobjects::Enemy> &ufos);
 	void displayPlanes(float totalTime, const std::vector<gameobjects::Enemy> &planes);

@@ -98,7 +98,6 @@ namespace game {
           updateExplosions(explosions, player.transform.position, dt);
           gui.dItems.playerPosition = player.transform.position;
           gui.dItems.cameraPosition = window.getCamera().position;
-          gui.dItems.bulletCount = bullets.size();
 
           // Update HUD data
           gui.hudItems.health = player.health;
