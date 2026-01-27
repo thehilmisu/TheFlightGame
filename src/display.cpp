@@ -464,8 +464,6 @@ void displayMiniMapBackground() {
   VAOS->bind("quad");
   SHADERS->use("minimap");
 
-
-
   // Display minimap background
   ShaderProgram &minimapshader = SHADERS->getShader("minimap");
   minimapshader.uniformMat4x4("screen", screenMat);
@@ -544,9 +542,9 @@ void displayEnemyMarkers(const std::vector<gameobjects::Enemy> &enemies,
     float x = MINIMAP_SIZE * cosf(angle) * dist;
     float y = MINIMAP_SIZE * sinf(angle) * dist;
     transform = glm::translate(transform, glm::vec3(x, y, 0.0f));
-    transform = glm::translate(transform, glm::vec3(100.0f, 100.0f, 0.0f));
+    transform = glm::translate(transform, glm::vec3(100.0f, -100.0f, 0.0f));
     transform = glm::translate(
-        transform, glm::vec3(-float(w) / 2.0f, -float(h) / 2.0f, 0.0f));
+        transform, glm::vec3(-float(w) / 2.0f, float(h) / 2.0f, 0.0f));
     transform = glm::scale(transform, glm::vec3(8.0f, 8.0f, 0.0f));
     transform = glm::rotate(transform, glm::radians(90.0f),
                             glm::vec3(1.0f, 0.0f, 0.0f));
