@@ -14,7 +14,7 @@ constexpr glm::vec3 TERRAIN_LOD_COLORS[] = {
     glm::vec3(1.0f, 0.0f, 1.0f),
 };
 
-constexpr float MINIMAP_SIZE = 80.0f;
+constexpr float MINIMAP_SIZE = 100.0f;
 
 namespace gobjs = gameobjects;
 
@@ -470,9 +470,9 @@ void displayMiniMapBackground() {
   ShaderProgram &minimapshader = SHADERS->getShader("minimap");
   minimapshader.uniformMat4x4("screen", screenMat);
   glm::mat4 transform(1.0f);
-  transform = glm::translate(transform, glm::vec3(100.0f, 100.0f, 0.0f));
+  transform = glm::translate(transform, glm::vec3(100.0f, -100.0f, 0.0f));
   transform = glm::translate(
-      transform, glm::vec3(-float(w) / 2.0f, -float(h) / 2.0f, 0.0f));
+      transform, glm::vec3(-float(w) / 2.0f, float(h) / 2.0f, 0.0f));
   transform =
       glm::scale(transform, glm::vec3(MINIMAP_SIZE, MINIMAP_SIZE, 0.0f));
   transform =
@@ -486,9 +486,9 @@ void displayMiniMapBackground() {
   ShaderProgram &texture2dshader = SHADERS->getShader("textured2d");
   texture2dshader.uniformMat4x4("screen", screenMat);
   transform = glm::mat4(1.0f);
-  transform = glm::translate(transform, glm::vec3(100.0f, 100.0f, 0.0f));
+  transform = glm::translate(transform, glm::vec3(100.0f, -100.0f, 0.0f));
   transform = glm::translate(
-      transform, glm::vec3(-float(w) / 2.0f, -float(h) / 2.0f, 0.0f));
+      transform, glm::vec3(-float(w) / 2.0f, float(h) / 2.0f, 0.0f));
   transform = glm::scale(transform, glm::vec3(8.0f, 8.0f, 0.0f));
   transform =
       glm::rotate(transform, glm::radians(90.0f), glm::vec3(1.0f, 0.0f, 0.0f));

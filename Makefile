@@ -28,7 +28,7 @@ BUILD_DIR = build
 ifeq ($(OS),Windows_NT)
     # --- Windows Settings (MinGW) ---
     LDFLAGS = -Llib-mingw-w64 -pthread -lglfw3 -lopengl32 -lgdi32 -luser32 -lshell32
-    CLEAN_CMD = rm $(BUILD_DIR)/$(TARGET)
+    CLEAN_CMD = rm $(BUILD_DIR)/*
     FIX_PATH = $(subst /,\,$1)
 else
 	TARGET = RiverRaid3D
@@ -39,12 +39,12 @@ else
 		          -L/usr/local/lib
 		          
         LDFLAGS = $(LIBDIRS) -lglfw -framework OpenGL -framework Cocoa -framework IOKit -framework CoreVideo
-        CLEAN_CMD = rm -f $(BUILD_DIR)/$(TARGET)
+        CLEAN_CMD = rm -f $(BUILD_DIR)/*
         FIX_PATH = $1
     else
         # --- Linux Settings ---
         LDFLAGS = -Llib -lglfw3 -lGL -lX11 -lpthread -lXrandr -lXi -ldl
-        CLEAN_CMD = rm -f $(BUILD_DIR)/$(TARGET)
+        CLEAN_CMD = rm -f $(BUILD_DIR)/*
         FIX_PATH = $1
     endif
 endif
