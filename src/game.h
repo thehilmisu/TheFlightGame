@@ -170,7 +170,7 @@ namespace gameobjects {
 		Enemy(glm::vec3 position, int hp, unsigned int scoreval);
 		void updateBalloon(float dt);
 		void updateBlimp(float dt);
-		void updateShip(float dt);
+		void updateShip(float dt, const Player &player, std::vector<Bullet> &bullets);
 		void updateUfo(float dt, const infworld::worldseed &permutations);
 		void updatePlane(
 			float dt,
