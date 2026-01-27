@@ -43,7 +43,6 @@ namespace infworld {
 	enum DecorationType {
 		TREE,
 		PINE_TREE,
-		WATER_CUBE,
 	};
 
 	struct Decoration {

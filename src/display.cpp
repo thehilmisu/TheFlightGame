@@ -79,8 +79,6 @@ void generateDecorationOffsets(infworld::DecorationTable &decorations) {
   decorations.generateOffsets(infworld::TREE, VAOS->getVao("tree"), 0, 4);
   decorations.generateOffsets(infworld::TREE, VAOS->getVao("treelowdetail"), 4,
                               8);
-  decorations.generateOffsets(infworld::WATER_CUBE, VAOS->getVao("warship_instanced"), 0,
-                              999);
 }
 
 void displayDecorations(infworld::DecorationTable &decorations,
@@ -114,29 +112,6 @@ void displayDecorations(infworld::DecorationTable &decorations,
   decorations.drawDecorations(VAOS->getVao("tree"));
   VAOS->bind("treelowdetail");
   decorations.drawDecorations(VAOS->getVao("treelowdetail"));
-
-   ShaderProgram &shader = SHADERS->getShader("textured");
-
-  shader.use();
-  shader.uniformMat4x4("persp", window.getPerspective());
-  shader.uniformMat4x4("view", cam.viewMatrix());
-  shader.uniformVec3("lightdir", LIGHT);
-  shader.uniformVec3("camerapos", cam.position);
-
-  // Display warships on water (using tree shader for instancing)
-  treeShader.use();
-  treeShader.uniformMat4x4("persp", window.getPerspective());
-  treeShader.uniformMat4x4("view", cam.viewMatrix());
-  treeShader.uniformVec3("lightdir", glm::normalize(glm::vec3(-1.0f)));
-  treeShader.uniformVec3("camerapos", cam.position);
-  treeShader.uniformFloat("time", 0.0f);
-  treeShader.uniformFloat("windstrength", 0.0f);
-  treeShader.uniformMat4x4(
-      "transform", glm::scale(glm::mat4(1.0f), glm::vec3(SCALE * 3.0f)));
-  TEXTURES->bindTexture("warship", GL_TEXTURE0);
-  VAOS->bind("warship_instanced");
-  decorations.drawDecorations(VAOS->getVao("warship_instanced"));
-
   glEnable(GL_CULL_FACE);
 }
 
@@ -319,6 +294,34 @@ void displayBarrels(const std::vector<gameobjects::Props> &barrels) {
   shader.uniformVec3("camerapos", cam.position);
   for (const auto &barrel : barrels) {
     glm::mat4 transform = barrel.transform.getTransformMat();
+    glm::mat3 normal = glm::mat3(glm::transpose(glm::inverse(transform)));
+    shader.uniformMat4x4("transform", transform);
+    shader.uniformMat3x3("normalmat", normal);
+    VAOS->draw();
+  }
+  glEnable(GL_CULL_FACE);
+}
+
+void displayShips(const std::vector<gameobjects::Enemy> &ships) {
+  if (ships.empty())
+    return;
+  Window &window = Window::getInstance();
+  Camera &cam = window.getCamera();
+
+  glDisable(GL_CULL_FACE);
+  VAOS->bind("warship");
+  SHADERS->use("textured");
+  TEXTURES->bindTexture("barrel", GL_TEXTURE0);
+  ShaderProgram &shader = SHADERS->getShader("textured");
+  shader.uniformMat4x4("persp", window.getPerspective());
+  shader.uniformMat4x4("view", cam.viewMatrix());
+  shader.uniformFloat("specularfactor", 0.3f);
+  shader.uniformVec3("lightdir", LIGHT);
+  shader.uniformVec3("camerapos", cam.position);
+
+  for (const auto &ship : ships) {
+    glm::mat4 transform = ship.transform.getTransformMat();
+    transform = glm::scale(transform, glm::vec3(14.0f, 14.0f, 14.0f));
     glm::mat3 normal = glm::mat3(glm::transpose(glm::inverse(transform)));
     shader.uniformMat4x4("transform", transform);
     shader.uniformMat3x3("normalmat", normal);

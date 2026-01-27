@@ -41,7 +41,7 @@
 	"path" = "assets/models/barrel.obj";
 }
 
-# Barrel model
+# Warship model
 "warship" {
 	"path" = "assets/models/warship.obj";
 }

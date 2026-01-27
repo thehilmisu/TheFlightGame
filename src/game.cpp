@@ -71,21 +71,6 @@ namespace game {
 		VAOS->add("tree", plants::createTreeModel(6));
 		VAOS->add("treelowdetail", plants::createTreeModel(3));
 		VAOS->importFromFile("assets/models.impfile");
-
-		// Create instanced warship VAO (similar to tree models)
-		gfx::Vao warshipInstanced;
-		warshipInstanced.genBuffers(5); // Index 4 is the instance offset array
-		warshipInstanced.bind();
-
-		mesh::Model warshipModel = mesh::loadObjModel("assets/models/warship.obj");
-		warshipInstanced.vertcount = warshipModel.indices.size();
-		warshipModel.dataToBuffers(warshipInstanced.buffers);
-
-		glBindBuffer(GL_ARRAY_BUFFER, warshipInstanced.buffers.at(4));
-		glVertexAttribPointer(3, 3, GL_FLOAT, false, 3 * sizeof(float), (void*)0);
-		glEnableVertexAttribArray(3);
-		glVertexAttribDivisor(3, 1);
-		VAOS->add("warship_instanced", warshipInstanced);
 		//Textures
 		TEXTURES->importFromFile("assets/textures.impfile");
 		//Shaders

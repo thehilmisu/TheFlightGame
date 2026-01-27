@@ -27,6 +27,7 @@ namespace game {
 		gameobjects::Player player(glm::vec3(0.0f, HEIGHT * SCALE * 0.5f, 0.0f));
 		std::vector<gameobjects::Bullet> bullets;
 		std::vector<gameobjects::Enemy> balloons;
+		std::vector<gameobjects::Enemy> ships;
 		std::vector<gameobjects::Explosion> explosions;
 		std::vector<gameobjects::Props> barrels;
 
@@ -39,6 +40,7 @@ namespace game {
 
     TimerManager timers;
     timers.addTimer("spawn_balloon", 0.0f, 20.0f);
+    timers.addTimer("spawn_ship", 0.0f, 20.0f);
     timers.addTimer("spawn_barrel", 0.0f, 20.0f);
 
     game::updateCamera(player);
@@ -60,6 +62,8 @@ namespace game {
            gfx::displayPlayerPlane(totalTime, player.transform, player.getPlayerObj());
         //Display balloons
         gfx::displayBalloons(balloons);
+        //Display ships
+        gfx::displayShips(ships);
         //Display barrels
         gfx::displayBarrels(barrels);
         //Display bullets
@@ -98,7 +102,8 @@ namespace game {
           updateExplosions(explosions, player.transform.position, dt);
           gui.dItems.playerPosition = player.transform.position;
           gui.dItems.cameraPosition = window.getCamera().position;
-          gui.dItems.bulletCount = bullets.size();
+          gui.dItems.shipCount = ships.size();
+          gui.dItems.balloonCount = balloons.size();
 
           // Update HUD data
           gui.hudItems.health = player.health;
@@ -125,7 +130,7 @@ namespace game {
   				game::updateBullets(bullets, dt);
   				game::checkForBulletTerrainCollision(bullets, permutations);
   				checkForHit(bullets, balloons, 24.0f);
-  				// checkForHit(bullets, blimps, 32.0f);
+  				checkForHit(bullets, ships, 32.0f);
   				// checkForHit(bullets, ufos, 14.0f);
   				// checkForHit(bullets, planes, 12.0f);
 
@@ -135,6 +140,13 @@ namespace game {
           for( auto &balloon : balloons) balloon.updateBalloon(dt);
           //Destroy any enemies that are too far away or have run out of health
   				destroyEnemies(player, balloons, explosions, 1.0f, 24.0f, score);
+
+          // Spawn Ships
+          if(timers.getTimer("spawn_ship")) spawnShips(player, ships, lcg, permutations);
+          // Update Ships
+          for( auto &ship : ships) ship.updateShip(dt);
+          //Destroy any enemies that are too far away or have run out of health
+  				destroyEnemies(player, ships, explosions, 1.0f, 24.0f, score);
 
           // Spawn Barrels
           if(timers.getTimer("spawn_barrel")) spawnBarrels(player, barrels, lcg, permutations);

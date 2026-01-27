@@ -642,6 +642,7 @@ namespace gfx {
 				data
 			);	
 			glGenerateMipmap(GL_TEXTURE_2D);
+			printf("Texture loaded successfully : %s \n", path);
 		}
 		else
 			fprintf(stderr, "Failed to open: %s\n", path);

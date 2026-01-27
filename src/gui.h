@@ -11,7 +11,8 @@
 struct DebugItems{
   glm::vec3 playerPosition;
   glm::vec3 cameraPosition;
-  int bulletCount;
+  int shipCount;
+  int balloonCount;
 };
 
 struct HUDItems {
