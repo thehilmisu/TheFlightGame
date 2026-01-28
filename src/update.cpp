@@ -94,11 +94,14 @@ namespace game {
 		Camera& cam = Window::getInstance().getCamera();
 		//Update camera
 		cam.position = game::getCameraFollowPos(player.transform);
-		float
-			yaw = -(player.transform.rotation.y + glm::radians(180.0f)),
-			pitch = player.transform.rotation.x;
-		cam.yaw += (yaw - cam.yaw) * 6.0f * dt;
-		cam.pitch += (pitch - cam.pitch) * 7.0f * dt;
+
+		float bankingInfluence = 0.2f;
+		float targetYaw = -(player.transform.rotation.y + glm::radians(180.0f));
+		targetYaw += player.transform.rotation.z * bankingInfluence;
+		float targetPitch = player.transform.rotation.x;
+		
+		cam.yaw += (targetYaw - cam.yaw) * 6.0f * dt;
+		cam.pitch += (targetPitch - cam.pitch) * 7.0f * dt;
 	}	
 
 	void updateExplosions(

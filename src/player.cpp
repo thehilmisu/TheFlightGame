@@ -7,7 +7,7 @@ constexpr float DEFAULT_FUEL = 100.0f;
 constexpr float DAMAGE_COOLDOWN = 0.2f;
 constexpr float DAMAGE_TIMER = 1.0f;
 constexpr float ROTATION_Z_SPEED = 0.5f;
-constexpr float MAX_ROTATION_Z = glm::radians(15.0f);
+constexpr float MAX_ROTATION_Z = glm::radians(40.0f);
 constexpr float ROTATION_Y_SPEED = 0.8f;
 constexpr float ROTATION_X_SPEED = 0.6f;
 constexpr float MAX_ROTATION_X = glm::radians(70.0f);
@@ -97,6 +97,7 @@ void Player::update(float dt) {
     fuel = 0.0f;
 
   Window &window = Window::getInstance();
+  Camera &camera = window.getCamera();
 
   // Turn left/right
   if (window.getKeyState(GLFW_KEY_D) == JUST_PRESSED)
@@ -120,6 +121,7 @@ void Player::update(float dt) {
 #if 0
 		rotateWithMouse(dt);
 #endif
+
   // Rotate on the y axis
   if (yRotationDirection == Player::RY_RIGHT) {
     transform.rotation.z += dt * ROTATION_Z_SPEED;
@@ -130,13 +132,10 @@ void Player::update(float dt) {
     transform.rotation.z = std::max(transform.rotation.z, -MAX_ROTATION_Z);
     transform.rotation.y += ROTATION_Y_SPEED * dt;
   } else {
-    if (transform.rotation.z < 0.0f)
-      transform.rotation.z += dt * ROTATION_Z_SPEED / 2.0f;
-    else if (transform.rotation.z > 0.0f)
-      transform.rotation.z -= dt * ROTATION_Z_SPEED / 2.0f;
+    if (transform.rotation.z < 0.0f)  transform.rotation.z += dt * ROTATION_Z_SPEED / 2.0f;
+    else if (transform.rotation.z > 0.0f)  transform.rotation.z -= dt * ROTATION_Z_SPEED / 2.0f;
 
-    if (std::abs(transform.rotation.z) < glm::radians(0.5f))
-      transform.rotation.z = 0.0f;
+    if (std::abs(transform.rotation.z) < glm::radians(0.5f)) transform.rotation.z = 0.0f;
   }
 
   // Rotate on the x axis
@@ -148,19 +147,20 @@ void Player::update(float dt) {
     transform.rotation.x = std::min(transform.rotation.x, MAX_ROTATION_X);
   }
 
-  transform.position += transform.direction() * speed / 2.0f * dt;
-  // Acceleration
-  if (window.keyIsHeld(window.getKeyState(GLFW_KEY_LEFT_SHIFT)))
-    speed += ACCELERATION * dt;
-  else if (window.getScrollSpeed() > 0.0)
-    speed += ACCELERATION * 4.0f * dt;
-  else if (window.keyIsHeld(window.getKeyState(GLFW_KEY_LEFT_CONTROL)))
-    speed -= ACCELERATION * dt;
-  else if (window.getScrollSpeed() < 0.0)
-    speed -= ACCELERATION * 4.0f * dt;
+  // transform.position += transform.direction() * speed / 2.0f * dt;
+  // Increase Speed
+  if (window.keyIsHeld(window.getKeyState(GLFW_KEY_LEFT_SHIFT))) speed += ACCELERATION * dt;
+  else if (window.getScrollSpeed() > 0.0) speed += ACCELERATION * 4.0f * dt;
+  // Decrease Speed
+  else if (window.keyIsHeld(window.getKeyState(GLFW_KEY_LEFT_CONTROL))) speed -= ACCELERATION * dt;
+  else if (window.getScrollSpeed() < 0.0) speed -= ACCELERATION * 4.0f * dt;
+
   speed = std::min(speed, SPEED * 3.0f);
   speed = std::max(speed, SPEED);
+
   transform.position += transform.direction() * speed / 2.0f * dt;
+
+   
 }
 
 void Player::resetShootTimer() { shoottimer = 0.2f; }

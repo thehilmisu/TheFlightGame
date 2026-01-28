@@ -85,7 +85,6 @@ namespace game {
           // gfx::displayPropMarkers(barrels, player.transform);
           gfx::displayExplosions(explosions);
         
-          game::updateCamera(player, dt);
           // to make the terrain infinite
           game::generateNewChunks(permutations, chunktables, decorations);
 
@@ -100,6 +99,7 @@ namespace game {
   					printf("Just crashed \n");
   				}
           player.update(dt);
+          game::updateCamera(player, dt);
           updateExplosions(explosions, player.transform.position, dt);
           gui.dItems.playerPosition = player.transform.position;
           gui.dItems.cameraPosition = window.getCamera().position;
