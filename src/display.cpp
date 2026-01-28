@@ -2,10 +2,9 @@
 #include "game.h"
 #include "glm/ext/matrix_transform.hpp"
 #include "infworld.h"
-#include "window.h"
 #include "opengl.h"
+#include "window.h"
 #include <glm/gtc/matrix_transform.hpp>
-
 
 // Just debug colors for different terrain LOD levels
 constexpr glm::vec3 TERRAIN_LOD_COLORS[] = {
@@ -452,7 +451,7 @@ void displayBullets(const std::vector<gameobjects::Bullet> &bullets) {
   }
 }
 
-void displayMiniMapBackground() {
+void displayMiniMapBackground(float totalTime) {
   Window &window = Window::getInstance();
 
   int w, h;
@@ -464,12 +463,13 @@ void displayMiniMapBackground() {
   glEnable(GL_BLEND);
   glDisable(GL_DEPTH_TEST);
   glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-  VAOS->bind("quad");
-  SHADERS->use("minimap");
 
   // Display minimap background
+  VAOS->bind("quad");
+  SHADERS->use("minimap");
   ShaderProgram &minimapshader = SHADERS->getShader("minimap");
   minimapshader.uniformMat4x4("screen", screenMat);
+  minimapshader.uniformFloat("u_time", totalTime);
   glm::mat4 transform(1.0f);
   transform = glm::translate(transform, glm::vec3(100.0f, -100.0f, 0.0f));
   transform = glm::translate(
@@ -495,6 +495,7 @@ void displayMiniMapBackground() {
       glm::rotate(transform, glm::radians(90.0f), glm::vec3(1.0f, 0.0f, 0.0f));
   texture2dshader.uniformMat4x4("transform", transform);
   VAOS->draw();
+
   glDisable(GL_BLEND);
   glEnable(GL_DEPTH_TEST);
 }
@@ -511,7 +512,7 @@ void displayEnemyMarkers(const std::vector<gameobjects::Enemy> &enemies,
       glm::mat4(1.0f), glm::vec3(2.0f / float(w), 2.0f / float(h), 0.0f));
 
   const float MAX_DIST = CHUNK_SZ * 16.0f;
-  
+
   glEnable(GL_BLEND);
   glDisable(GL_DEPTH_TEST);
   glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);

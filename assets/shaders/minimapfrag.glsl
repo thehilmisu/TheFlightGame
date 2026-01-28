@@ -6,19 +6,23 @@ precision mediump float;
 #endif
 
 in vec2 pos2d;
-in vec3 fragpos;
+// in vec3 fragpos;
+uniform float u_time;
 
 out vec4 color;
 
 void main()
 {
-	float a = step(length(pos2d), 1.0);
-	float green = float(
-		(fract(pos2d.x * 4.0) < 0.05 || 
-		fract(pos2d.x * 4.0) > 0.95) ||
-		(fract(pos2d.y * 4.0) < 0.05 || 
-		fract(pos2d.y * 4.0) > 0.95) ||
-		fract(length(pos2d) * 3.1) < 0.1
-	);
-	color = vec4(0.0, 0.0, 0.0, a) * (1.0 - green) + vec4(0.0, 0.5, 0.0, a) * green;
+	float distance = length(pos2d);
+
+	float mask = step(distance, 1.0);
+
+	float rings = sin(distance * 20.0 - u_time * 5.0);
+
+	float greenLine = smoothstep(0.8, 1.0, rings);
+
+	vec4 bgColor = vec4(0.0, 0.0, 0.0, 0.5 * mask);
+	vec4 lineColor = vec4(0.0, 1.0, 0.0, 1.0 * mask);
+
+	color = mix(bgColor, lineColor, greenLine);
 }

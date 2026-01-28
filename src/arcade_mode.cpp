@@ -80,7 +80,7 @@ namespace game {
           
           //Draw HUD Backgorunds
           gfx::displayCrosshair(player.transform);
-          gfx::displayMiniMapBackground();
+          gfx::displayMiniMapBackground(totalTime);
           gfx::displayEnemyMarkers(balloons, player.transform);
           gfx::displayEnemyMarkers(ships, player.transform);
           // gfx::displayPropMarkers(barrels, player.transform);

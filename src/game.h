@@ -338,7 +338,7 @@ namespace gfx {
 	void displayUfos(const std::vector<gameobjects::Enemy> &ufos);
 	void displayPlanes(float totalTime, const std::vector<gameobjects::Enemy> &planes);
 	void displayBullets(const std::vector<gameobjects::Bullet> &bullets);
-	void displayMiniMapBackground();
+	void displayMiniMapBackground(float totalTime);
 	void displayEnemyMarkers(
 		const std::vector<gameobjects::Enemy> &enemies,
 		const game::Transform &playertransform
