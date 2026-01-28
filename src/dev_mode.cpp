@@ -1,6 +1,8 @@
 #include "game.h"
 #include "window.h"
 #include "gui.h"
+#include <SDL.h>
+#include "timing.h"
 
 
 namespace game {
@@ -44,7 +46,7 @@ namespace game {
     game::updateCamera(player);
     
     while (!window.shouldClose() && window.isRunnning()) {
-        float startTime = glfwGetTime();
+        float startTime = getTime();
         window.pollEvents();
 
         gui.newFrame();
@@ -109,8 +111,8 @@ namespace game {
           gui.hudItems.fuel = player.fuel;
 
           //Shoot bullets
-  				KeyState leftbutton = window.getButtonState(GLFW_MOUSE_BUTTON_LEFT);
-  				KeyState spacebar = window.getKeyState(GLFW_KEY_SPACE);
+  				KeyState leftbutton = window.getButtonState(SDL_BUTTON_LEFT);
+  				KeyState spacebar = window.getKeyState(SDLK_SPACE);
   				if(player.shoottimer <= 0.0f && 
   				   (window.keyIsHeld(spacebar) || window.keyIsHeld(leftbutton)) &&
   				   !player.crashed) {
@@ -165,8 +167,8 @@ namespace game {
            }
         }
         
-        if (window.getKeyState(GLFW_KEY_TAB) == JUST_PRESSED) draw_debug_gui = !draw_debug_gui;
-        if (window.getKeyState(GLFW_KEY_ESCAPE) == JUST_PRESSED) paused = !paused;
+        if (window.getKeyState(SDLK_TAB) == JUST_PRESSED) draw_debug_gui = !draw_debug_gui;
+        if (window.getKeyState(SDLK_ESCAPE) == JUST_PRESSED) paused = !paused;
 
         if (draw_debug_gui){
           gui.drawUI();
@@ -176,7 +178,7 @@ namespace game {
 
         window.swapBuffers();
         window.updateKeyStates();
-        dt = glfwGetTime() - startTime;
+        dt = getTime() - startTime;
     }
 
     return NONE;

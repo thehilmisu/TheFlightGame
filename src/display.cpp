@@ -3,7 +3,7 @@
 #include "glm/ext/matrix_transform.hpp"
 #include "infworld.h"
 #include "window.h"
-#include <glad/glad.h>
+#include "opengl.h"
 #include <glm/gtc/matrix_transform.hpp>
 
 

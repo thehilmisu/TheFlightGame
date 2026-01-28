@@ -1,6 +1,8 @@
 #include "game.h"
 #include "window.h"
 #include "gui.h"
+#include <SDL.h>
+#include "timing.h"
 
 
 namespace game {
@@ -39,14 +41,14 @@ namespace game {
     bool paused = false;
 
     TimerManager timers;
-    timers.addTimer("spawn_balloon", 0.0f, 20.0f);
-    timers.addTimer("spawn_ship", 0.0f, 20.0f);
-    timers.addTimer("spawn_barrel", 0.0f, 20.0f);
+    timers.addTimer("spawn_balloon", 0.0f, 50.0f);
+    timers.addTimer("spawn_ship", 0.0f, 100.0f);
+    // timers.addTimer("spawn_barrel", 0.0f, 70.0f);
 
     game::updateCamera(player);
     
     while (!window.shouldClose() && window.isRunnning()) {
-        float startTime = glfwGetTime();
+        float startTime = getTime();
         window.pollEvents();
 
         gui.newFrame();
@@ -116,8 +118,8 @@ namespace game {
           gui.hudItems.fuel = player.fuel;
 
           //Shoot bullets
-  				KeyState leftbutton = window.getButtonState(GLFW_MOUSE_BUTTON_LEFT);
-  				KeyState spacebar = window.getKeyState(GLFW_KEY_SPACE);
+  				KeyState leftbutton = window.getButtonState(SDL_BUTTON_LEFT);
+  				KeyState spacebar = window.getKeyState(SDLK_SPACE);
   				if(player.shoottimer <= 0.0f && 
   				   (window.keyIsHeld(spacebar) || window.keyIsHeld(leftbutton)) &&
   				   !player.crashed) {
@@ -150,11 +152,11 @@ namespace game {
   				destroyEnemies(player, ships, explosions, 1.0f, 24.0f, score);
 
           // Spawn Barrels
-          if(timers.getTimer("spawn_barrel")) spawnBarrels(player, barrels, lcg, permutations);
-          // Update Barrels
-          for( auto &barrel : barrels) barrel.updateBarrel(dt);
-          //Destroy any enemies that are too far away or have run out of health
-  				destroyProps(player, barrels, explosions, 1.0f, 24.0f, score);
+      //     if(timers.getTimer("spawn_barrel")) spawnBarrels(player, barrels, lcg, permutations);
+      //     // Update Barrels
+      //     for( auto &barrel : barrels) barrel.updateBarrel(dt);
+      //     //Destroy any enemies that are too far away or have run out of health
+  				// destroyProps(player, barrels, explosions, 1.0f, 24.0f, score);
   				
           gui.drawHUD();
         
@@ -179,8 +181,8 @@ namespace game {
            }
         }
         
-        if (window.getKeyState(GLFW_KEY_TAB) == JUST_PRESSED) draw_debug_gui = !draw_debug_gui;
-        if (window.getKeyState(GLFW_KEY_ESCAPE) == JUST_PRESSED) paused = !paused;
+        if (window.getKeyState(SDLK_TAB) == JUST_PRESSED) draw_debug_gui = !draw_debug_gui;
+        if (window.getKeyState(SDLK_ESCAPE) == JUST_PRESSED) paused = !paused;
 
         if (draw_debug_gui){
           gui.drawUI();
@@ -190,7 +192,7 @@ namespace game {
 
         window.swapBuffers();
         window.updateKeyStates();
-        dt = glfwGetTime() - startTime;
+        dt = getTime() - startTime;
     }
 
     return NONE;

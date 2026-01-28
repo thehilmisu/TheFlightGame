@@ -1,6 +1,6 @@
 #include "infworld.h"
 #include <random>
-#include <glad/glad.h>
+#include "opengl.h"
 #include <chrono>
 #include <thread>
 

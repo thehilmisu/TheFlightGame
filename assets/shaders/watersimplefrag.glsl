@@ -1,4 +1,9 @@
+#ifdef GL_ES
+#version 300 es
+precision highp float;
+#else
 #version 330 core
+#endif
 
 out vec4 color;
 

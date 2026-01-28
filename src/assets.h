@@ -10,7 +10,7 @@
 #include "importfile.h"
 #include "shader.h"
 #include <unordered_map>
-#include <glad/glad.h>
+#include "opengl.h"
 
 namespace assets {
 	struct TextureMetaData {

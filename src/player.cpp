@@ -1,5 +1,6 @@
 #include "game.h"
 #include "window.h"
+#include <SDL.h>
 // #include "audio.hpp"
 
 constexpr unsigned int DEFAULT_HEALTH = 100;
@@ -99,21 +100,21 @@ void Player::update(float dt) {
   Window &window = Window::getInstance();
 
   // Turn left/right
-  if (window.getKeyState(GLFW_KEY_D) == JUST_PRESSED)
+  if (window.getKeyState(SDLK_d) == JUST_PRESSED)
     yRotationDirection = Player::RY_RIGHT;
-  else if (window.getKeyState(GLFW_KEY_A) == JUST_PRESSED)
+  else if (window.getKeyState(SDLK_a) == JUST_PRESSED)
     yRotationDirection = Player::RY_LEFT;
-  else if (window.getKeyState(GLFW_KEY_A) == RELEASED &&
-           window.getKeyState(GLFW_KEY_D) == RELEASED)
+  else if (window.getKeyState(SDLK_a) == RELEASED &&
+           window.getKeyState(SDLK_d) == RELEASED)
     yRotationDirection = Player::RY_NONE;
 
   // Change pitch
-  if (window.getKeyState(GLFW_KEY_S) == JUST_PRESSED)
+  if (window.getKeyState(SDLK_s) == JUST_PRESSED)
     xRotationDirection = Player::RX_UP;
-  else if (window.getKeyState(GLFW_KEY_W) == JUST_PRESSED)
+  else if (window.getKeyState(SDLK_w) == JUST_PRESSED)
     xRotationDirection = Player::RX_DOWN;
-  else if (window.getKeyState(GLFW_KEY_S) == RELEASED &&
-           window.getKeyState(GLFW_KEY_W) == RELEASED)
+  else if (window.getKeyState(SDLK_s) == RELEASED &&
+           window.getKeyState(SDLK_w) == RELEASED)
     xRotationDirection = Player::RX_NONE;
 
   // Rotate with mouse
@@ -150,11 +151,11 @@ void Player::update(float dt) {
 
   transform.position += transform.direction() * speed / 2.0f * dt;
   // Acceleration
-  if (window.keyIsHeld(window.getKeyState(GLFW_KEY_LEFT_SHIFT)))
+  if (window.keyIsHeld(window.getKeyState(SDLK_LSHIFT)))
     speed += ACCELERATION * dt;
   else if (window.getScrollSpeed() > 0.0)
     speed += ACCELERATION * 4.0f * dt;
-  else if (window.keyIsHeld(window.getKeyState(GLFW_KEY_LEFT_CONTROL)))
+  else if (window.keyIsHeld(window.getKeyState(SDLK_LCTRL)))
     speed -= ACCELERATION * dt;
   else if (window.getScrollSpeed() < 0.0)
     speed -= ACCELERATION * 4.0f * dt;

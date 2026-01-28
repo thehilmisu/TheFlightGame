@@ -1,4 +1,9 @@
+#ifdef GL_ES
+#version 300 es
+precision highp float;
+#else
 #version 330 core
+#endif
 
 layout(location = 0) in vec4 pos;
 layout(location = 1) in vec3 norm;

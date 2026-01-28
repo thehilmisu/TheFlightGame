@@ -1,6 +1,8 @@
 #include "game.h"
 #include "gui.h"
 #include "window.h"
+#include <SDL.h>
+#include "timing.h"
 // #include <AL/al.h>
 
 namespace gobjs = gameobjects;
@@ -16,7 +18,7 @@ game::MainMenuActions mainMenu() {
   Window &window = Window::getInstance();
   Gui &gui = Gui::getInstance();
 
-  window.setCursorInputMode(GLFW_CURSOR_NORMAL);
+  window.setCursorInputMode(CURSOR_NORMAL);
 
   window.getCamera().pitch = 0.0f;
   window.getCamera().yaw = 0.0f;
@@ -27,7 +29,7 @@ game::MainMenuActions mainMenu() {
   float dt = 0.0f;
   float totalTime = 0.0f;
   while (!window.shouldClose()) {
-    float start = glfwGetTime();
+    float start = getTime();
 
     gui.newFrame();
 
@@ -53,7 +55,7 @@ game::MainMenuActions mainMenu() {
     glEnable(GL_DEPTH_TEST);
     glEnable(GL_BLEND);
     window.swapBuffers();
-    glfwPollEvents();
+    window.pollEvents();
     gfx::outputErrors();
     totalTime += dt;
 
@@ -82,7 +84,7 @@ game::MainMenuActions mainMenu() {
       break;
     }
 
-    dt = glfwGetTime() - start;
+    dt = getTime() - start;
   }
 
   return NONE_SELECTED;
