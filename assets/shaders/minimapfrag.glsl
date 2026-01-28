@@ -21,7 +21,7 @@ void main()
 	float greenLine = smoothstep(0.8, 1.0, rings);
 
 	vec4 bgColor = vec4(0.0, 0.0, 0.0, 0.5 * mask);
-	vec4 lineColor = vec4(0.0, 1.0, 0.0, 1.0 * mask);
+	vec4 lineColor = vec4(0.0, 0.8, 0.0, 1.0 * mask);
 
 	color = mix(bgColor, lineColor, greenLine);
 }

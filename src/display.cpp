@@ -466,12 +466,13 @@ void displaySpeed(float speed) {
   glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
   VAOS->bind("quad");
-  SHADERS->use("verticaltape");
-  ShaderProgram &attitudeshader = SHADERS->getShader("verticaltape");
+  SHADERS->use("speed");
+  ShaderProgram &attitudeshader = SHADERS->getShader("speed");
   attitudeshader.uniformMat4x4("screen", screenMat);
-  attitudeshader.uniformFloat("u_value", speed);
+  attitudeshader.uniformFloat("u_speed", speed);
+  attitudeshader.uniformFloat("u_maxSpeed", 150.0f);
   glm::mat4 transform(1.0f);
-  transform = glm::translate(transform, glm::vec3(130.0f,  (w / 2.0f) + 130.0f, 0.0f));
+  transform = glm::translate(transform, glm::vec3((w - 60.0f),  130.0f, 0.0f));
   transform = glm::translate(
       transform, glm::vec3(-float(w) / 2.0f, -float(h) / 2.0f, 0.0f));
   transform =
@@ -540,6 +541,7 @@ void displayAttitude(float pitch, float roll) {
   attitudeshader.uniformFloat("u_pitch", pitch);
   attitudeshader.uniformFloat("u_roll", roll);
   glm::mat4 transform(1.0f);
+
   transform = glm::translate(transform, glm::vec3(130.0f, 130.0f, 0.0f));
   transform = glm::translate(
       transform, glm::vec3(-float(w) / 2.0f, -float(h) / 2.0f, 0.0f));
@@ -590,7 +592,7 @@ void displayMiniMapBackground(float totalTime) {
   ShaderProgram &texture2dshader = SHADERS->getShader("textured2d");
   texture2dshader.uniformMat4x4("screen", screenMat);
   transform = glm::mat4(1.0f);
-  transform = glm::translate(transform, glm::vec3(100.0f, -100.0f, 0.0f));
+  transform = glm::translate(transform, glm::vec3(110.0f, -110.0f, 0.0f));
   transform = glm::translate(
       transform, glm::vec3(-float(w) / 2.0f, float(h) / 2.0f, 0.0f));
   transform = glm::scale(transform, glm::vec3(8.0f, 8.0f, 0.0f));

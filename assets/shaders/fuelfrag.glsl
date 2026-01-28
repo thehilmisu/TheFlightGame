@@ -1,4 +1,9 @@
+#ifdef GL_ES
+#version 300 es
+precision highp float;
+#else
 #version 330 core
+#endif
 
 in vec2 pos2d;
 uniform float u_fuelLevel;      // 0 to 100

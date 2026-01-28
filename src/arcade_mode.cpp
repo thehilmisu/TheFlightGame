@@ -82,7 +82,7 @@ namespace game {
           gfx::displayCrosshair(player.transform);
           gfx::displayMiniMapBackground(totalTime);
           gfx::displayAttitude(player.transform.rotation.x, player.transform.rotation.z);
-          // gfx::displaySpeed(player.speed);
+          gfx::displaySpeed(player.speed);
           gfx::displayFuel(player.fuel, totalTime);
           gfx::displayEnemyMarkers(balloons, player.transform);
           gfx::displayEnemyMarkers(ships, player.transform);

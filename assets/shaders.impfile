@@ -53,6 +53,11 @@
 	"fragment" = "assets/shaders/fuelfrag.glsl";
 }
 
+"speed" {
+	"vertex" = "assets/shaders/vert2d.glsl";
+	"fragment" = "assets/shaders/speedfrag.glsl";
+}
+
 "textured2d" {
 	"vertex" = "assets/shaders/vert2d.glsl";
 	"fragment" = "assets/shaders/textured-simple-frag.glsl";
