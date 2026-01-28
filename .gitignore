@@ -47,3 +47,9 @@ ANDROID_BUILD.md
 SDL2_MIGRATION_COMPLETE.md
 
 thirdparty/glm
+/android/app/build.gradle
+/android/settings.gradle
+/android/build.gradle
+/android/gradle.properties
+/android/app/src/main/res/values/strings.xml
+/android/app/src/main/AndroidManifest.xml
