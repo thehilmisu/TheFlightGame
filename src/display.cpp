@@ -14,6 +14,7 @@ constexpr glm::vec3 TERRAIN_LOD_COLORS[] = {
 };
 
 constexpr float MINIMAP_SIZE = 100.0f;
+constexpr float ATTITUDE_SIZE = 120.0f;
 
 namespace gobjs = gameobjects;
 
@@ -451,6 +452,108 @@ void displayBullets(const std::vector<gameobjects::Bullet> &bullets) {
   }
 }
 
+void displaySpeed(float speed) {
+  Window &window = Window::getInstance();
+
+  int w, h;
+  w = window.getWidth();
+  h = window.getHeight();
+  glm::mat4 screenMat = glm::scale(
+      glm::mat4(1.0f), glm::vec3(2.0f / float(w), 2.0f / float(h), 0.0f));
+
+  glEnable(GL_BLEND);
+  glDisable(GL_DEPTH_TEST);
+  glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+
+  VAOS->bind("quad");
+  SHADERS->use("verticaltape");
+  ShaderProgram &attitudeshader = SHADERS->getShader("verticaltape");
+  attitudeshader.uniformMat4x4("screen", screenMat);
+  attitudeshader.uniformFloat("u_value", speed);
+  glm::mat4 transform(1.0f);
+  transform = glm::translate(transform, glm::vec3(130.0f,  (w / 2.0f) + 130.0f, 0.0f));
+  transform = glm::translate(
+      transform, glm::vec3(-float(w) / 2.0f, -float(h) / 2.0f, 0.0f));
+  transform =
+      glm::scale(transform, glm::vec3(ATTITUDE_SIZE, ATTITUDE_SIZE, 0.0f));
+  transform =
+      glm::rotate(transform, glm::radians(90.0f), glm::vec3(1.0f, 0.0f, 0.0f));
+  attitudeshader.uniformMat4x4("transform", transform);
+  VAOS->draw();
+
+  glDisable(GL_BLEND);
+  glEnable(GL_DEPTH_TEST);
+}
+
+void displayFuel(float fuel, float totalTime) {
+  Window &window = Window::getInstance();
+
+  int w, h;
+  w = window.getWidth();
+  h = window.getHeight();
+  glm::mat4 screenMat = glm::scale(
+      glm::mat4(1.0f), glm::vec3(2.0f / float(w), 2.0f / float(h), 0.0f));
+
+  glEnable(GL_BLEND);
+  glDisable(GL_DEPTH_TEST);
+  glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+
+  VAOS->bind("quad");
+  SHADERS->use("fuel");
+  ShaderProgram &attitudeshader = SHADERS->getShader("fuel");
+  attitudeshader.uniformMat4x4("screen", screenMat);
+  attitudeshader.uniformFloat("u_fuelLevel", fuel);
+  attitudeshader.uniformFloat("u_lowFuelWarning", 0.15f);
+  attitudeshader.uniformFloat("u_time", totalTime);
+  glm::mat4 transform(1.0f);
+  transform = glm::translate(transform, glm::vec3(w - 130.0f,  130.0f, 0.0f));
+  transform = glm::translate(
+      transform, glm::vec3(-float(w) / 2.0f, -float(h) / 2.0f, 0.0f));
+  transform =
+      glm::scale(transform, glm::vec3(ATTITUDE_SIZE, ATTITUDE_SIZE, 0.0f));
+  transform =
+      glm::rotate(transform, glm::radians(90.0f), glm::vec3(1.0f, 0.0f, 0.0f));
+  attitudeshader.uniformMat4x4("transform", transform);
+  VAOS->draw();
+
+  glDisable(GL_BLEND);
+  glEnable(GL_DEPTH_TEST);
+}
+
+void displayAttitude(float pitch, float roll) {
+  Window &window = Window::getInstance();
+
+  int w, h;
+  w = window.getWidth();
+  h = window.getHeight();
+  glm::mat4 screenMat = glm::scale(
+      glm::mat4(1.0f), glm::vec3(2.0f / float(w), 2.0f / float(h), 0.0f));
+
+  glEnable(GL_BLEND);
+  glDisable(GL_DEPTH_TEST);
+  glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+
+  VAOS->bind("quad");
+  SHADERS->use("attitude");
+  ShaderProgram &attitudeshader = SHADERS->getShader("attitude");
+  attitudeshader.uniformMat4x4("screen", screenMat);
+  attitudeshader.uniformFloat("u_pitch", pitch);
+  attitudeshader.uniformFloat("u_roll", roll);
+  glm::mat4 transform(1.0f);
+  transform = glm::translate(transform, glm::vec3(130.0f, 130.0f, 0.0f));
+  transform = glm::translate(
+      transform, glm::vec3(-float(w) / 2.0f, -float(h) / 2.0f, 0.0f));
+  transform =
+      glm::scale(transform, glm::vec3(ATTITUDE_SIZE, ATTITUDE_SIZE, 0.0f));
+  transform =
+      glm::rotate(transform, glm::radians(90.0f), glm::vec3(1.0f, 0.0f, 0.0f));
+  attitudeshader.uniformMat4x4("transform", transform);
+  VAOS->draw();
+
+  glDisable(GL_BLEND);
+  glEnable(GL_DEPTH_TEST);
+}
+
 void displayMiniMapBackground(float totalTime) {
   Window &window = Window::getInstance();
 
@@ -471,7 +574,7 @@ void displayMiniMapBackground(float totalTime) {
   minimapshader.uniformMat4x4("screen", screenMat);
   minimapshader.uniformFloat("u_time", totalTime);
   glm::mat4 transform(1.0f);
-  transform = glm::translate(transform, glm::vec3(100.0f, -100.0f, 0.0f));
+  transform = glm::translate(transform, glm::vec3(110.0f, -110.0f, 0.0f));
   transform = glm::translate(
       transform, glm::vec3(-float(w) / 2.0f, float(h) / 2.0f, 0.0f));
   transform =

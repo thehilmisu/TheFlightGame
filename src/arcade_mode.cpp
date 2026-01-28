@@ -81,6 +81,9 @@ namespace game {
           //Draw HUD Backgorunds
           gfx::displayCrosshair(player.transform);
           gfx::displayMiniMapBackground(totalTime);
+          gfx::displayAttitude(player.transform.rotation.x, player.transform.rotation.z);
+          // gfx::displaySpeed(player.speed);
+          gfx::displayFuel(player.fuel, totalTime);
           gfx::displayEnemyMarkers(balloons, player.transform);
           gfx::displayEnemyMarkers(ships, player.transform);
           // gfx::displayPropMarkers(barrels, player.transform);
@@ -150,13 +153,12 @@ namespace game {
           //Destroy any enemies that are too far away or have run out of health
   				destroyEnemies(player, ships, explosions, 1.0f, 50.0f, score);
   				
-          gui.drawHUD();
+          // gui.drawHUD();
         
         }
         //paused
         else{
           game::PauseMenuActions action = gui.drawPauseMenu();
-          INFO("Pause Menu Action : %d", action);
           switch (action) {
             case EXIT:
               window.setIsRunning(false);

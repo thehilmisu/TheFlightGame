@@ -6,7 +6,6 @@ precision mediump float;
 #endif
 
 in vec2 pos2d;
-// in vec3 fragpos;
 uniform float u_time;
 
 out vec4 color;

@@ -38,6 +38,21 @@
 	"fragment" = "assets/shaders/minimapfrag.glsl";
 }
 
+"attitude" {
+	"vertex" = "assets/shaders/vert2d.glsl";
+	"fragment" = "assets/shaders/attitudefrag.glsl";
+}
+
+"verticaltape" {
+	"vertex" = "assets/shaders/vert2d.glsl";
+	"fragment" = "assets/shaders/verticaltapefrag.glsl";
+}
+
+"fuel" {
+	"vertex" = "assets/shaders/vert2d.glsl";
+	"fragment" = "assets/shaders/fuelfrag.glsl";
+}
+
 "textured2d" {
 	"vertex" = "assets/shaders/vert2d.glsl";
 	"fragment" = "assets/shaders/textured-simple-frag.glsl";
