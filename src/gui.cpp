@@ -5,7 +5,8 @@
 #include "imgui.h"
 #include "imgui_impl_glfw.h"
 #include "imgui_impl_opengl3.h"
-#include <glm/glm.hpp>
+#include <glm/glm.hpp>
+#include "window.h"
 
 Gui::Gui() {
 
@@ -148,12 +149,17 @@ game::PauseMenuActions Gui::drawPauseMenu() {
 }
 
 game::MainMenuActions Gui::drawMainMenu() {
-
   game::MainMenuActions action = game::NONE_SELECTED;
+  Window& window = Window::getInstance();
+  int w = window.getWidth();
+  int h = window.getHeight();
 
-  ImGui::SetNextWindowPos(ImVec2(150.0f, 500.0f), ImGuiCond_Always,
-                          ImVec2(0.5f, 0.5f));
-  ImGui::SetNextWindowSize(ImVec2(300, 400));
+  float pos_x = (w * 0.3f) + 100.0f;
+  float pos_y = float(h + 75.0f);
+
+  ImGui::SetNextWindowPos(ImVec2(pos_x, pos_y), ImGuiCond_Always,
+                          ImVec2(1.0f, 1.0f));
+  ImGui::SetNextWindowSize(ImVec2((w*0.30f), (h * 0.7f)));
 
   // Use flags to remove the typical window frame for a cleaner "Game Menu" look
   ImGuiWindowFlags window_flags =
@@ -161,7 +167,7 @@ game::MainMenuActions Gui::drawMainMenu() {
       ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoBackground;
 
   if (ImGui::Begin("GameMainMenu", nullptr, window_flags)) {
-    ImGui::PushStyleVar(ImGuiStyleVar_FrameRounding, 5.0f); // Round the buttons
+    ImGui::PushStyleVar(ImGuiStyleVar_FrameRounding, 5.0f);
 
     // Title Text
     ImGui::SetWindowFontScale(2.0f);
@@ -193,11 +199,25 @@ game::MainMenuActions Gui::drawMainMenu() {
     }
 
     ImGui::Spacing();
+    ImGui::PopStyleVar();
+    ImGui::End();
+  }
 
-    if (ImGui::Button("<<", ImVec2(-1.0f, 50.0f))) {
+  pos_x = (w / 2.0f) + 300.0f;
+  pos_y = float(h - 50.0f);
+  ImGui::SetNextWindowPos(ImVec2(pos_x, pos_y), ImGuiCond_Always,
+                          ImVec2(1.0f, 1.0f));
+  ImGui::SetNextWindowSize(ImVec2(300, 75));
+
+  if (ImGui::Begin("PlaneArrows", nullptr, window_flags)) {
+    ImGui::PushStyleVar(ImGuiStyleVar_FrameRounding, 5.0f);
+    ImGui::SetWindowFontScale(2.0f);
+    
+    if (ImGui::Button("<<", ImVec2(150.0f, 50.0f))) {
       action = game::CHANGE_PLANE_MINUS;
     }
-    if (ImGui::Button(">>", ImVec2(-1.0f, 50.0f))) {
+    ImGui::SameLine();
+    if (ImGui::Button(">>", ImVec2(150.0f, 50.0f))) {
       action = game::CHANGE_PLANE_PLUS;
     }
 

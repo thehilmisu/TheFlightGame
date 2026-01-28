@@ -82,10 +82,6 @@ namespace game {
 		infworld::DecorationTable &decorations
 	);
 
-	//This is the game loop for "Fight Mode"
-	//In fight mode, there are other things in the sky you need to shoot down
-	//and some of those things will shoot back at you so you must try to
-	//destroy as many things as possible before being shot down yourself
 	//returns the final score the player acheives
 	game::PauseMenuActions arcadeModeGameLoop();
 	//Development Purposes
