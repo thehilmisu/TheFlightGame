@@ -20,6 +20,13 @@ enum KeyState {
   HELD,
 };
 
+// Cursor mode constants for SDL2
+enum CursorMode {
+  CURSOR_NORMAL = 0,
+  CURSOR_HIDDEN = 1,
+  CURSOR_DISABLED = 2
+};
+
 class Window {
 
   Camera cam;
@@ -107,7 +114,5 @@ private:
 
   // SDL2 specific methods
   void processSDLEvent(SDL_Event& event);
-  int mapSDL2KeyToGLFW(int sdlKey);
-  int mapSDL2MouseButtonToGLFW(int sdlButton);
 };
 #endif

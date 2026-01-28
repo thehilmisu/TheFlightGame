@@ -273,13 +273,15 @@ bool Window::keyIsHeld(KeyState keystate)
 }
 
 void Window::setCursorInputMode(int mode){
-  // Map GLFW cursor modes to SDL2
-  // GLFW_CURSOR_DISABLED = 0x00034003
-  // GLFW_CURSOR_NORMAL = 0x00034001
-  if(mode == 0x00034003) { // GLFW_CURSOR_DISABLED
+  if(mode == CURSOR_DISABLED) {
     SDL_SetRelativeMouseMode(SDL_TRUE);
-  } else {
+    SDL_ShowCursor(SDL_DISABLE);
+  } else if(mode == CURSOR_HIDDEN) {
     SDL_SetRelativeMouseMode(SDL_FALSE);
+    SDL_ShowCursor(SDL_DISABLE);
+  } else { // CURSOR_NORMAL
+    SDL_SetRelativeMouseMode(SDL_FALSE);
+    SDL_ShowCursor(SDL_ENABLE);
   }
 }
 
@@ -317,12 +319,12 @@ void Window::processSDLEvent(SDL_Event& event) {
 
     case SDL_KEYDOWN:
       if (!event.key.repeat) {
-        setKey(mapSDL2KeyToGLFW(event.key.keysym.sym), JUST_PRESSED);
+        setKey(event.key.keysym.sym, JUST_PRESSED);
       }
       break;
 
     case SDL_KEYUP:
-      setKey(mapSDL2KeyToGLFW(event.key.keysym.sym), RELEASED);
+      setKey(event.key.keysym.sym, RELEASED);
       break;
 
     case SDL_MOUSEMOTION:
@@ -335,11 +337,11 @@ void Window::processSDLEvent(SDL_Event& event) {
       break;
 
     case SDL_MOUSEBUTTONDOWN:
-      setButton(mapSDL2MouseButtonToGLFW(event.button.button), JUST_PRESSED);
+      setButton(event.button.button, JUST_PRESSED);
       break;
 
     case SDL_MOUSEBUTTONUP:
-      setButton(mapSDL2MouseButtonToGLFW(event.button.button), RELEASED);
+      setButton(event.button.button, RELEASED);
       break;
 
     case SDL_MOUSEWHEEL:
@@ -355,12 +357,12 @@ void Window::processSDLEvent(SDL_Event& event) {
         double x = event.tfinger.x * w;
         double y = event.tfinger.y * h;
         setMousePos(x, y);
-        setButton(0, JUST_PRESSED); // Left mouse button
+        setButton(SDL_BUTTON_LEFT, JUST_PRESSED);
       }
       break;
 
     case SDL_FINGERUP:
-      setButton(0, RELEASED);
+      setButton(SDL_BUTTON_LEFT, RELEASED);
       break;
 
     case SDL_FINGERMOTION:
@@ -379,54 +381,6 @@ void Window::processSDLEvent(SDL_Event& event) {
 
     default:
       break;
-  }
-}
-
-int Window::mapSDL2KeyToGLFW(int sdlKey) {
-  // Map common SDL2 keys to GLFW key codes
-  // GLFW key codes are defined in keycodes.h
-  switch (sdlKey) {
-    case SDLK_SPACE: return 32;  // GLFW_KEY_SPACE
-    case SDLK_ESCAPE: return 256; // GLFW_KEY_ESCAPE
-    case SDLK_RETURN: return 257; // GLFW_KEY_ENTER
-    case SDLK_TAB: return 258; // GLFW_KEY_TAB
-    case SDLK_BACKSPACE: return 259; // GLFW_KEY_BACKSPACE
-    case SDLK_INSERT: return 260; // GLFW_KEY_INSERT
-    case SDLK_DELETE: return 261; // GLFW_KEY_DELETE
-    case SDLK_RIGHT: return 262; // GLFW_KEY_RIGHT
-    case SDLK_LEFT: return 263; // GLFW_KEY_LEFT
-    case SDLK_DOWN: return 264; // GLFW_KEY_DOWN
-    case SDLK_UP: return 265; // GLFW_KEY_UP
-    case SDLK_PAGEUP: return 266; // GLFW_KEY_PAGE_UP
-    case SDLK_PAGEDOWN: return 267; // GLFW_KEY_PAGE_DOWN
-    case SDLK_HOME: return 268; // GLFW_KEY_HOME
-    case SDLK_END: return 269; // GLFW_KEY_END
-    case SDLK_LSHIFT: return 340; // GLFW_KEY_LEFT_SHIFT
-    case SDLK_LCTRL: return 341; // GLFW_KEY_LEFT_CONTROL
-    case SDLK_LALT: return 342; // GLFW_KEY_LEFT_ALT
-    case SDLK_RSHIFT: return 344; // GLFW_KEY_RIGHT_SHIFT
-    case SDLK_RCTRL: return 345; // GLFW_KEY_RIGHT_CONTROL
-    case SDLK_RALT: return 346; // GLFW_KEY_RIGHT_ALT
-
-    // Alphanumeric keys (A-Z map directly, 0-9 map directly)
-    default:
-      if (sdlKey >= SDLK_a && sdlKey <= SDLK_z) {
-        return 65 + (sdlKey - SDLK_a); // GLFW_KEY_A to GLFW_KEY_Z
-      }
-      if (sdlKey >= SDLK_0 && sdlKey <= SDLK_9) {
-        return 48 + (sdlKey - SDLK_0); // GLFW_KEY_0 to GLFW_KEY_9
-      }
-      return sdlKey;
-  }
-}
-
-int Window::mapSDL2MouseButtonToGLFW(int sdlButton) {
-  // Map SDL2 mouse buttons to GLFW mouse buttons
-  switch (sdlButton) {
-    case SDL_BUTTON_LEFT: return 0;   // GLFW_MOUSE_BUTTON_LEFT
-    case SDL_BUTTON_RIGHT: return 1;  // GLFW_MOUSE_BUTTON_RIGHT
-    case SDL_BUTTON_MIDDLE: return 2; // GLFW_MOUSE_BUTTON_MIDDLE
-    default: return sdlButton - 1;
   }
 }
 

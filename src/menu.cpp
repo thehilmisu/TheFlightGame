@@ -1,7 +1,7 @@
 #include "game.h"
 #include "gui.h"
 #include "window.h"
-#include "keycodes.h"
+#include <SDL.h>
 #include "timing.h"
 // #include <AL/al.h>
 
@@ -18,7 +18,7 @@ game::MainMenuActions mainMenu() {
   Window &window = Window::getInstance();
   Gui &gui = Gui::getInstance();
 
-  window.setCursorInputMode(GLFW_CURSOR_NORMAL);
+  window.setCursorInputMode(CURSOR_NORMAL);
 
   window.getCamera().pitch = 0.0f;
   window.getCamera().yaw = 0.0f;
