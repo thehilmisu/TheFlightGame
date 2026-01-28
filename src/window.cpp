@@ -1,36 +1,64 @@
 #include "window.h"
-#include "GLFW/glfw3.h"
+#include <SDL.h>
 #include <iostream>
+#include "imgui_impl_sdl2.h"
 
 Window::Window(){
 
-  if (!glfwInit()) {
-    std::cerr << "Failed to initialize GLFW" << std::endl;
+  // SDL2 initialization
+  if (SDL_Init(SDL_INIT_VIDEO | SDL_INIT_EVENTS) != 0) {
+    std::cerr << "Failed to initialize SDL2: " << SDL_GetError() << std::endl;
     return;
   }
 
-  glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
-  glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
-  glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
+  // Set OpenGL attributes
+#ifdef __ANDROID__
+  SDL_GL_SetAttribute(SDL_GL_CONTEXT_PROFILE_MASK, SDL_GL_CONTEXT_PROFILE_ES);
+  SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, 3);
+  SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, 0);
+#else
+  SDL_GL_SetAttribute(SDL_GL_CONTEXT_PROFILE_MASK, SDL_GL_CONTEXT_PROFILE_CORE);
+  SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, 3);
+  SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, 3);
+#endif
 
-  mWindow = glfwCreateWindow(mWidth, mHeight, mTitle.data(), NULL, NULL);
+  SDL_GL_SetAttribute(SDL_GL_DOUBLEBUFFER, 1);
+  SDL_GL_SetAttribute(SDL_GL_DEPTH_SIZE, 24);
+
+  // Create window
+  Uint32 windowFlags = SDL_WINDOW_OPENGL | SDL_WINDOW_SHOWN | SDL_WINDOW_RESIZABLE;
+#ifdef __ANDROID__
+  windowFlags |= SDL_WINDOW_FULLSCREEN;
+#endif
+
+  mWindow = SDL_CreateWindow(
+    mTitle.c_str(),
+    SDL_WINDOWPOS_CENTERED,
+    SDL_WINDOWPOS_CENTERED,
+    mWidth,
+    mHeight,
+    windowFlags
+  );
+
   if (!mWindow) {
-    std::cerr << "Failed to create GLFW window";
-    glfwTerminate();
+    std::cerr << "Failed to create SDL window: " << SDL_GetError() << std::endl;
+    SDL_Quit();
     return;
   }
-	glfwMakeContextCurrent(mWindow);
-	glfwSwapInterval(1);
-	glfwSetFramebufferSizeCallback(mWindow, framebuffer_size_callback);
-	glfwSetKeyCallback(mWindow, handleKeyInput);
-	glfwSetCursorPosCallback(mWindow, cursorPosCallback);
-	glfwSetMouseButtonCallback(mWindow, handleMouseInput);
-	glfwSetScrollCallback(mWindow, scrollCallback);
-  glfwMakeContextCurrent(mWindow);
 
-  if(!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress)) {
-    std::cerr << "Failed to initialize GLAD";
+  // Create OpenGL context
+  mGLContext = SDL_GL_CreateContext(mWindow);
+  if (!mGLContext) {
+    std::cerr << "Failed to create OpenGL context: " << SDL_GetError() << std::endl;
+    SDL_DestroyWindow(mWindow);
+    SDL_Quit();
+    return;
   }
+
+  // Enable vsync
+  SDL_GL_SetSwapInterval(1);
+
+  mShouldClose = false;
 
   cam = Camera(glm::vec3(0.0f, 360.0f, 0.0f));
   mousex = 0.0;
@@ -46,24 +74,13 @@ Window::Window(){
  }
 
 Window::~Window() {
-  if(mWindow) {
-    glfwDestroyWindow(mWindow);
+  if(mGLContext) {
+    SDL_GL_DeleteContext(mGLContext);
   }
-  glfwTerminate();
-}
-
-void Window::framebuffer_size_callback(GLFWwindow* window, int width, int height){
-  (void)window;
-  getInstance().onResize(width, height);
-}
-
-void Window::handleWindowResizeImpl(GLFWwindow* window, int w, int h){
-  (void)window;
-  onResize(w, h);
-}
-
-void Window::handleWindowResize(GLFWwindow* window, int w, int h){
-  getInstance().handleWindowResizeImpl(window, w, h);
+  if(mWindow) {
+    SDL_DestroyWindow(mWindow);
+  }
+  SDL_Quit();
 }
 
 void Window::onResize(int width, int height){
@@ -74,10 +91,11 @@ void Window::onResize(int width, int height){
 
   updatePerspectiveMat(currentFovy, currentZnear, currentZfar, width, height);
 }
+
 void Window::updatePerspectiveMat(float fovy, float znear, float zfar, int w, int h)
 {
 	const float aspect = float(w) / float(h);
-	persp = glm::perspective(fovy, aspect, znear, zfar);	
+	persp = glm::perspective(fovy, aspect, znear, zfar);
 
 	currentFovy = fovy;
 	currentAspect = aspect;
@@ -160,7 +178,7 @@ Camera& Window::getCamera()
 {
   return cam;
 }
-                          
+
 float Window::getFovy()
 {
 	return currentFovy;
@@ -223,7 +241,7 @@ void Window::updateKeyStates()
 			buttonstate.second = HELD;
 
 	scrollspeed = 0.0;
-	
+
 	mousedx = 0.0;
 	mousedy = 0.0;
 }
@@ -249,55 +267,172 @@ glm::mat4 Window::getPerspective()
 	return persp;
 }
 
-void Window::cursorPosCallback(GLFWwindow* window, double x, double y)
-{
-  (void)window;
-	// int cursorMode = glfwGetInputMode(mWindow, GLFW_CURSOR);
-	double dx = x - getMouseX();
-	double dy = y - getMouseY();
-	setMousePos(x, y);
-	setMouseDiff(dx, dy);
-}
-
-void Window::handleKeyInput(GLFWwindow* window, int key, int scancode, int action, int mods)
-{
-  (void)window;
-	if(action == GLFW_PRESS)
-		setKey(key, JUST_PRESSED);
-	else if(action == GLFW_RELEASE)
-		setKey(key, RELEASED);
-}
-
-void Window::handleMouseInput(GLFWwindow* window, int button, int action, int mods)
-{
-  (void)window;
-	if(action == GLFW_PRESS)
-		setButton(button, JUST_PRESSED);
-	else if(action == GLFW_RELEASE)
-		setButton(button, RELEASED);
-}
-
-void Window::scrollCallback(GLFWwindow* window,double xoff, double yoff)
-{
-  (void)window;
-	setScrollSpeed(yoff);
-}
-
-void Window::initMousePos()
-{
-	double mousex, mousey;
-	glfwGetCursorPos(mWindow, &mousex, &mousey);
-	setMousePos(mousex, mousey);
-}
-
 bool Window::keyIsHeld(KeyState keystate)
 {
 	return keystate == JUST_PRESSED || keystate == HELD;
 }
 
 void Window::setCursorInputMode(int mode){
-	glfwSetInputMode(mWindow, GLFW_CURSOR, mode);
-}                
-            
-      
-    
+  // Map GLFW cursor modes to SDL2
+  // GLFW_CURSOR_DISABLED = 0x00034003
+  // GLFW_CURSOR_NORMAL = 0x00034001
+  if(mode == 0x00034003) { // GLFW_CURSOR_DISABLED
+    SDL_SetRelativeMouseMode(SDL_TRUE);
+  } else {
+    SDL_SetRelativeMouseMode(SDL_FALSE);
+  }
+}
+
+// SDL2 method implementations
+bool Window::shouldClose() const {
+  return mShouldClose;
+}
+
+void Window::swapBuffers() {
+  SDL_GL_SwapWindow(mWindow);
+}
+
+void Window::pollEvents() {
+  SDL_Event event;
+  while (SDL_PollEvent(&event)) {
+    // Let ImGui process the event first
+    ImGui_ImplSDL2_ProcessEvent(&event);
+
+    // Then process window events
+    processSDLEvent(event);
+  }
+}
+
+void Window::processSDLEvent(SDL_Event& event) {
+  switch (event.type) {
+    case SDL_QUIT:
+      mShouldClose = true;
+      break;
+
+    case SDL_WINDOWEVENT:
+      if (event.window.event == SDL_WINDOWEVENT_RESIZED) {
+        onResize(event.window.data1, event.window.data2);
+      }
+      break;
+
+    case SDL_KEYDOWN:
+      if (!event.key.repeat) {
+        setKey(mapSDL2KeyToGLFW(event.key.keysym.sym), JUST_PRESSED);
+      }
+      break;
+
+    case SDL_KEYUP:
+      setKey(mapSDL2KeyToGLFW(event.key.keysym.sym), RELEASED);
+      break;
+
+    case SDL_MOUSEMOTION:
+      {
+        double dx = event.motion.xrel;
+        double dy = event.motion.yrel;
+        setMousePos(event.motion.x, event.motion.y);
+        setMouseDiff(dx, dy);
+      }
+      break;
+
+    case SDL_MOUSEBUTTONDOWN:
+      setButton(mapSDL2MouseButtonToGLFW(event.button.button), JUST_PRESSED);
+      break;
+
+    case SDL_MOUSEBUTTONUP:
+      setButton(mapSDL2MouseButtonToGLFW(event.button.button), RELEASED);
+      break;
+
+    case SDL_MOUSEWHEEL:
+      setScrollSpeed(event.wheel.y);
+      break;
+
+#ifdef __ANDROID__
+    case SDL_FINGERDOWN:
+      // Convert touch to mouse for Android
+      {
+        int w, h;
+        SDL_GetWindowSize(mWindow, &w, &h);
+        double x = event.tfinger.x * w;
+        double y = event.tfinger.y * h;
+        setMousePos(x, y);
+        setButton(0, JUST_PRESSED); // Left mouse button
+      }
+      break;
+
+    case SDL_FINGERUP:
+      setButton(0, RELEASED);
+      break;
+
+    case SDL_FINGERMOTION:
+      {
+        int w, h;
+        SDL_GetWindowSize(mWindow, &w, &h);
+        double x = event.tfinger.x * w;
+        double y = event.tfinger.y * h;
+        double dx = event.tfinger.dx * w;
+        double dy = event.tfinger.dy * h;
+        setMousePos(x, y);
+        setMouseDiff(dx, dy);
+      }
+      break;
+#endif
+
+    default:
+      break;
+  }
+}
+
+int Window::mapSDL2KeyToGLFW(int sdlKey) {
+  // Map common SDL2 keys to GLFW key codes
+  // GLFW key codes are defined in keycodes.h
+  switch (sdlKey) {
+    case SDLK_SPACE: return 32;  // GLFW_KEY_SPACE
+    case SDLK_ESCAPE: return 256; // GLFW_KEY_ESCAPE
+    case SDLK_RETURN: return 257; // GLFW_KEY_ENTER
+    case SDLK_TAB: return 258; // GLFW_KEY_TAB
+    case SDLK_BACKSPACE: return 259; // GLFW_KEY_BACKSPACE
+    case SDLK_INSERT: return 260; // GLFW_KEY_INSERT
+    case SDLK_DELETE: return 261; // GLFW_KEY_DELETE
+    case SDLK_RIGHT: return 262; // GLFW_KEY_RIGHT
+    case SDLK_LEFT: return 263; // GLFW_KEY_LEFT
+    case SDLK_DOWN: return 264; // GLFW_KEY_DOWN
+    case SDLK_UP: return 265; // GLFW_KEY_UP
+    case SDLK_PAGEUP: return 266; // GLFW_KEY_PAGE_UP
+    case SDLK_PAGEDOWN: return 267; // GLFW_KEY_PAGE_DOWN
+    case SDLK_HOME: return 268; // GLFW_KEY_HOME
+    case SDLK_END: return 269; // GLFW_KEY_END
+    case SDLK_LSHIFT: return 340; // GLFW_KEY_LEFT_SHIFT
+    case SDLK_LCTRL: return 341; // GLFW_KEY_LEFT_CONTROL
+    case SDLK_LALT: return 342; // GLFW_KEY_LEFT_ALT
+    case SDLK_RSHIFT: return 344; // GLFW_KEY_RIGHT_SHIFT
+    case SDLK_RCTRL: return 345; // GLFW_KEY_RIGHT_CONTROL
+    case SDLK_RALT: return 346; // GLFW_KEY_RIGHT_ALT
+
+    // Alphanumeric keys (A-Z map directly, 0-9 map directly)
+    default:
+      if (sdlKey >= SDLK_a && sdlKey <= SDLK_z) {
+        return 65 + (sdlKey - SDLK_a); // GLFW_KEY_A to GLFW_KEY_Z
+      }
+      if (sdlKey >= SDLK_0 && sdlKey <= SDLK_9) {
+        return 48 + (sdlKey - SDLK_0); // GLFW_KEY_0 to GLFW_KEY_9
+      }
+      return sdlKey;
+  }
+}
+
+int Window::mapSDL2MouseButtonToGLFW(int sdlButton) {
+  // Map SDL2 mouse buttons to GLFW mouse buttons
+  switch (sdlButton) {
+    case SDL_BUTTON_LEFT: return 0;   // GLFW_MOUSE_BUTTON_LEFT
+    case SDL_BUTTON_RIGHT: return 1;  // GLFW_MOUSE_BUTTON_RIGHT
+    case SDL_BUTTON_MIDDLE: return 2; // GLFW_MOUSE_BUTTON_MIDDLE
+    default: return sdlButton - 1;
+  }
+}
+
+void Window::initMousePos()
+{
+  int mousex, mousey;
+  SDL_GetMouseState(&mousex, &mousey);
+  setMousePos(mousex, mousey);
+}

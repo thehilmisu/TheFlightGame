@@ -1,14 +1,18 @@
-
 #ifndef WINDOW_H
 #define WINDOW_H
 
-#include <glad/glad.h>
-#include <GLFW/glfw3.h>
+#include <SDL.h>
+#ifdef __ANDROID__
+#include <GLES3/gl3.h>
+#else
+#include <SDL_opengl.h>
+#endif
+
 #include <string>
 #include "camera.h"
 #include <map>
 #include <glm/glm.hpp>
-#include <glm/gtc/matrix_transform.hpp> 
+#include <glm/gtc/matrix_transform.hpp>
 
 enum KeyState {
   RELEASED,
@@ -39,9 +43,9 @@ public:
   Window(const Window&) = delete;
   Window& operator=(const Window&) = delete;
 
-  bool shouldClose() const { return glfwWindowShouldClose(mWindow); }
-  void swapBuffers() { glfwSwapBuffers(mWindow); }
-  void pollEvents() { glfwPollEvents(); }
+  bool shouldClose() const;
+  void swapBuffers();
+  void pollEvents();
   void setIsRunning(bool value) { mIsRunning = value; }
   bool isRunnning() { return mIsRunning; }
   int getWidth() const { return mWidth; }
@@ -68,30 +72,26 @@ public:
   void clearInputState();
   KeyState getKeyState(int key);
   KeyState getButtonState(int button);
-  //Window callback functions
-  static void handleWindowResize(GLFWwindow* window, int w, int h);
-  static void cursorPosCallback(GLFWwindow* window, double x, double y);
-  static void handleKeyInput(GLFWwindow* window, int key, int scancode, int action, int mods);
-  static void handleMouseInput(GLFWwindow* window, int button, int action, int mods);
-  static void scrollCallback(GLFWwindow* window, double xoff, double yoff);
-  //Initializes mouse position
   void initMousePos();
   bool keyIsHeld(KeyState keystate);
   void setCursorInputMode(int mode);
 
-                                   
+  SDL_Window* getSDLWindow() { return mWindow; }
+  SDL_GLContext getGLContext() { return mGLContext; }
+
 private:
   Window();
   ~Window();
 
-  GLFWwindow* mWindow;
+  SDL_Window* mWindow;
+  SDL_GLContext mGLContext;
+  bool mShouldClose = false;
+
   int mWidth = 1280;
   int mHeight = 720;
   bool mIsRunning = true;
   std::string mTitle = "River Raid 3D";
-  
-  // Callbacks to events
-  static void framebuffer_size_callback(GLFWwindow* window, int width, int height);
+
   void onResize(int width, int height);
 
   // Private instance method implementations for static wrappers
@@ -104,6 +104,10 @@ private:
   void setKeyImpl(int key, KeyState keystate);
   void setButtonImpl(int button, KeyState buttonstate);
   void setScrollSpeedImpl(double yoff);
-  void handleWindowResizeImpl(GLFWwindow* window, int w, int h);
+
+  // SDL2 specific methods
+  void processSDLEvent(SDL_Event& event);
+  int mapSDL2KeyToGLFW(int sdlKey);
+  int mapSDL2MouseButtonToGLFW(int sdlButton);
 };
-#endif 
+#endif

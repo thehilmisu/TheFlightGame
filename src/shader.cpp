@@ -15,9 +15,39 @@ std::string readShaderFile(const char* path)
 
 	std::string line;
 	std::stringstream shaderFileContents;
-	//Read file line by line and concatonate them together
-	while(std::getline(shaderFile, line))
-		shaderFileContents << line << '\n';
+	bool inIfdefBlock = false;
+	bool useGLES = false;
+	bool skipLines = false;
+
+	#ifdef __ANDROID__
+	useGLES = true;
+	#endif
+
+	//Read file line by line and preprocess #ifdef directives
+	while(std::getline(shaderFile, line)) {
+		// Handle #ifdef GL_ES
+		if(line.find("#ifdef GL_ES") != std::string::npos) {
+			inIfdefBlock = true;
+			skipLines = !useGLES;
+			continue;
+		}
+		// Handle #else
+		else if(inIfdefBlock && line.find("#else") != std::string::npos) {
+			skipLines = useGLES;
+			continue;
+		}
+		// Handle #endif
+		else if(inIfdefBlock && line.find("#endif") != std::string::npos) {
+			inIfdefBlock = false;
+			skipLines = false;
+			continue;
+		}
+
+		// Only add lines that shouldn't be skipped
+		if(!skipLines) {
+			shaderFileContents << line << '\n';
+		}
+	}
 	shaderFile.close();
 	return shaderFileContents.str();
 }

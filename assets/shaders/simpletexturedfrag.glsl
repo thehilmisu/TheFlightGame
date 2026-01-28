@@ -1,4 +1,9 @@
+#ifdef GL_ES
+#version 300 es
+precision mediump float;
+#else
 #version 330 core
+#endif
 
 uniform sampler2D tex;
 

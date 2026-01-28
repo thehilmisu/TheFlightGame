@@ -5,9 +5,13 @@
 #include "imgui.h"
 #include "infworld.h"
 #include "window.h"
-#include <GLFW/glfw3.h>
-#include <glad/glad.h>
-#include <iostream>
+#include <iostream>
+
+#ifdef __ANDROID__
+  #include <GLES3/gl3.h>
+#else
+  #include <SDL_opengl.h>
+#endif
 
 int main() {
 
@@ -23,7 +27,7 @@ int main() {
   glCullFace(GL_BACK);
 
   int fbWidth, fbHeight;
-  glfwGetFramebufferSize(glfwGetCurrentContext(), &fbWidth, &fbHeight);
+  SDL_GL_GetDrawableSize(window.getSDLWindow(), &fbWidth, &fbHeight);
   glViewport(0, 0, fbWidth, fbHeight);
   window.updatePerspectiveMat(FOVY, ZNEAR, ZFAR, fbWidth, fbHeight);
 

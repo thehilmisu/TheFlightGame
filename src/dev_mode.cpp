@@ -1,6 +1,8 @@
 #include "game.h"
 #include "window.h"
 #include "gui.h"
+#include "keycodes.h"
+#include "timing.h"
 
 
 namespace game {
@@ -44,7 +46,7 @@ namespace game {
     game::updateCamera(player);
     
     while (!window.shouldClose() && window.isRunnning()) {
-        float startTime = glfwGetTime();
+        float startTime = getTime();
         window.pollEvents();
 
         gui.newFrame();
@@ -176,7 +178,7 @@ namespace game {
 
         window.swapBuffers();
         window.updateKeyStates();
-        dt = glfwGetTime() - startTime;
+        dt = getTime() - startTime;
     }
 
     return NONE;

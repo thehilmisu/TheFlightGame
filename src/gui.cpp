@@ -1,11 +1,11 @@
 #include "gui.h"
-#include "GLFW/glfw3.h"
 #include "colors.h"
 #include "game.h"
 #include "imgui.h"
-#include "imgui_impl_glfw.h"
 #include "imgui_impl_opengl3.h"
-#include <glm/glm.hpp>
+#include "imgui_impl_sdl2.h"
+#include "window.h"
+#include <glm/glm.hpp>
 
 Gui::Gui() {
 
@@ -17,13 +17,19 @@ Gui::Gui() {
 
   ImGui::StyleColorsDark();
 
-#if defined(__APPLE__)
-  const char *glsl_version = "#version 150";
-#else
-  const char *glsl_version = "#version 130";
-#endif
+  // SDL2 backend
+  Window& window = Window::getInstance();
+  #ifdef __ANDROID__
+    const char *glsl_version = "#version 300 es";
+  #else
+    #if defined(__APPLE__)
+      const char *glsl_version = "#version 150";
+    #else
+      const char *glsl_version = "#version 130";
+    #endif
+  #endif
 
-  ImGui_ImplGlfw_InitForOpenGL(glfwGetCurrentContext(), true);
+  ImGui_ImplSDL2_InitForOpenGL(window.getSDLWindow(), window.getGLContext());
   ImGui_ImplOpenGL3_Init(glsl_version);
 
   dItems.playerPosition = glm::vec3(0.0f);
@@ -36,13 +42,13 @@ Gui::Gui() {
 
 Gui::~Gui() {
   ImGui_ImplOpenGL3_Shutdown();
-  ImGui_ImplGlfw_Shutdown();
+  ImGui_ImplSDL2_Shutdown();
   ImGui::DestroyContext();
 }
 
 void Gui::newFrame() {
   ImGui_ImplOpenGL3_NewFrame();
-  ImGui_ImplGlfw_NewFrame();
+  ImGui_ImplSDL2_NewFrame();
   ImGui::NewFrame();
 }
 
