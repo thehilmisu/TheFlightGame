@@ -42,3 +42,8 @@ android/local.properties
 
 # Logs
 *.log
+
+ANDROID_BUILD.md
+SDL2_MIGRATION_COMPLETE.md
+
+thirdparty/glm
