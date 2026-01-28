@@ -152,67 +152,85 @@ game::PauseMenuActions Gui::drawPauseMenu() {
 
   return action;
 }
-
 game::MainMenuActions Gui::drawMainMenu() {
+    game::MainMenuActions action = game::NONE_SELECTED;
+    Window& window = Window::getInstance();
+    int w = window.getWidth();
+    int h = window.getHeight();
 
-  game::MainMenuActions action = game::NONE_SELECTED;
+    float pos_x = (w * 0.3f) + 100.0f;
+    float pos_y = float(h + 75.0f);
 
-  ImGui::SetNextWindowPos(ImVec2(150.0f, 500.0f), ImGuiCond_Always,
-                          ImVec2(0.5f, 0.5f));
-  ImGui::SetNextWindowSize(ImVec2(300, 400));
+    ImGui::SetNextWindowPos(ImVec2(pos_x, pos_y), ImGuiCond_Always,
+                            ImVec2(1.0f, 1.0f));
+    ImGui::SetNextWindowSize(ImVec2((w*0.30f), (h * 0.7f)));
 
-  // Use flags to remove the typical window frame for a cleaner "Game Menu" look
-  ImGuiWindowFlags window_flags =
-      ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoResize |
-      ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoBackground;
+    // Use flags to remove the typical window frame for a cleaner "Game Menu" look
+    ImGuiWindowFlags window_flags =
+        ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoResize |
+        ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoBackground;
 
-  if (ImGui::Begin("GameMainMenu", nullptr, window_flags)) {
-    ImGui::PushStyleVar(ImGuiStyleVar_FrameRounding, 5.0f); // Round the buttons
+    if (ImGui::Begin("GameMainMenu", nullptr, window_flags)) {
+      ImGui::PushStyleVar(ImGuiStyleVar_FrameRounding, 5.0f);
 
-    // Title Text
-    ImGui::SetWindowFontScale(2.0f);
-    float text_width = ImGui::CalcTextSize("River Raid 3D").x;
-    ImGui::SetCursorPosX((ImGui::GetWindowSize().x - text_width) * 0.5f);
-    ImGui::Text("River Raid 3D");
-    ImGui::SetWindowFontScale(1.0f);
+      // Title Text
+      ImGui::SetWindowFontScale(2.0f);
+      float text_width = ImGui::CalcTextSize("River Raid 3D").x;
+      ImGui::SetCursorPosX((ImGui::GetWindowSize().x - text_width) * 0.5f);
+      ImGui::Text("River Raid 3D");
+      ImGui::SetWindowFontScale(1.0f);
 
-    ImGui::Spacing();
-    ImGui::Separator();
-    ImGui::Spacing();
+      ImGui::Spacing();
+      ImGui::Separator();
+      ImGui::Spacing();
 
-    if (ImGui::Button("NEW GAME", ImVec2(-1.0f, 50.0f))) {
-      action = game::START_GAME;
+      if (ImGui::Button("NEW GAME", ImVec2(-1.0f, 50.0f))) {
+        action = game::START_GAME;
+      }
+
+      if (ImGui::Button("LOAD GAME", ImVec2(-1.0f, 50.0f))) {
+        action = game::LOAD_GAME;
+      }
+
+      if (ImGui::Button("OPTIONS", ImVec2(-1.0f, 50.0f))) {
+        // Settings logic
+      }
+
+      ImGui::Spacing();
+
+      if (ImGui::Button("EXIT", ImVec2(-1.0f, 50.0f))) {
+        action = game::EXIT_GAME;
+      }
+
+      ImGui::Spacing();
+      ImGui::PopStyleVar();
+      ImGui::End();
     }
 
-    if (ImGui::Button("LOAD GAME", ImVec2(-1.0f, 50.0f))) {
-      action = game::LOAD_GAME;
+    pos_x = (w / 2.0f) + 300.0f;
+    pos_y = float(h - 50.0f);
+    ImGui::SetNextWindowPos(ImVec2(pos_x, pos_y), ImGuiCond_Always,
+                            ImVec2(1.0f, 1.0f));
+    ImGui::SetNextWindowSize(ImVec2(300, 75));
+
+    if (ImGui::Begin("PlaneArrows", nullptr, window_flags)) {
+      ImGui::PushStyleVar(ImGuiStyleVar_FrameRounding, 5.0f);
+      ImGui::SetWindowFontScale(2.0f);
+
+      if (ImGui::Button("<<", ImVec2(150.0f, 50.0f))) {
+        action = game::CHANGE_PLANE_MINUS;
+      }
+      ImGui::SameLine();
+      if (ImGui::Button(">>", ImVec2(150.0f, 50.0f))) {
+        action = game::CHANGE_PLANE_PLUS;
+      }
+
+      ImGui::PopStyleVar();
+      ImGui::End();
     }
 
-    if (ImGui::Button("OPTIONS", ImVec2(-1.0f, 50.0f))) {
-      // Settings logic
-    }
-
-    ImGui::Spacing();
-
-    if (ImGui::Button("EXIT", ImVec2(-1.0f, 50.0f))) {
-      action = game::EXIT_GAME;
-    }
-
-    ImGui::Spacing();
-
-    if (ImGui::Button("<<", ImVec2(-1.0f, 50.0f))) {
-      action = game::CHANGE_PLANE_MINUS;
-    }
-    if (ImGui::Button(">>", ImVec2(-1.0f, 50.0f))) {
-      action = game::CHANGE_PLANE_PLUS;
-    }
-
-    ImGui::PopStyleVar();
-    ImGui::End();
-  }
-
-  return action;
-}
+    return action;
+ }
 
 void Gui::drawHUD() {
 

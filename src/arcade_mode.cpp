@@ -3,6 +3,7 @@
 #include "gui.h"
 #include <SDL.h>
 #include "timing.h"
+#include "logger.h"
 
 
 namespace game {
@@ -35,7 +36,6 @@ namespace game {
 
   	float totalTime = 0.0f;
   	float dt = 0.0f;
-    unsigned int chunksPerSecond = 0; //Number of chunks drawn per second
     unsigned int score = 0; //Player score
     bool draw_debug_gui = false;
     bool paused = false;
@@ -56,7 +56,6 @@ namespace game {
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
         //Draw terrain
         unsigned int drawCount = gfx::displayTerrain(chunktables, MAX_LOD, LOD_SCALE);
-        chunksPerSecond += drawCount;
         //Display trees
         gfx::displayDecorations(decorations, totalTime);
         //Display plane
@@ -99,7 +98,7 @@ namespace game {
   				if(justcrashed) {
   					explosions.push_back(gameobjects::Explosion(player.transform.position));
   					// SNDSRC->playid("explosion", player.transform.position);	
-  					printf("Just crashed \n");
+  					WARN("Plane Crashed");
   				}
           player.update(dt);
           updateExplosions(explosions, player.transform.position, dt);
@@ -149,14 +148,7 @@ namespace game {
           // Update Ships
           for( auto &ship : ships) ship.updateShip(dt, player, bullets);
           //Destroy any enemies that are too far away or have run out of health
-  				destroyEnemies(player, ships, explosions, 1.0f, 24.0f, score);
-
-          // Spawn Barrels
-      //     if(timers.getTimer("spawn_barrel")) spawnBarrels(player, barrels, lcg, permutations);
-      //     // Update Barrels
-      //     for( auto &barrel : barrels) barrel.updateBarrel(dt);
-      //     //Destroy any enemies that are too far away or have run out of health
-  				// destroyProps(player, barrels, explosions, 1.0f, 24.0f, score);
+  				destroyEnemies(player, ships, explosions, 1.0f, 50.0f, score);
   				
           gui.drawHUD();
         
@@ -164,6 +156,7 @@ namespace game {
         //paused
         else{
           game::PauseMenuActions action = gui.drawPauseMenu();
+          INFO("Pause Menu Action : %d", action);
           switch (action) {
             case EXIT:
               window.setIsRunning(false);

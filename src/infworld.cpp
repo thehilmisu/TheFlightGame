@@ -3,6 +3,7 @@
 #include "opengl.h"
 #include <chrono>
 #include <thread>
+#include "logger.h"
 
 namespace infworld {
 	worldseed makePermutations(int seed, unsigned int count)
@@ -32,7 +33,7 @@ namespace infworld {
 		float freq = FREQUENCY;
 		float amplitude = 1.0f;
 
-		for(int i = 0; i < permutations.size(); i++) {
+		for(size_t i = 0; i < permutations.size(); i++) {
 			float h = perlin::noise(x / freq, z / freq, permutations[i]) * amplitude;
 			height += h;
 			freq /= 2.0f;
@@ -124,7 +125,7 @@ namespace infworld {
 			return 0;
 		for(auto &th : builders)
 			th.join();
-		for(int i = 0; i < builders.size(); i++)
+		for(size_t i = 0; i < builders.size(); i++)
 			chunks.addChunk(ind + i, builtchunks.at(i));
 		unsigned int sz = builders.size();
 		builders.clear();
@@ -167,7 +168,7 @@ namespace infworld {
 		auto endtime = std::chrono::steady_clock::now();
 		std::chrono::duration<double> duration = endtime - starttime;
 		double time = duration.count();
-		printf("Time to generate world: %f\n", time);
+		TRACE("Time to generate world: %f", time);
 	
 		return chunks;
 	}

@@ -102,14 +102,12 @@ namespace game {
 		Camera& cam = Window::getInstance().getCamera();
 		for(int i = 0; i < MAX_LOD; i++){
 			chunktables[i].generateNewChunks(cam.position.x, cam.position.z, permutations);
-			// printf("New chunks generated at x:%f,z:%f \n", cam.position.x, cam.position.z);
 		}
 
 		//If we generate new terrain, we must generate new decorations as well
 		bool generated = decorations.genNewDecorations(cam.position.x, cam.position.z, permutations);
 		if(generated){
 			gfx::generateDecorationOffsets(decorations);
-			// printf("New decorations are generated as well\n");
 		}
 	}
 

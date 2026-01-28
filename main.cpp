@@ -5,7 +5,7 @@
 #include "imgui.h"
 #include "infworld.h"
 #include "window.h"
-#include <iostream>
+#include "logger.h"
 
 #ifdef __ANDROID__
   #include <GLES3/gl3.h>
@@ -34,10 +34,12 @@ int main() {
   game::loadAssets();
   game::initUniforms();
 
+
   while (!window.shouldClose() && window.isRunnning()) {
 
     game::MainMenuActions action = game::mainMenu();
-    std::cout << "action : " << action << std::endl;
+    INFO("Action selected from main menu : %d ", action);
+
     switch (action) {
     case game::OPTIONS:
       if (game::devModeGameLoop() == game::EXIT_TO_MAINMENU) {
