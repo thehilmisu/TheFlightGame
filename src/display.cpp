@@ -2,7 +2,6 @@
 #include "game.h"
 #include "glm/ext/matrix_transform.hpp"
 #include "infworld.h"
-#include "opengl.h"
 #include "window.h"
 #include <glm/gtc/matrix_transform.hpp>
 

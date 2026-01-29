@@ -6,11 +6,13 @@
 #ifndef ASSETS_H
 #define ASSETS_H
 
+#include <glad/glad.h>
 #include "gfx.h"
 #include "importfile.h"
 #include "shader.h"
 #include <unordered_map>
-#include "opengl.h"
+
+
 
 namespace assets {
 	struct TextureMetaData {

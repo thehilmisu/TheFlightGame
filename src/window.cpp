@@ -1,7 +1,9 @@
+#include <glad/glad.h>
 #include "window.h"
 #include <SDL.h>
 #include <iostream>
 #include "imgui_impl_sdl2.h"
+#include "logger.h"
 
 Window::Window(){
 
@@ -49,9 +51,13 @@ Window::Window(){
   // Create OpenGL context
   mGLContext = SDL_GL_CreateContext(mWindow);
   if (!mGLContext) {
-    std::cerr << "Failed to create OpenGL context: " << SDL_GetError() << std::endl;
+    ERROR("Failed to create OpenGL context: %s ", SDL_GetError());
     SDL_DestroyWindow(mWindow);
     SDL_Quit();
+    return;
+  }
+  if (!gladLoadGLLoader((GLADloadproc)SDL_GL_GetProcAddress)) {
+    ERROR("Failed to load glad ");
     return;
   }
 

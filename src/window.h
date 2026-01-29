@@ -5,7 +5,7 @@
 #ifdef __ANDROID__
 #include <GLES3/gl3.h>
 #else
-#include <SDL_opengl.h>
+// #include <SDL_opengl.h>
 #endif
 
 #include <string>

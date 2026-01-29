@@ -2,7 +2,6 @@
 #define SHADER_H
 
 #include <string>
-#include "opengl.h"
 #include <glm/glm.hpp>
 #include <map>
 

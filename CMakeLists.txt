@@ -15,6 +15,7 @@ endif()
 
 # Source files (common to all platforms)
 set(COMMON_SOURCES
+    src/glad.c
     main.cpp
     src/window.cpp
     src/gui.cpp
@@ -60,29 +61,27 @@ set(COMMON_INCLUDES
     ${CMAKE_SOURCE_DIR}/include/KHR
     ${CMAKE_SOURCE_DIR}/thirdparty/imgui
     ${CMAKE_SOURCE_DIR}/thirdparty/imgui/backends
+    ${CMAKE_SOURCE_DIR}/thirdparty/glm
     ${CMAKE_SOURCE_DIR}/src
 )
 
+add_definitions(-DIMGUI_IMPL_OPENGL_LOADER_GLAD)
+
 # Platform-specific configuration
 if(ANDROID)
-    # Android-specific settings
     add_library(${PROJECT_NAME} SHARED ${COMMON_SOURCES} ${IMGUI_SOURCES})
 
-    # Add SDL2 backend for ImGui
     target_sources(${PROJECT_NAME} PRIVATE
         thirdparty/imgui/backends/imgui_impl_sdl2.cpp
     )
 
-    # Find SDL2
     find_library(SDL2_LIBRARY SDL2)
-
-    # Android libraries
     find_library(log-lib log)
     find_library(android-lib android)
     find_library(EGL-lib EGL)
     find_library(GLESv3-lib GLESv3)
 
-    target_link_libraries(${PROJECT_NAME}
+    target_link_libraries(${PROJECT_NAME} PRIVATE
         ${SDL2_LIBRARY}
         ${log-lib}
         ${android-lib}
@@ -90,7 +89,6 @@ if(ANDROID)
         ${GLESv3-lib}
     )
 
-    # Define Android platform
     target_compile_definitions(${PROJECT_NAME} PRIVATE
         PLATFORM_ANDROID
         USE_SDL2
@@ -98,50 +96,49 @@ if(ANDROID)
     )
 
 else()
-    # Desktop-specific settings (SDL2 only)
+    # Desktop-specific settings
     add_executable(${PROJECT_NAME} ${COMMON_SOURCES} ${IMGUI_SOURCES})
 
-    # SDL2 backend for ImGui
     target_sources(${PROJECT_NAME} PRIVATE
         thirdparty/imgui/backends/imgui_impl_sdl2.cpp
     )
 
-    # Find SDL2 - use pkg-config on Unix systems
+    # Find SDL2
     if(APPLE OR UNIX)
         find_package(PkgConfig REQUIRED)
         pkg_check_modules(SDL2 REQUIRED sdl2)
-
         target_include_directories(${PROJECT_NAME} PRIVATE ${SDL2_INCLUDE_DIRS})
         target_link_directories(${PROJECT_NAME} PRIVATE ${SDL2_LIBRARY_DIRS})
-        target_link_libraries(${PROJECT_NAME} ${SDL2_LIBRARIES})
+        target_link_libraries(${PROJECT_NAME} PRIVATE ${SDL2_LIBRARIES})
     else()
-        # Windows - try find_package
+        # Windows MinGW/MSVC
+        
         find_package(SDL2 REQUIRED)
-        target_link_libraries(${PROJECT_NAME} SDL2::SDL2)
+        target_link_libraries(${PROJECT_NAME} PRIVATE SDL2::SDL2main SDL2::SDL2)
     endif()
 
-    message(STATUS "Using SDL2 backend")
-    message(STATUS "SDL2 include dirs: ${SDL2_INCLUDE_DIRS}")
-    message(STATUS "SDL2 libraries: ${SDL2_LIBRARIES}")
-
-    # Platform-specific libraries
+    # Platform-specific Libraries & Frameworks
     if(APPLE)
-        target_link_libraries(${PROJECT_NAME}
+        target_link_libraries(${PROJECT_NAME} PRIVATE
             "-framework OpenGL"
             "-framework Cocoa"
             "-framework IOKit"
             "-framework CoreVideo"
         )
     elseif(WIN32)
-        target_link_libraries(${PROJECT_NAME}
+        # Order matters for MinGW: Dependencies first, then System libs
+        target_link_libraries(${PROJECT_NAME} PRIVATE
             opengl32
             gdi32
             user32
             shell32
+            imm32
+            winmm
+            version
         )
     else() # Linux
         find_package(OpenGL REQUIRED)
-        target_link_libraries(${PROJECT_NAME}
+        target_link_libraries(${PROJECT_NAME} PRIVATE
             OpenGL::GL
             X11
             Xrandr
@@ -152,7 +149,8 @@ else()
     endif()
 endif()
 
-# Common include directories for all platforms
+
+# Common include directories
 target_include_directories(${PROJECT_NAME} PRIVATE ${COMMON_INCLUDES})
 
 # Compiler warnings
@@ -162,7 +160,7 @@ else()
     target_compile_options(${PROJECT_NAME} PRIVATE -Wall -Wextra)
 endif()
 
-# Copy assets to build directory (desktop only)
+# Copy assets to build directory
 if(NOT ANDROID)
     add_custom_command(TARGET ${PROJECT_NAME} POST_BUILD
         COMMAND ${CMAKE_COMMAND} -E copy_directory
@@ -173,4 +171,4 @@ endif()
 
 message(STATUS "Build type: ${CMAKE_BUILD_TYPE}")
 message(STATUS "Platform: ${PLATFORM_NAME}")
-message(STATUS "C++ Standard: ${CMAKE_CXX_STANDARD}")
+message(STATUS "SDL2 libraries: ${SDL2_LIBRARIES}")

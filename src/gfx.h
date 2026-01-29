@@ -1,7 +1,7 @@
 #ifndef GFX_H
 #define GFX_H
 
-#include "opengl.h"
+#include <glad/glad.h>
 #include <vector>
 #include <glm/glm.hpp>
 #include <string>

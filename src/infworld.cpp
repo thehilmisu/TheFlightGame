@@ -1,6 +1,5 @@
 #include "infworld.h"
 #include <random>
-#include "opengl.h"
 #include <chrono>
 #include <thread>
 #include "logger.h"

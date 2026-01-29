@@ -1,3 +1,6 @@
+#include <glad/glad.h>
+#include <SDL.h> // Include this early
+
 #include "camera.h"
 #include "game.h"
 #include "gfx.h"
@@ -7,13 +10,15 @@
 #include "window.h"
 #include "logger.h"
 
-#ifdef __ANDROID__
-  #include <GLES3/gl3.h>
-#else
-  #include <SDL_opengl.h>
-#endif
+// #ifdef __ANDROID__
+  // #include <GLES3/gl3.h>
+// #else
+// #include <glad/glad.h>
+// #include <SDL.h>
+// #endif
 
-int main() {
+
+int main(int argc, char* argv[]) {
 
   Window &window = Window::getInstance();
   Gui &gui = Gui::getInstance();

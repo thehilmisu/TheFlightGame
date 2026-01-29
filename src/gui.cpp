@@ -31,7 +31,8 @@ Gui::Gui() {
 
   ImGui_ImplSDL2_InitForOpenGL(window.getSDLWindow(), window.getGLContext());
   ImGui_ImplOpenGL3_Init(glsl_version);
-
+  // ImGui_ImplOpenGL3_Init(nullptr);
+  
   dItems.playerPosition = glm::vec3(0.0f);
   dItems.cameraPosition = glm::vec3(0.0f);
   dItems.shipCount = 0;
