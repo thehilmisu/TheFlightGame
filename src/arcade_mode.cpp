@@ -118,6 +118,7 @@ namespace game {
           gui.hudItems.score = score;
           gui.hudItems.crashed = player.crashed;
           gui.hudItems.fuel = player.fuel;
+          gui.hudItems.elapsedTime = getTime();
 
           //Shoot bullets
   				KeyState leftbutton = window.getButtonState(SDL_BUTTON_LEFT);
@@ -153,7 +154,7 @@ namespace game {
           //Destroy any enemies that are too far away or have run out of health
   				destroyEnemies(player, ships, explosions, 1.0f, 50.0f, score);
   				
-          // gui.drawHUD();
+          gui.drawHUD();
         
         }
         //paused

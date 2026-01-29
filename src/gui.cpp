@@ -238,100 +238,109 @@ void Gui::drawHUD() {
   ImGuiViewport *viewport = ImGui::GetMainViewport();
   const float padding = 10.0f;
 
-  ImGuiWindowFlags hudFlags = ImGuiWindowFlags_NoDecoration |
+  ImGuiWindowFlags hudWindowFlags = ImGuiWindowFlags_NoDecoration |
                               ImGuiWindowFlags_NoInputs |
                               // ImGuiWindowFlags_NoBackground |
                               ImGuiWindowFlags_NoSavedSettings;
 
-  // TOP-CENTER: FUEL
+  // TOP-CENTER: Elapsed Time
   {
-    ImGui::SetNextWindowPos(ImVec2(viewport->GetCenter().x - 150.0f,
+    float textWidth = ImGui::CalcTextSize("00:00").x;
+  
+    ImGui::SetNextWindowPos(ImVec2(viewport->GetCenter().x - textWidth / 2.0f,
                                    viewport->WorkPos.y + padding));
 
-    if (ImGui::Begin("HUD_TopCenter", nullptr, hudFlags)) {
-      ImGui::SetWindowFontScale(1.2f);
-
-      // fuel bar with color coding
-      float fuelPercent = hudItems.fuel / 100.0f;
-      ImVec4 fuelBarColor;
-      if (fuelPercent > 0.6f)
-        fuelBarColor = COLOR_GREEN; // Green
-      else if (fuelPercent > 0.3f)
-        fuelBarColor = COLOR_YELLOW; // Yellow
-      else
-        fuelBarColor = COLOR_RED; // Red
-
-      ImGui::Text("Fuel : ");
-      ImGui::SameLine();
-      ImGui::PushStyleColor(ImGuiCol_PlotHistogram, fuelBarColor);
-      ImGui::ProgressBar(fuelPercent, ImVec2(300, 20));
-      ImGui::PopStyleColor();
-
-      ImGui::End();
-    }
-  }
-
-  // TOP-RIGHT: Score + Ammo
-  {
-    ImGui::SetNextWindowPos(
-        ImVec2(viewport->WorkSize.x - 300, viewport->WorkPos.y + padding));
-
-    if (ImGui::Begin("HUD_TopRight", nullptr, hudFlags)) {
-      ImGui::SetWindowFontScale(1.2f);
-
-      ImGui::Text("Score: %u", hudItems.score);
-
-      ImGui::End();
-    }
-  }
-
-  // BOTTOM-RIGHT: Altitude
-  {
-    ImGui::SetNextWindowPos(
-        ImVec2(viewport->WorkSize.x - 300.0f + padding,
-               viewport->WorkPos.y + viewport->WorkSize.y - 120));
-
-    if (ImGui::Begin("HUD_BottomLeft", nullptr, hudFlags)) {
-      ImGui::SetWindowFontScale(1.2f);
-
-      ImGui::Text("Altitude: %.1f", hudItems.altitude);
-      ImGui::Text("Speed: %.1f", hudItems.speed);
-
-      // health bar with color coding
-      float healthPercent = hudItems.health / 100.0f;
-      ImVec4 healthBarColor;
-      if (healthPercent > 0.6f)
-        healthBarColor = COLOR_GREEN; // Green
-      else if (healthPercent > 0.3f)
-        healthBarColor = COLOR_YELLOW; // Yellow
-      else
-        healthBarColor = COLOR_RED; // Red
-
-      ImGui::Text("Health : ");
-      ImGui::SameLine();
-      ImGui::PushStyleColor(ImGuiCol_PlotHistogram, healthBarColor);
-      ImGui::ProgressBar(healthPercent, ImVec2(150, 20));
-      ImGui::PopStyleColor();
-      ImGui::End();
-    }
-  }
-
-  // Optional: Crash indicator
-  if (hudItems.crashed) {
-    ImGui::SetNextWindowPos(
-        ImVec2(viewport->WorkPos.x + viewport->WorkSize.x / 2 - 100,
-               viewport->WorkPos.y + viewport->WorkSize.y / 2 - 50));
-
-    ImGuiWindowFlags crashFlags = ImGuiWindowFlags_NoDecoration |
-                                  ImGuiWindowFlags_NoInputs |
-                                  ImGuiWindowFlags_NoSavedSettings;
-
-    if (ImGui::Begin("HUD_Crash", nullptr, crashFlags)) {
-      ImGui::PushStyleColor(ImGuiCol_WindowBg, ImVec4(0.5f, 0.0f, 0.0f, 0.7f));
+    if (ImGui::Begin("HUD_TopCenter", nullptr, hudWindowFlags)) {
       ImGui::SetWindowFontScale(2.0f);
-      ImGui::TextColored(ImVec4(1.0f, 0.0f, 0.0f, 1.0f), "CRASHED!");
-      ImGui::PopStyleColor();
+
+      double time = hudItems.elapsedTime;
+      int totalSeconds = static_cast<int>(time);
+
+      int minutes = totalSeconds / 60;
+      int seconds = totalSeconds % 60;
+      ImGui::Text("%02d:%02d", minutes, seconds);
+      ImGui::SameLine();
+
       ImGui::End();
     }
   }
+
+  // BOTTOM LEFT: Altitude
+  {
+    float textWidth = ImGui::CalcTextSize("Altitude : 9999").x;
+    ImGui::SetNextWindowPos(ImVec2(textWidth / 2.0f,
+                                   viewport->Size.y - 300.0f));
+
+    if (ImGui::Begin("HUD_BottomLeft", nullptr, hudWindowFlags)) {
+      ImGui::SetWindowFontScale(2.0f);
+      ImGui::Text("Altitude : %.2f", hudItems.altitude);
+      ImGui::SameLine();
+
+      ImGui::End();
+    }
+ }
+
+  // // TOP-RIGHT: Score + Ammo
+  // {
+  //   ImGui::SetNextWindowPos(
+  //       ImVec2(viewport->WorkSize.x - 300, viewport->WorkPos.y + padding));
+
+  //   if (ImGui::Begin("HUD_TopRight", nullptr, hudFlags)) {
+  //     ImGui::SetWindowFontScale(1.2f);
+
+  //     ImGui::Text("Score: %u", hudItems.score);
+
+  //     ImGui::End();
+  //   }
+  // }
+
+  // // BOTTOM-RIGHT: Altitude
+  // {
+  //   ImGui::SetNextWindowPos(
+  //       ImVec2(viewport->WorkSize.x - 300.0f + padding,
+  //              viewport->WorkPos.y + viewport->WorkSize.y - 120));
+
+  //   if (ImGui::Begin("HUD_BottomLeft", nullptr, hudFlags)) {
+  //     ImGui::SetWindowFontScale(1.2f);
+
+  //     ImGui::Text("Altitude: %.1f", hudItems.altitude);
+  //     ImGui::Text("Speed: %.1f", hudItems.speed);
+
+  //     // health bar with color coding
+  //     float healthPercent = hudItems.health / 100.0f;
+  //     ImVec4 healthBarColor;
+  //     if (healthPercent > 0.6f)
+  //       healthBarColor = COLOR_GREEN; // Green
+  //     else if (healthPercent > 0.3f)
+  //       healthBarColor = COLOR_YELLOW; // Yellow
+  //     else
+  //       healthBarColor = COLOR_RED; // Red
+
+  //     ImGui::Text("Health : ");
+  //     ImGui::SameLine();
+  //     ImGui::PushStyleColor(ImGuiCol_PlotHistogram, healthBarColor);
+  //     ImGui::ProgressBar(healthPercent, ImVec2(150, 20));
+  //     ImGui::PopStyleColor();
+  //     ImGui::End();
+  //   }
+  // }
+
+  // // Optional: Crash indicator
+  // if (hudItems.crashed) {
+  //   ImGui::SetNextWindowPos(
+  //       ImVec2(viewport->WorkPos.x + viewport->WorkSize.x / 2 - 100,
+  //              viewport->WorkPos.y + viewport->WorkSize.y / 2 - 50));
+
+  //   ImGuiWindowFlags crashFlags = ImGuiWindowFlags_NoDecoration |
+  //                                 ImGuiWindowFlags_NoInputs |
+  //                                 ImGuiWindowFlags_NoSavedSettings;
+
+  //   if (ImGui::Begin("HUD_Crash", nullptr, crashFlags)) {
+  //     ImGui::PushStyleColor(ImGuiCol_WindowBg, ImVec4(0.5f, 0.0f, 0.0f, 0.7f));
+  //     ImGui::SetWindowFontScale(2.0f);
+  //     ImGui::TextColored(ImVec4(1.0f, 0.0f, 0.0f, 1.0f), "CRASHED!");
+  //     ImGui::PopStyleColor();
+  //     ImGui::End();
+  //   }
+  // }
 }

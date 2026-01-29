@@ -21,6 +21,7 @@ struct HUDItems {
   unsigned int bulletCount;
   float altitude;
   unsigned int score;
+  float elapsedTime;
   bool crashed;
 };
 

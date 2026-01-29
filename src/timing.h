@@ -3,7 +3,7 @@
 
 #include <SDL.h>
 
-// Helper function to get time in seconds (replaces glfwGetTime)
+// get time in seconds
 inline double getTime() {
   return SDL_GetTicks() / 1000.0;
 }
