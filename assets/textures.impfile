@@ -163,3 +163,14 @@
 	"north" = "assets/textures/skybox/nightskybox_north.png";
 	"south" = "assets/textures/skybox/nightskybox_south.png";
 }
+
+# cubemap for nightskybox
+"cloudynightskybox" {
+	"target" = "cubemap";
+	"east" = "assets/textures/skybox/Cloudy_Sky-Night_01-512x512.png";
+	"west" = "assets/textures/skybox/Cloudy_Sky-Night_02-512x512.png";
+	"up" = "assets/textures/skybox/Cloudy_Sky-Night_01-512x512.png";
+	"down" = "assets/textures/skybox/Cloudy_Sky-Night_01-512x512.png";
+	"north" = "assets/textures/skybox/Cloudy_Sky-Night_02-512x512.png";
+	"south" = "assets/textures/skybox/Cloudy_Sky-Night_02-512x512.png";
+}
