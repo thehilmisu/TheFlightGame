@@ -7,7 +7,7 @@
 #include "window.h"
 #include <glm/glm.hpp>
 
-Gui::Gui() {
+Gui::Gui()  {
 
   IMGUI_CHECKVERSION();
   ImGui::CreateContext();
@@ -59,7 +59,7 @@ void Gui::render() {
 }
 
 void Gui::drawUI() {
-  ImGuiViewport *viewport = ImGui::GetMainViewport();
+  const ImGuiViewport *viewport = ImGui::GetMainViewport();
 
   float sidebarwidth = 250.0f;
   ImGui::SetNextWindowPos(viewport->WorkPos);
