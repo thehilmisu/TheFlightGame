@@ -152,3 +152,14 @@
 	"north" = "assets/textures/skybox/skybox_north.png";
 	"south" = "assets/textures/skybox/skybox_south.png";
 }
+
+# cubemap for nightskybox
+"nightskybox" {
+	"target" = "cubemap";
+	"east" = "assets/textures/skybox/nightskybox_east.png";
+	"west" = "assets/textures/skybox/nightskybox_west.png";
+	"up" = "assets/textures/skybox/nightskybox_up.png";
+	"down" = "assets/textures/skybox/nightskybox_down.png";
+	"north" = "assets/textures/skybox/nightskybox_north.png";
+	"south" = "assets/textures/skybox/nightskybox_south.png";
+}

@@ -25,8 +25,8 @@ void displaySkybox() {
   // Draw skybox - render at max depth so it appears behind everything
   glDepthFunc(GL_LEQUAL);
   glCullFace(GL_FRONT);
-  TEXTURES->bindTexture("skybox", GL_TEXTURE0);
-  ShaderProgram &skyboxShader = SHADERS->getShader("skybox");
+  TEXTURES->bindTexture("nightskybox", GL_TEXTURE0);
+  ShaderProgram &skyboxShader = SHADERS->getShader("nightskybox");
   skyboxShader.use();
 
   // Uniforms

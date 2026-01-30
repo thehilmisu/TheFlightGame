@@ -272,7 +272,7 @@ void Gui::drawHUD() {
                                    viewport->Size.y - 300.0f));
 
     if (ImGui::Begin("HUD_BottomLeft", nullptr, hudWindowFlags)) {
-      ImGui::SetWindowFontScale(2.0f);
+      ImGui::SetWindowFontScale(1.2f);
       ImGui::Text("Altitude : %.2f", hudItems.altitude);
       ImGui::SameLine();
 

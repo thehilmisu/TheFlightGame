@@ -21,7 +21,7 @@ uniform vec3 camerapos;
 
 uniform sampler2D terraintexture;
 
-const float FOG_DIST = 10000.0;
+const float FOG_DIST = 1000.0;
 const float WATER_FOG_DIST = 128.0;
 
 uniform vec2 center;
@@ -70,8 +70,8 @@ vec4 getcolor()
 	vec4 color2 = texture(terraintexture, tc + uv2);
 
  	// Darken grass specifically (when sampling from 0.25 region)
-  	if (uv1.x == 0.25) color1.rgb *= 0.7;
-  	if (uv2.x == 0.25) color2.rgb *= 0.7;
+  	if (uv1.x == 0.25) color1.rgb *= 0.5;
+  	if (uv2.x == 0.25) color2.rgb *= 0.5;
 
 	color1.a = 0.0;
 	color2.a = 0.0;
@@ -94,7 +94,7 @@ void main()
 	//color = vec4(testcolor, 1.0) * lighting;
 	color.a = 1.0;
 	//fog
-	vec4 fogeffect = mix(color, vec4(0.5, 0.8, 1.0, 1.0), min(max(0.0, d - viewdist) / FOG_DIST, 1.0));
+	vec4 fogeffect = mix(color, vec4(0.1, 0.1, 0.1, 1.0), min(max(0.0, d - viewdist) / FOG_DIST, 1.0));
 	vec4 watereffect = mix(color, vec4(0.1, 0.7, 0.9, 1.0), min(max(0.0, d) / WATER_FOG_DIST, 1.0));
 	color = fogeffect * float(camerapos.y >= 0.0) + watereffect * float(camerapos.y < 0.0);
 }

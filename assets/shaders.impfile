@@ -18,6 +18,11 @@
 	"fragment" = "assets/shaders/skyboxfrag.glsl";
 }
 
+"nightskybox" {
+	"vertex" = "assets/shaders/skyboxvert.glsl";
+	"fragment" = "assets/shaders/nightskyboxfrag.glsl";
+}
+
 "tree" {
 	"vertex" = "assets/shaders/tree-vert.glsl";
 	"fragment" = "assets/shaders/textured-frag.glsl";
