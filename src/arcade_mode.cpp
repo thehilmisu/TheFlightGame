@@ -13,7 +13,7 @@ namespace game {
 
         //Initially generate world
         std::random_device rd;
-        int randSeed = rd();
+        unsigned int randSeed = rd();
         infworld::worldseed permutations = infworld::makePermutations(randSeed, 9);
         infworld::ChunkTable chunktables[MAX_LOD];
         game::generateChunks(permutations, chunktables, RANGE);
@@ -74,6 +74,8 @@ namespace game {
             gfx::displayWater(totalTime);
             //Draw skybox
             gfx::displaySkybox(skybox);
+            // Fog
+            gfx::displayFog();
 
             if (!paused) {
                 timers.update(dt);

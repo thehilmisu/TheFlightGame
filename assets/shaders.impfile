@@ -72,3 +72,8 @@
 	"vertex" = "assets/shaders/trailvert.glsl";
 	"fragment" = "assets/shaders/textured-simple-frag.glsl";
 }
+
+"fog" {
+	"vertex" = "assets/shaders/fogvert.glsl";
+	"fragment" = "assets/shaders/fogfrag.glsl";
+}

@@ -10,6 +10,7 @@
 Gui::Gui()  {
 
   IMGUI_CHECKVERSION();
+
   ImGui::CreateContext();
   ImGuiIO &io = ImGui::GetIO();
   (void)io;

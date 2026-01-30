@@ -348,4 +348,5 @@ namespace gfx {
 	);
 	void displayCrosshair(const game::Transform &playertransform);
 	void displayHUDBackGrounds();
+	void displayFog();
 }
