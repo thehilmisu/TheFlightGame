@@ -10,7 +10,7 @@ namespace infworld {
 		worldseed permutations(count);
 		std::minstd_rand lcg(seed);
 
-		for(int i = 0; i < count; i++)
+		for(size_t i = 0; i < count; i++)
 			rng::createPermutation(permutations[i], lcg());
 
 		return permutations;

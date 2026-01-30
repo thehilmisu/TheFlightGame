@@ -177,7 +177,7 @@ namespace infworld {
 		}
 
 		//Determine which chunks are out of range
-		for(int i = 0; i < chunkcount; i++) {
+		for(size_t i = 0; i < chunkcount; i++) {
 			int 
 				chunkx = chunkpos.at(i).x,
 				chunkz = chunkpos.at(i).z;	
@@ -195,7 +195,7 @@ namespace infworld {
 		const geo::Frustum &viewfrustum
 	) {
 		unsigned int drawCount = 0;
-		for(int i = 0; i < count(); i++) {
+		for(size_t i = 0; i < count(); i++) {
 			infworld::ChunkPos p = getPos(i);
 
 			float x = float(p.z) * chunkscale * 2.0f * float(PREC) / float(PREC + 1);
@@ -227,7 +227,7 @@ namespace infworld {
 		const geo::Frustum &viewfrustum
 	) {
 		unsigned int drawCount = 0;
-		for(int i = 0; i < count(); i++) {
+		for(size_t i = 0; i < count(); i++) {
 			infworld::ChunkPos p = getPos(i);
 
 			if(std::abs(p.x - centerx) < minrange && 

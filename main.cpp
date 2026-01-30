@@ -1,5 +1,9 @@
+#ifdef __ANDROID__
+  #include <GLES2/gl3.h>
+#else
 #include <glad/glad.h>
-#include <SDL.h> // Include this early
+#include <SDL.h>
+#endif
 
 #include "camera.h"
 #include "game.h"
@@ -9,14 +13,6 @@
 #include "infworld.h"
 #include "window.h"
 #include "logger.h"
-
-// #ifdef __ANDROID__
-  // #include <GLES3/gl3.h>
-// #else
-// #include <glad/glad.h>
-// #include <SDL.h>
-// #endif
-
 
 int main(int argc, char* argv[]) {
 
@@ -38,7 +34,6 @@ int main(int argc, char* argv[]) {
 
   game::loadAssets();
   game::initUniforms();
-
 
   while (!window.shouldClose() && window.isRunnning()) {
 

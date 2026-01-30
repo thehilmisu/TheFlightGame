@@ -112,7 +112,7 @@ else()
         target_link_libraries(${PROJECT_NAME} PRIVATE ${SDL2_LIBRARIES})
     else()
         # Windows MinGW/MSVC
-        
+        set(SDL2_DIR "${CMAKE_SOURCE_DIR}/thirdparty/SDL2/SDL2-2.32.10/x86_64-w64-mingw32/lib/cmake/SDL2")
         find_package(SDL2 REQUIRED)
         target_link_libraries(${PROJECT_NAME} PRIVATE SDL2::SDL2main SDL2::SDL2)
     endif()

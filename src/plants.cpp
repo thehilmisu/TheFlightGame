@@ -123,10 +123,10 @@ namespace plants {
 	) {
 		std::string result = axiom;
 
-		for(int i = 0; i < iterations; i++) {
+		for(size_t i = 0; i < iterations; i++) {
 			std::string currentIteration = result;
 			result.clear();
-			for(int j = 0; j < currentIteration.size(); j++) {
+			for(size_t j = 0; j < currentIteration.size(); j++) {
 				if(currentIteration.at(j) == 'F')
 					result.append(rule);
 				else
@@ -159,7 +159,7 @@ namespace plants {
 		std::stack<BranchProperties> branchStack;
 
 		BranchProperties branch;
-		for(int i = 0; i < str.size(); i++) {
+		for(size_t i = 0; i < str.size(); i++) {
 			char ch = str.at(i);
 			mesh::Model treepart;
 

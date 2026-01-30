@@ -27,12 +27,12 @@ namespace game {
 		lcg.seed(randSeed);
 		
     //Gameobjects
-		gameobjects::Player player(glm::vec3(0.0f, HEIGHT * SCALE * 0.5f, 0.0f));
-		std::vector<gameobjects::Bullet> bullets;
-		std::vector<gameobjects::Enemy> balloons;
-		std::vector<gameobjects::Enemy> ships;
-		std::vector<gameobjects::Explosion> explosions;
-		std::vector<gameobjects::Props> barrels;
+    gameobjects::Player player(glm::vec3(0.0f, HEIGHT * SCALE * 0.5f, 0.0f));
+    std::vector<gameobjects::Bullet> bullets;
+    std::vector<gameobjects::Enemy> balloons;
+    std::vector<gameobjects::Enemy> ships;
+    std::vector<gameobjects::Explosion> explosions;
+    std::vector<gameobjects::Props> barrels;
 
   	float totalTime = 0.0f;
   	float dt = 0.0f;

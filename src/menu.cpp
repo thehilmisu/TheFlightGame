@@ -46,7 +46,7 @@ game::MainMenuActions mainMenu() {
 
     game::MainMenuActions selected = gui.drawMainMenu();
 
-    player.transform.rotation.y += 2.0f * dt;
+    player.transform.rotation.y += 0.5f * dt;
 
     gui.render();
 

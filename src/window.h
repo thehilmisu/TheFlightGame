@@ -101,7 +101,6 @@ private:
 
   void onResize(int width, int height);
 
-  // Private instance method implementations for static wrappers
   double getMouseXImpl();
   double getMouseYImpl();
   double getMouseDXImpl();
@@ -112,7 +111,6 @@ private:
   void setButtonImpl(int button, KeyState buttonstate);
   void setScrollSpeedImpl(double yoff);
 
-  // SDL2 specific methods
   void processSDLEvent(SDL_Event& event);
 };
 #endif

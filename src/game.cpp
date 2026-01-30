@@ -87,7 +87,7 @@ namespace game {
 		unsigned int range
 	) {
 		float sz = CHUNK_SZ;
-		for(int i = 0; i < MAX_LOD; i++) {
+		for(size_t i = 0; i < MAX_LOD; i++) {
 			chunktables[i] = 
 				infworld::buildWorld(range, permutations, HEIGHT, sz);
 			sz *= LOD_SCALE;
@@ -100,7 +100,7 @@ namespace game {
 		infworld::DecorationTable &decorations
 	) {
 		Camera& cam = Window::getInstance().getCamera();
-		for(int i = 0; i < MAX_LOD; i++){
+		for(size_t i = 0; i < MAX_LOD; i++){
 			chunktables[i].generateNewChunks(cam.position.x, cam.position.z, permutations);
 		}
 
