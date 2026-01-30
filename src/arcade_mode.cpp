@@ -46,6 +46,8 @@ namespace game {
     // timers.addTimer("spawn_barrel", 0.0f, 70.0f);
 
     game::updateCamera(player);
+
+  	std::string skybox = "skybox";
     
     while (!window.shouldClose() && window.isRunnning()) {
         float startTime = getTime();
@@ -72,7 +74,7 @@ namespace game {
         //Display water
         gfx::displayWater(totalTime);
         //Draw skybox
-        gfx::displaySkybox();
+        gfx::displaySkybox(skybox);
 
         if (!paused) {
 
@@ -179,6 +181,11 @@ namespace game {
         
         if (window.getKeyState(SDLK_TAB) == JUST_PRESSED) draw_debug_gui = !draw_debug_gui;
         if (window.getKeyState(SDLK_ESCAPE) == JUST_PRESSED) paused = !paused;
+    	// Development Purposes
+    	if (window.getKeyState(SDLK_p) == JUST_PRESSED) {
+    		if (skybox == "skybox") skybox = "nightskybox";
+    		else skybox = "skybox";
+    	}
 
         if (draw_debug_gui){
           gui.drawUI();

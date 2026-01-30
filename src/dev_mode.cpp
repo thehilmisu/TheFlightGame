@@ -69,7 +69,7 @@ namespace game {
         //Display water
         gfx::displayWater(totalTime);
         //Draw skybox
-        gfx::displaySkybox();
+        gfx::displaySkybox("skybox");
 
         if (!paused) {
 

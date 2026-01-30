@@ -28,6 +28,7 @@ game::MainMenuActions mainMenu() {
 
   float dt = 0.0f;
   float totalTime = 0.0f;
+  std::string skybox = "skybox";
   while (!window.shouldClose()) {
     float start = getTime();
 
@@ -42,7 +43,7 @@ game::MainMenuActions mainMenu() {
     gfx::displayPlayerPlane(totalTime, player.transform, player.getPlayerObj());
 
     // Display skybox
-    gfx::displaySkybox();
+    gfx::displaySkybox(skybox);
 
     game::MainMenuActions selected = gui.drawMainMenu();
 
@@ -69,12 +70,14 @@ game::MainMenuActions mainMenu() {
       int c = player.getCurrentIndex();
       c = (c - 1) % 2;
       player.setPlayerObj(c);
+      skybox = "skybox";
       break;
     }
     case CHANGE_PLANE_PLUS: {
       int c = player.getCurrentIndex();
       c = (c + 1) % 2;
       player.setPlayerObj(c);
+      skybox = "nightskybox";
       break;
     }
     case EXIT_GAME: {

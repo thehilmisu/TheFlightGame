@@ -18,15 +18,15 @@ constexpr float ATTITUDE_SIZE = 120.0f;
 namespace gobjs = gameobjects;
 
 namespace gfx {
-void displaySkybox() {
+void displaySkybox(const std::string &skybox) {
   Window &window = Window::getInstance();
   Camera &cam = window.getCamera();
 
   // Draw skybox - render at max depth so it appears behind everything
   glDepthFunc(GL_LEQUAL);
   glCullFace(GL_FRONT);
-  TEXTURES->bindTexture("nightskybox", GL_TEXTURE0);
-  ShaderProgram &skyboxShader = SHADERS->getShader("nightskybox");
+  TEXTURES->bindTexture(skybox, GL_TEXTURE0);
+  ShaderProgram &skyboxShader = SHADERS->getShader(skybox);
   skyboxShader.use();
 
   // Uniforms

@@ -1,4 +1,4 @@
-#pragma once
+ #pragma once
 #include <iostream>
 #include "infworld.h"
 
@@ -324,7 +324,7 @@ namespace game {
 }
 
 namespace gfx {
-	void displaySkybox();
+	void displaySkybox(const std::string &skybox);
 	void displayWater(float totalTime);
 	void displayDecorations(infworld::DecorationTable &decorations, float totalTime);
 	unsigned int displayTerrain(infworld::ChunkTable *chunktables, int maxlod, float lodscale);	
