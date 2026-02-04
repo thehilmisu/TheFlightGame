@@ -28,7 +28,7 @@ game::MainMenuActions mainMenu() {
 
   float dt = 0.0f;
   float totalTime = 0.0f;
-  std::string skybox = "skybox";
+  std::string skybox = "nightskybox";
   while (!window.shouldClose()) {
     float start = getTime();
 
@@ -41,6 +41,7 @@ game::MainMenuActions mainMenu() {
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
     gfx::displayPlayerPlane(totalTime, player.transform, player.getPlayerObj());
+    gfx::displayDanger();
 
     // Display skybox
     gfx::displaySkybox(skybox);

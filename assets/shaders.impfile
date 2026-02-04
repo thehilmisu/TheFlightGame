@@ -68,6 +68,11 @@
 	"fragment" = "assets/shaders/textured-simple-frag.glsl";
 }
 
+"dangeroverlay" {
+	"vertex" = "assets/shaders/vert2d.glsl";
+	"fragment" = "assets/shaders/dangerfrag.glsl";
+}
+
 "trail" {
 	"vertex" = "assets/shaders/trailvert.glsl";
 	"fragment" = "assets/shaders/textured-simple-frag.glsl";
