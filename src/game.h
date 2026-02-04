@@ -341,7 +341,7 @@ namespace gfx {
 	void displayMiniMapBackground(float totalTime);
 	void displayAttitude(float pitch, float roll);
 	void displaySpeed(float speed);
-	void displayDanger();
+	void displayDanger(float totalTime);
 	void displayFuel(float fuel, float totalTime);
 	void displayEnemyMarkers(
 		const std::vector<gameobjects::Enemy> &enemies,

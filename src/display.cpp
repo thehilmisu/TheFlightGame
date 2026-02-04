@@ -4,6 +4,7 @@
 #include "infworld.h"
 #include "window.h"
 #include <glm/gtc/matrix_transform.hpp>
+#include <glm/gtc/quaternion.hpp>
 
 // Just debug colors for different terrain LOD levels
 constexpr glm::vec3 TERRAIN_LOD_COLORS[] = {
@@ -556,7 +557,7 @@ namespace gfx {
         glEnable(GL_DEPTH_TEST);
     }
     
-    void displayDanger() {
+    void displayDanger(float totalTime) {
         Window &window = Window::getInstance();
 
         int w, h;
@@ -571,18 +572,15 @@ namespace gfx {
 
         VAOS->bind("quad");
         SHADERS->use("dangeroverlay");
-        ShaderProgram &attitudeshader = SHADERS->getShader("dangeroverlay");
-        // attitudeshader.uniformVec2("pos2d", glm::vec2);
-        glm::mat4 transform(1.0f);
+        ShaderProgram &dangershader = SHADERS->getShader("dangeroverlay");
 
-        transform = glm::translate(transform, glm::vec3(130.0f, 130.0f, 0.0f));
-        transform = glm::translate(
-            transform, glm::vec3(-float(w) / 2.0f, -float(h) / 2.0f, 0.0f));
-        transform =
-                glm::scale(transform, glm::vec3(ATTITUDE_SIZE, ATTITUDE_SIZE, 0.0f));
-        transform =
-                glm::rotate(transform, glm::radians(90.0f), glm::vec3(1.0f, 0.0f, 0.0f));
-        attitudeshader.uniformMat4x4("transform", transform);
+        dangershader.uniformMat4x4("screen", screenMat);
+        dangershader.uniformFloat("time", totalTime);
+        glm::mat4 transform = glm::scale(
+            glm::mat4(1.0f), glm::vec3(float(w) / 2.0f, float(h) / 2.0f, 1.0f));
+        transform = glm::rotate(transform, glm::radians(90.0f), glm::vec3(1.0f, 0.0f, 0.0f));
+        dangershader.uniformMat4x4("transform", transform);
+
         VAOS->draw();
 
         glDisable(GL_BLEND);

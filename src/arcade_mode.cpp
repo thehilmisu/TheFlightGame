@@ -106,6 +106,9 @@ namespace game {
                     WARN("Plane Crashed");
                 }
                 player.update(dt);
+                if (player.fuel <= 20.0f) {
+                    gfx::displayDanger(totalTime);
+                }
                 updateExplosions(explosions, player.transform.position, dt);
                 gui.dItems.playerPosition = player.transform.position;
                 gui.dItems.cameraPosition = window.getCamera().position;
