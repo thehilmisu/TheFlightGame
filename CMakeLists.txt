@@ -149,6 +149,27 @@ else()
     endif()
 endif()
 
+# Build Asset Packer Tool
+add_subdirectory(tools/assetpacker)
+
+# Custom command to run asset packer and generate assets.bin
+add_custom_command(
+        OUTPUT ${CMAKE_BINARY_DIR}/assets.bin
+        COMMAND AssetPacker ${CMAKE_SOURCE_DIR}/assets ${CMAKE_BINARY_DIR}/assets.bin
+        DEPENDS AssetPacker
+        WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}
+        COMMENT "Packing assets into assets.bin..."
+        VERBATIM
+)
+
+# Create a target that depends on assets.bin
+add_custom_target(PackedAssets ALL DEPENDS ${CMAKE_BINARY_DIR}/assets.bin)
+
+# Make the game depend on packed assets
+add_dependencies(${PROJECT_NAME} PackedAssets)
+
+# Common include directories
+target_include_directories(${PROJECT_NAME} PRIVATE ${COMMON_INCLUDES})
 
 # Common include directories
 target_include_directories(${PROJECT_NAME} PRIVATE ${COMMON_INCLUDES})
@@ -160,14 +181,6 @@ else()
     target_compile_options(${PROJECT_NAME} PRIVATE -Wall -Wextra)
 endif()
 
-# Copy assets to build directory
-if(NOT ANDROID)
-    add_custom_command(TARGET ${PROJECT_NAME} POST_BUILD
-        COMMAND ${CMAKE_COMMAND} -E copy_directory
-        ${CMAKE_SOURCE_DIR}/assets $<TARGET_FILE_DIR:${PROJECT_NAME}>/assets
-        COMMENT "Copying assets to build directory"
-    )
-endif()
 
 message(STATUS "Build type: ${CMAKE_BUILD_TYPE}")
 message(STATUS "Platform: ${PLATFORM_NAME}")

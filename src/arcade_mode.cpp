@@ -14,7 +14,7 @@ namespace game {
         //Initially generate world
         std::random_device rd;
         unsigned int randSeed = rd();
-        infworld::worldseed permutations = infworld::makePermutations(randSeed, 9);
+        infworld::worldseed permutations = infworld::makePermutations(randSeed, 8);
         infworld::ChunkTable chunktables[MAX_LOD];
         game::generateChunks(permutations, chunktables, RANGE);
         infworld::DecorationTable decorations = infworld::DecorationTable(14, CHUNK_SZ);
@@ -108,6 +108,7 @@ namespace game {
                 player.update(dt);
                 if (player.fuel <= 20.0f) {
                     gfx::displayDanger(totalTime);
+                    // TODO: also need to add a sound to indicate the danger.
                 }
                 updateExplosions(explosions, player.transform.position, dt);
                 gui.dItems.playerPosition = player.transform.position;
@@ -168,8 +169,7 @@ namespace game {
             }
             //paused
             else {
-                game::PauseMenuActions action = gui.drawPauseMenu();
-                switch (action) {
+                switch (game::PauseMenuActions action = gui.drawPauseMenu()) {
                     case EXIT:
                         window.setIsRunning(false);
                         break;
