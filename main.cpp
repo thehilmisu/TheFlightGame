@@ -15,6 +15,8 @@
 #include "logger.h"
 
 int main(int argc, char* argv[]) {
+  (void)argc;
+  (void)argv;
 
   Window &window = Window::getInstance();
   Gui &gui = Gui::getInstance();

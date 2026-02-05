@@ -7,4 +7,4 @@ class assetpacker {
 };
 
 
-#endif ASSETPACKER_H
+#endif //ASSETPACKER_H

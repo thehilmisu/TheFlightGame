@@ -91,8 +91,8 @@ void checkForCollision(gameobjects::Player &player,
 
 void checkForCollision(std::vector<gameobjects::Props> &props,
                        float hitdist) {
-  for (int i = 0; i < props.size(); i++) {
-    for (int j = i + 1; j < props.size(); j++) {
+  for (size_t i = 0; i < props.size(); i++) {
+    for (size_t j = i + 1; j < props.size(); j++) {
       glm::vec3 p1 = props.at(i).transform.position,
                 p2 = props.at(j).transform.position;
       float dist = glm::length(p1 - p2);

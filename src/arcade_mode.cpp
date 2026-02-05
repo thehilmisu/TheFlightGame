@@ -55,7 +55,7 @@ namespace game {
 
             glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
             //Draw terrain
-            unsigned int drawCount = gfx::displayTerrain(chunktables, MAX_LOD, LOD_SCALE);
+            gfx::displayTerrain(chunktables, MAX_LOD, LOD_SCALE);
             //Display trees
             gfx::displayDecorations(decorations, totalTime);
             //Display plane
