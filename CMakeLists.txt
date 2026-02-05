@@ -44,6 +44,7 @@ set(COMMON_SOURCES
     src/display.cpp
     src/player.cpp
     src/update.cpp
+    src/assetloader.cpp
 )
 
 # ImGui sources
@@ -63,6 +64,7 @@ set(COMMON_INCLUDES
     ${CMAKE_SOURCE_DIR}/thirdparty/imgui/backends
     ${CMAKE_SOURCE_DIR}/thirdparty/glm
     ${CMAKE_SOURCE_DIR}/src
+    ${CMAKE_SOURCE_DIR}/tools/assetpacker
 )
 
 add_definitions(-DIMGUI_IMPL_OPENGL_LOADER_GLAD)

@@ -13,6 +13,7 @@
 #include "infworld.h"
 #include "window.h"
 #include "logger.h"
+#include "assetloader.h"
 
 int main(int argc, char* argv[]) {
   (void)argc;
@@ -34,34 +35,40 @@ int main(int argc, char* argv[]) {
   glViewport(0, 0, fbWidth, fbHeight);
   window.updatePerspectiveMat(FOVY, ZNEAR, ZFAR, fbWidth, fbHeight);
 
-  game::loadAssets();
-  game::initUniforms();
+  //game::loadAssets();
+  //game::initUniforms();
 
-  while (!window.shouldClose() && window.isRunnning()) {
+  AssetLoader &assetLoader = AssetLoader::getInstance();
+  assetLoader.loadAssets("assets.bin");
+  auto shadercode = assetLoader.getAssetData("textured-frag.glsl");
+  std::string shaderStr(shadercode.begin(), shadercode.end());
+  std::cout << "Loaded shader code " <<  shaderStr.c_str() << std::endl;
 
-    game::MainMenuActions action = game::mainMenu();
-    INFO("Action selected from main menu : %d ", action);
+  // while (!window.shouldClose() && window.isRunnning()) {
 
-    switch (action) {
-    case game::OPTIONS:
-      if (game::devModeGameLoop() == game::EXIT_TO_MAINMENU) {
-        gui.render();
-        action = game::mainMenu();
-      }
-      break;
-    case game::START_GAME:
-      if (game::arcadeModeGameLoop() == game::EXIT_TO_MAINMENU) {
-          gui.render();
-          action = game::mainMenu();
-        }
-      break;
-    case game::EXIT_GAME:
-      game::exitGame();
-      break;
-    default:
-      break;
-    }
-  }
+  //   game::MainMenuActions action = game::mainMenu();
+  //   INFO("Action selected from main menu : %d ", action);
+
+  //   switch (action) {
+  //   case game::OPTIONS:
+  //     if (game::devModeGameLoop() == game::EXIT_TO_MAINMENU) {
+  //       gui.render();
+  //       action = game::mainMenu();
+  //     }
+  //     break;
+  //   case game::START_GAME:
+  //     if (game::arcadeModeGameLoop() == game::EXIT_TO_MAINMENU) {
+  //         gui.render();
+  //         action = game::mainMenu();
+  //       }
+  //     break;
+  //   case game::EXIT_GAME:
+  //     game::exitGame();
+  //     break;
+  //   default:
+  //     break;
+  //   }
+  // }
 
   return 0;
 }
