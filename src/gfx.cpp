@@ -5,7 +5,8 @@
 #include <math.h>
 #include <sstream>
 #include <stb_image/stb_image.h>
-#include <unordered_map>
+#include <unordered_map>
+
 #include "logger.h"
 
 namespace mesh {
@@ -59,7 +60,7 @@ Model createConeModel1(unsigned int prec) {
   cone.normals.push_back(glm::vec3(0.0f, 1.0f, 0.0f));
   cone.texturecoords.push_back(glm::vec2(0.5f, 1.0f));
 
-  for (int i = 0; i < prec; i++) {
+  for (size_t i = 0; i < prec; i++) {
     // Calculate vertex
     float angle = 2.0f * M_PI / float(prec) * float(i);
     glm::vec3 vert = glm::vec3(cosf(angle), 0.0f, sinf(angle));
@@ -101,7 +102,7 @@ Model createConeModel2(unsigned int prec) {
   cone.normals.push_back(glm::vec3(0.0f, 1.0f, 0.0f));
   cone.texturecoords.push_back(glm::vec2(0.5f, 0.5f));
 
-  for (int i = 0; i < prec; i++) {
+  for (size_t i = 0; i < prec; i++) {
     // Calculate vertex
     float angle = 2.0f * M_PI / float(prec) * float(i);
     glm::vec3 vert = glm::vec3(cosf(angle), 0.0f, sinf(angle));
@@ -134,7 +135,7 @@ Model createConeModel2(unsigned int prec) {
 Model createFrustumModel(unsigned int prec, float radius1, float radius2) {
   Model frustum;
 
-  for (int i = 0; i < prec; i++) {
+  for (size_t i = 0; i < prec; i++) {
     float angle = float(i) / float(prec) * 2.0f * M_PI;
     // Calculate vertex
     glm::vec3 vert = glm::vec3(cosf(angle), 0.0f, sinf(angle)) * radius1;
@@ -158,7 +159,7 @@ Model createFrustumModel(unsigned int prec, float radius1, float radius2) {
     frustum.normals.push_back(norm);
   }
 
-  for (int i = 0; i < prec; i++) {
+  for (size_t i = 0; i < prec; i++) {
     float angle = float(i) / float(prec) * 2.0f * M_PI;
     // Calculate vertex
     glm::vec3 vert = glm::vec3(cosf(angle), 0.0f, sinf(angle)) * radius2 +
@@ -184,7 +185,7 @@ Model createFrustumModel(unsigned int prec, float radius1, float radius2) {
   }
 
   // Calculate indices
-  for (int i = 0; i < prec; i++) {
+  for (size_t i = 0; i < prec; i++) {
     frustum.indices.push_back(i);
     frustum.indices.push_back((i + 1) % prec);
     frustum.indices.push_back(i + prec);
@@ -200,8 +201,8 @@ Model createFrustumModel(unsigned int prec, float radius1, float radius2) {
 Model createPlaneModel(unsigned int subdivision) {
   Model plane;
 
-  for (int i = 0; i <= subdivision + 2; i++) {
-    for (int j = 0; j <= subdivision + 2; j++) {
+  for (size_t i = 0; i <= subdivision + 2; i++) {
+    for (size_t j = 0; j <= subdivision + 2; j++) {
       float x = float(j) / float(subdivision + 2) * 2.0f - 1.0f;
       float y = float(i) / float(subdivision + 2) * 2.0f - 1.0f;
       float tcx = float(j) / float(subdivision + 2);
@@ -212,8 +213,8 @@ Model createPlaneModel(unsigned int subdivision) {
     }
   }
 
-  for (int i = 0; i <= subdivision + 1; i++) {
-    for (int j = 0; j <= subdivision + 1; j++) {
+  for (size_t i = 0; i <= subdivision + 1; i++) {
+    for (size_t j = 0; j <= subdivision + 1; j++) {
       plane.indices.push_back(i * (subdivision + 3) + j);
       plane.indices.push_back(i * (subdivision + 3) + j + 1);
       plane.indices.push_back((i + 1) * (subdivision + 3) + j);
@@ -287,7 +288,7 @@ Model loadObjModel(const char *path) {
   std::vector<glm::vec2> texturecoords;
 
   vertices.reserve(m->position_count);
-  for (int i = 0; i < m->position_count; i++) {
+  for (size_t i = 0; i < m->position_count; i++) {
     int index = i * 3;
     glm::vec3 pos(m->positions[index], m->positions[index + 1],
                   m->positions[index + 2]);
@@ -295,7 +296,7 @@ Model loadObjModel(const char *path) {
   }
 
   normals.reserve(m->normal_count);
-  for (int i = 0; i < m->normal_count; i++) {
+  for (size_t i = 0; i < m->normal_count; i++) {
     int index = i * 3;
     glm::vec3 norm(m->normals[index], m->normals[index + 1],
                    m->normals[index + 2]);
@@ -303,7 +304,7 @@ Model loadObjModel(const char *path) {
   }
 
   texturecoords.reserve(m->texture_count);
-  for (int i = 0; i < m->texcoord_count; i++) {
+  for (size_t i = 0; i < m->texcoord_count; i++) {
     int index = i * 2;
     glm::vec2 tc(m->texcoords[index], m->texcoords[index + 1]);
     texturecoords.push_back(tc);
@@ -312,7 +313,7 @@ Model loadObjModel(const char *path) {
   std::unordered_map<std::string, unsigned int> indices;
   model.indices.reserve(m->index_count);
   unsigned int index = 0;
-  for (int i = 0; i < m->index_count; i++) {
+  for (size_t i = 0; i < m->index_count; i++) {
     fastObjIndex ind = m->indices[i];
     std::string indstr = indicesToStr(ind.p, ind.t, ind.n);
     if (indices.count(indstr))

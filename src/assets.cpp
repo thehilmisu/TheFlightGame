@@ -64,7 +64,7 @@ void TextureManager::importFromFile(const char *path) {
   std::vector<unsigned int> textureids(entries.size());
   glGenTextures(entries.size(), &textureids[0]);
 
-  for (int i = 0; i < entries.size(); i++) {
+  for (size_t i = 0; i < entries.size(); i++) {
     const impfile::Entry &entry = entries.at(i);
     TextureMetaData metadata = entryToTextureMetaData(entry);
     unsigned id = textureids.at(i);
@@ -86,9 +86,9 @@ ShaderMetaData entryToShaderMetaData(const impfile::Entry &entry) {
 void ShaderManager::importFromFile(const char *path) {
   std::vector<impfile::Entry> entries = impfile::parseFile(path);
 
-  for (int i = 0; i < entries.size(); i++) {
+  for (size_t i = 0; i < entries.size(); i++) {
     const impfile::Entry &entry = entries.at(i);
-    ShaderMetaData metadata = entryToShaderMetaData(entries.at(i));
+    ShaderMetaData metadata = entryToShaderMetaData(entry);
     ShaderProgram program(metadata.vertpath.c_str(), metadata.fragpath.c_str());
     shaders.insert({metadata.name, program});
   }

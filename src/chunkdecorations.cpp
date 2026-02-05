@@ -1,7 +1,8 @@
 #include "infworld.h"
 #include <algorithm>
 #include <glm/glm.hpp>
-#include <glm/gtc/matrix_transform.hpp>
+#include <glm/gtc/matrix_transform.hpp>
+
 
 namespace infworld {
 int getChunkSeed(int x, int z, const worldseed &permutations) {
@@ -48,7 +49,7 @@ void DecorationTable::genDecorations(const worldseed &permutations,
   float posz = float(x) * chunksz;
   unsigned int amount = (unsigned int)(lcg()) % n;
 
-  for (int i = 0; i < amount; i++) {
+  for (size_t i = 0; i < amount; i++) {
     float x = float((unsigned int)(lcg()) % PREC) / float(PREC) - 0.5f;
     float z = float((unsigned int)(lcg()) % PREC) / float(PREC) - 0.5f;
     x *= chunksz;
@@ -104,7 +105,7 @@ void DecorationTable::generate(const worldseed &permutations,
 
 // Generate decorations
 void DecorationTable::genDecorations(const worldseed &permutations) {
-  for (int i = 0; i < decorations.size(); i++)
+  for (size_t i = 0; i < decorations.size(); i++)
     generate(permutations, i);
 }
 
@@ -128,14 +129,14 @@ bool DecorationTable::genNewDecorations(float camerax, float cameraz,
   }
 
   std::vector<unsigned int> indices;
-  for (int i = 0; i < positions.size(); i++) {
+  for (size_t i = 0; i < positions.size(); i++) {
     ChunkPos pos = positions.at(i);
     if (labs(pos.x - ix) <= range && labs(pos.z - iz) <= range)
       continue;
     indices.push_back(i);
   }
 
-  for (int i = 0; i < indices.size(); i++) {
+  for (size_t i = 0; i < indices.size(); i++) {
     unsigned int index = indices.at(i);
     ChunkPos pos = newChunks.at(i);
     positions.at(index) = pos;
@@ -157,7 +158,7 @@ void DecorationTable::generateOffsets(DecorationType type, const gfx::Vao &vao,
 
   std::vector<float> offsets;
 
-  for (int i = 0; i < count(); i++) {
+  for (size_t i = 0; i < count(); i++) {
     ChunkPos pos = positions.at(i);
 
     if ((labs(pos.x - centerx) < minrange &&
