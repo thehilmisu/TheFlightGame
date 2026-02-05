@@ -26,6 +26,8 @@ void AssetPacker::scanDirectory(const char* path) {
                    entry.path().extension() == ".fbx" ||
                    entry.path().extension() == ".gltf") {
             models[entry.path().filename().string()] = entry.path().string();
+        } else if (entry.path().extension() == ".mtl") {
+            materials[entry.path().filename().string()] = entry.path().string();
         } else if (entry.path().extension() == ".ttf" ||
                    entry.path().extension() == ".otf") {
             fonts[entry.path().filename().string()] = entry.path().string();
@@ -41,12 +43,13 @@ void AssetPacker::scanDirectory(const char* path) {
     std::cout << "Textures found: " << textures.size() << std::endl;
     std::cout << "Shaders found: " << shaders.size() << std::endl;
     std::cout << "Models found: " << models.size() << std::endl;
+    std::cout << "Materials found: " << materials.size() << std::endl;
     std::cout << "Fonts found: " << fonts.size() << std::endl;
     std::cout << "Sounds found: " << sounds.size() << std::endl;
 }
 
 void AssetPacker::packAssets(const char* outputPath) {
- // 1. Prepare a temporary list of all assets with their assigned types
+    // Temporary list of all assets with their assigned types
     struct InternalEntry {
         std::string name;
         std::string fullPath;
@@ -61,14 +64,15 @@ void AssetPacker::packAssets(const char* outputPath) {
     add(shaders, ASSET_TYPE_SHADER);
     add(textures, ASSET_TYPE_TEXTURE);
     add(models, ASSET_TYPE_MODEL);
+    add(materials, ASSET_TYPE_MATERIAL);
     add(sounds, ASSET_TYPE_SOUND);
     add(fonts, ASSET_TYPE_FONT);
-    // add(configs, ASSET_TYPE_CONFIG); // Add if you have a config map
+    // add(configs, ASSET_TYPE_CONFIG); 
 
     std::ofstream outFile(outputPath, std::ios::binary);
     if (!outFile) return;
 
-    // 2. Setup the Main Header
+    // Setup the Main Header
     AssetBinHeader binHeader;
     binHeader.magic = 0x41535442;
     binHeader.version = 1;
@@ -80,7 +84,7 @@ void AssetPacker::packAssets(const char* outputPath) {
     // So we leave it as 0 for now and seek back later.
     outFile.write(reinterpret_cast<const char*>(&binHeader), sizeof(binHeader));
 
-    // 3. Write Asset Data (The "Blobs")
+    // Write Asset Data
     std::vector<AssetIndexEntry> indexEntries;
     uint64_t currentOffset = binHeader.data_offset;
 
@@ -105,11 +109,11 @@ void AssetPacker::packAssets(const char* outputPath) {
         currentOffset += size;
     }
 
-    // 4. Write the Index Table
+    // Write the Index Table
     uint64_t indexLocation = outFile.tellp(); // Current position is the start of the index
     outFile.write(reinterpret_cast<const char*>(indexEntries.data()), indexEntries.size() * sizeof(AssetIndexEntry));
 
-    // 5. Finalize the Header
+    // Finalize the Header
     // Go back to the beginning and update the index_offset
     binHeader.index_offset = indexLocation;
     outFile.seekp(0); 
@@ -117,4 +121,12 @@ void AssetPacker::packAssets(const char* outputPath) {
 
     outFile.close();
     std::cout << "Packed " << binHeader.num_assets << " assets into " << outputPath << std::endl;
+
+    auto totalSize = std::filesystem::file_size(outputPath);
+    if (totalSize >= 1024 * 1024) {
+        std::cout << "Total Size: " << std::fixed << std::setprecision(2) 
+                  << (static_cast<double>(totalSize) / (1024.0 * 1024.0)) << " MB" << std::endl;
+    } else {
+        std::cout << "Total Size: " << (totalSize / 1024) << " KB" << std::endl;
+    }
 }

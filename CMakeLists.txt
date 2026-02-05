@@ -152,7 +152,7 @@ endif()
 # Build Asset Packer Tool
 add_subdirectory(tools/assetpacker)
 
-# Custom command to run asset packer and generate assets.bin
+# build and run asset packer and generate assets.bin
 add_custom_command(
         OUTPUT ${CMAKE_BINARY_DIR}/assets.bin
         COMMAND AssetPacker ${CMAKE_SOURCE_DIR}/assets ${CMAKE_BINARY_DIR}/assets.bin
@@ -160,6 +160,15 @@ add_custom_command(
         WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}
         COMMENT "Packing assets into assets.bin..."
         VERBATIM
+)
+
+# Copy assets.bin to output directory after build
+add_custom_command(
+    TARGET ${PROJECT_NAME} POST_BUILD
+    COMMAND ${CMAKE_COMMAND} -E copy
+            "${CMAKE_SOURCE_DIR}/assets.bin"
+            "$<TARGET_FILE_DIR:${PROJECT_NAME}>/assets.bin"
+    COMMENT "Copying assets.bin to output directory..."
 )
 
 # Create a target that depends on assets.bin

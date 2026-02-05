@@ -24,6 +24,10 @@ RiverRaid3D
 *.a
 *.lib
 
+# Binary asset files
+assets.bin
+*.bin
+
 # Android
 android/app/build/
 android/app/.cxx/
