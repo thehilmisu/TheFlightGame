@@ -2,6 +2,7 @@
 #include "logger.h"
 #include "assetloader.h"
 #include <fstream>
+#include <filesystem>
 
 namespace assets {
 TextureManager *TextureManager::get() {
@@ -122,8 +123,10 @@ void ShaderManager::importFromFile(const char *path) {
     }
 
     // Write to temp files (shader compiler needs file paths)
-    std::string tempVertPath = "/tmp/" + metadata.name + "_vert.glsl";
-    std::string tempFragPath = "/tmp/" + metadata.name + "_frag.glsl";
+    // Use cross-platform temp directory (works on Windows, macOS, Linux, Android)
+    std::filesystem::path tempDir = std::filesystem::temp_directory_path();
+    std::string tempVertPath = (tempDir / (metadata.name + "_vert.glsl")).string();
+    std::string tempFragPath = (tempDir / (metadata.name + "_frag.glsl")).string();
 
     std::ofstream vertFile(tempVertPath);
     vertFile << vertSource;
@@ -190,8 +193,6 @@ void VaoManager::importFromFile(const char *path) {
   for (const auto &entry : entries) {
     ModelMetaData metadata = entryToModelMetaData(entry);
 
-    printf("DEBUG: Model '%s' path='%s'\n", metadata.name.c_str(), metadata.path.c_str());
-
     // Load model data from packed assets
     auto modelData = loader.getAssetData(metadata.path.c_str());
     if (modelData.empty()) {
@@ -200,7 +201,9 @@ void VaoManager::importFromFile(const char *path) {
     }
 
     // Write to temp file (fast_obj needs file path)
-    std::string tempPath = "/tmp/" + metadata.name + ".obj";
+    // Use cross-platform temp directory (works on Windows, macOS, Linux, Android)
+    std::filesystem::path tempDir = std::filesystem::temp_directory_path();
+    std::string tempPath = (tempDir / (metadata.name + ".obj")).string();
     std::ofstream tempFile(tempPath, std::ios::binary);
     tempFile.write(reinterpret_cast<const char*>(modelData.data()), modelData.size());
     tempFile.close();

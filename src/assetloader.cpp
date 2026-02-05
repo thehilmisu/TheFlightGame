@@ -26,8 +26,8 @@ bool AssetLoader::loadAssets(const std::string& assetBundlePath) {
         std::string assetPath = entry.path;  // Ensure null-terminated string
         m_index[assetPath] = { entry.offset, entry.size, entry.type };
 
-        // Debug: print first few assets, impfiles, and models
-        if (i < 10 || entry.type == ASSET_TYPE_IMPFILE || entry.type == ASSET_TYPE_MODEL) {
+        // Debug: print first few assets and impfiles
+        if (i < 10 || entry.type == ASSET_TYPE_IMPFILE) {
             std::cout << "Loaded asset: [" << assetPath << "] type=" << (int)entry.type << std::endl;
         }
     }

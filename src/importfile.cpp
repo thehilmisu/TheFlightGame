@@ -180,8 +180,6 @@ namespace impfile
 		while (stream.get(c) && c != '}')
 			entryContent << c;
 
-		fprintf(stderr, "DEBUG parseEntry: entry '%s' content = [%s]\n", entry.name.c_str(), entryContent.str().c_str());
-
 		// Reset read position to beginning after writing
 		entryContent.seekg(0);
 
@@ -201,20 +199,15 @@ namespace impfile
 				fprintf(stderr, "Error in \'%s\'\n", entry.name.c_str());
 				return res;
 			}
-			fprintf(stderr, "DEBUG parseEntry: parsed variable '%s' = '%s'\n", v.first.c_str(), v.second.c_str());
 			entry.variables.insert(v);
 		}
 
-		fprintf(stderr, "DEBUG parseEntry: entry '%s' has %zu variables\n", entry.name.c_str(), entry.variables.size());
 		return Result::Ok();
 	}
 
 	std::vector<Entry> parseBin(const std::string &content)
 	{
 		std::vector<Entry> entries;
-
-		fprintf(stderr, "parseBin: content size = %zu\n", content.size());
-		fprintf(stderr, "parseBin: first 100 chars = [%s]\n", content.substr(0, 100).c_str());
 
 		std::stringstream filecontents(content);
 
@@ -237,9 +230,6 @@ namespace impfile
 			processed += line;
 		}
 
-		fprintf(stderr, "parseBin: processed size = %zu, lines = %d\n", processed.size(), lineCount);
-		fprintf(stderr, "parseBin: processed = [%s]\n", processed.substr(0, 200).c_str());
-
 		// Create new stringstream from processed content
 		std::stringstream parsedStream(processed);
 
@@ -257,7 +247,6 @@ namespace impfile
 			entries.push_back(e);
 		}
 
-		fprintf(stderr, "parseBin: returning %zu entries\n", entries.size());
 		return entries;
 	}
 
