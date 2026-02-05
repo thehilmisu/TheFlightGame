@@ -5,6 +5,9 @@
 #include "timing.h"
 #include "logger.h"
 
+#define BALLOON_EXPLOSION_SCALE 2.5f
+#define SHIP_EXPLOSION_SCALE 3.5f
+
 
 namespace game {
     game::PauseMenuActions arcadeModeGameLoop() {
@@ -156,14 +159,14 @@ namespace game {
                 // Update Balloons
                 for (auto &balloon: balloons) balloon.updateBalloon(dt);
                 //Destroy any enemies that are too far away or have run out of health
-                destroyEnemies(player, balloons, explosions, 1.0f, 24.0f, score);
+                destroyEnemies(player, balloons, explosions, BALLOON_EXPLOSION_SCALE, 24.0f, score);
 
                 // Spawn Ships
                 if (timers.getTimer("spawn_ship")) spawnShips(player, ships, lcg, permutations);
                 // Update Ships
                 for (auto &ship: ships) ship.updateShip(dt, player, enemyBullets);
                 //Destroy any enemies that are too far away or have run out of health
-                destroyEnemies(player, ships, explosions, 1.0f, 50.0f, score);
+                destroyEnemies(player, ships, explosions, SHIP_EXPLOSION_SCALE, 50.0f, score);
 
                 gui.drawHUD();
             }
