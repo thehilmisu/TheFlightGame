@@ -16,6 +16,7 @@ int main(int argc, char** argv) {
     const char* path = "assets";
     AssetPacker &assetPacker = AssetPacker::getInstance();
     assetPacker.scanDirectory(path);
+    assetPacker.packAssets("assets.bin");
 
     std::cout << " ########################### " << std::endl;
     std::cout << " # Asset Packer DONE !" << std::endl;
