@@ -45,3 +45,8 @@
 "warship" {
 	"path" = "warship.obj";
 }
+
+# Warship model
+"warship2" {
+	"path" = "warship2.obj";
+}

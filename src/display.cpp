@@ -310,9 +310,9 @@ namespace gfx {
         Camera &cam = window.getCamera();
 
         glDisable(GL_CULL_FACE);
-        VAOS->bind("warship");
+        VAOS->bind("warship2");
         SHADERS->use("textured");
-        TEXTURES->bindTexture("barrel", GL_TEXTURE0);
+        TEXTURES->bindTexture("warship2", GL_TEXTURE0);
         ShaderProgram &shader = SHADERS->getShader("textured");
         shader.uniformMat4x4("persp", window.getPerspective());
         shader.uniformMat4x4("view", cam.viewMatrix());
@@ -322,7 +322,7 @@ namespace gfx {
 
         for (const auto &ship: ships) {
             glm::mat4 transform = ship.transform.getTransformMat();
-            transform = glm::scale(transform, glm::vec3(14.0f, 14.0f, 14.0f));
+            transform = glm::scale(transform, glm::vec3(2.5f, 2.5f, 2.5f));
             glm::mat3 normal = glm::mat3(glm::transpose(glm::inverse(transform)));
             shader.uniformMat4x4("transform", transform);
             shader.uniformMat3x3("normalmat", normal);

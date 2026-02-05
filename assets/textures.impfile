@@ -142,6 +142,13 @@
 	"flip" = "true";
 }
 
+# Warship2 texture
+"warship2" {
+	"target" = "texture2d";
+	"path" = "warship2.jpg";
+	"flip" = "false";
+}
+
 # cubemap for skybox
 "skybox" {
 	"target" = "cubemap";
