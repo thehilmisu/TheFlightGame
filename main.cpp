@@ -42,7 +42,8 @@ int main(int argc, char* argv[]) {
   assetLoader.loadAssets("assets.bin");
   auto shadercode = assetLoader.getAssetData("textured-frag.glsl");
   std::string shaderStr(shadercode.begin(), shadercode.end());
-  std::cout << "Loaded shader code " <<  shaderStr.c_str() << std::endl;
+  std::cout << "Loaded shader code " << std::endl;
+  std::cout <<  shaderStr.c_str() << std::endl;
 
   // while (!window.shouldClose() && window.isRunnning()) {
 

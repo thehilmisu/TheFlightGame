@@ -138,6 +138,7 @@ else()
             winmm
             version
         )
+        set_target_properties(${PROJECT_NAME} PROPERTIES LINK_FLAGS "-mconsole")
     else() # Linux
         find_package(OpenGL REQUIRED)
         target_link_libraries(${PROJECT_NAME} PRIVATE
