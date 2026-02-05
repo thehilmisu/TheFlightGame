@@ -5,6 +5,7 @@
 #include <filesystem>
 
 void AssetPacker::scanDirectory(const char* path) {
+    std::cout << "Scanning assets directory: " << path << std::endl;
     std::filesystem::path targetDir = path;
     for (const auto& entry : std::filesystem::recursive_directory_iterator(targetDir)) {
 
@@ -49,6 +50,7 @@ void AssetPacker::scanDirectory(const char* path) {
 }
 
 void AssetPacker::packAssets(const char* outputPath) {
+    std::cout << "Start packing assets  " << std::endl;
     // Temporary list of all assets with their assigned types
     struct InternalEntry {
         std::string name;
