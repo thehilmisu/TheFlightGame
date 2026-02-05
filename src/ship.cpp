@@ -28,8 +28,10 @@ namespace gameobjects {
             glm::vec3 toPlayer = player.transform.position - transform.position;
             toPlayer = glm::normalize(toPlayer);
 
-            // Set rotation to face player
+            // Set rotation to face player (yaw + pitch)
             transform.rotation.y = atan2f(toPlayer.x, toPlayer.z);
+            float horizontalDist = sqrtf(toPlayer.x * toPlayer.x + toPlayer.z * toPlayer.z);
+            transform.rotation.x = -atan2f(toPlayer.y, horizontalDist);
 
             // Spawn rocket
             bullets.push_back(Bullet(transform, 0.3f, glm::vec3(0.0f, 5.0f, 0.0f)));
