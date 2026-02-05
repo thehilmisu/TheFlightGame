@@ -45,6 +45,7 @@ set(COMMON_SOURCES
     src/player.cpp
     src/update.cpp
     src/assetloader.cpp
+    src/plane.cpp
 )
 
 # ImGui sources

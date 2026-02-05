@@ -46,6 +46,8 @@ void Player::damage(unsigned int amount) {
 
   damagecooldown = DAMAGE_COOLDOWN;
   damagetimer = DAMAGE_TIMER;
+  std::cout << "Player took " << amount << " damage, health now " << health
+            << "\n";
 }
 
 unsigned int Player::hpPercent() {

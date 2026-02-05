@@ -8,13 +8,14 @@
 #define BALLOON_EXPLOSION_SCALE 2.5f
 #define SHIP_EXPLOSION_SCALE 3.5f
 
-
-namespace game {
-    game::PauseMenuActions arcadeModeGameLoop() {
+namespace game
+{
+    game::PauseMenuActions arcadeModeGameLoop()
+    {
         Window &window = Window::getInstance();
         Gui &gui = Gui::getInstance();
 
-        //Initially generate world
+        // Initially generate world
         std::random_device rd;
         unsigned int randSeed = rd();
         infworld::worldseed permutations = infworld::makePermutations(randSeed, 8);
@@ -26,64 +27,69 @@ namespace game {
 
         std::minstd_rand0 lcg(randSeed);
 
-        //Gameobjects
+        // Gameobjects
         gameobjects::Player player(glm::vec3(0.0f, HEIGHT * SCALE * 0.5f, 0.0f));
         std::vector<gameobjects::Bullet> bullets;
         std::vector<gameobjects::Bullet> enemyBullets;
         std::vector<gameobjects::Enemy> balloons;
         std::vector<gameobjects::Enemy> ships;
+        std::vector<gameobjects::Enemy> planes;
         std::vector<gameobjects::Explosion> explosions;
         std::vector<gameobjects::Props> barrels;
 
         float totalTime = 0.0f;
         float dt = 0.0f;
-        unsigned int score = 0; //Player score
+        unsigned int score = 0; // Player score
         bool draw_debug_gui = false;
         bool paused = false;
 
         TimerManager timers;
         timers.addTimer("spawn_balloon", 0.0f, 50.0f);
-        timers.addTimer("spawn_ship", 0.0f, 100.0f);
+        timers.addTimer("spawn_ship", 0.0f, 150.0f);
+        timers.addTimer("spawn_plane", 0.0f, 100.0f);
         // timers.addTimer("spawn_barrel", 0.0f, 70.0f);
 
         game::updateCamera(player);
-
         std::string skybox = "skybox";
 
-        while (!window.shouldClose() && window.isRunnning()) {
+        while (!window.shouldClose() && window.isRunnning())
+        {
             double startTime = getTime();
             window.pollEvents();
 
             gui.newFrame();
 
             glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-            //Draw terrain
+            // Draw terrain
             gfx::displayTerrain(chunktables, MAX_LOD, LOD_SCALE);
-            //Display trees
+            // Display trees
             gfx::displayDecorations(decorations, totalTime);
-            //Display plane
+            // Display plane
             if (!player.crashed)
                 gfx::displayPlayerPlane(totalTime, player.transform, player.getPlayerObj());
-            //Display balloons
+            // Display balloons
             gfx::displayBalloons(balloons);
-            //Display ships
+            // Display enemy ships
             gfx::displayShips(ships);
-            //Display barrels
+            // Display enemy planes
+            gfx::displayPlanes(totalTime, planes);
+            // Display barrels
             gfx::displayBarrels(barrels);
-            //Display bullets
+            // Display bullets
             gfx::displayBullets(bullets);
             gfx::displayBullets(enemyBullets);
-            //Display water
+            // Display water
             gfx::displayWater(totalTime);
-            //Draw skybox
+            // Draw skybox
             gfx::displaySkybox(skybox);
             // Fog
             gfx::displayFog();
 
-            if (!paused) {
+            if (!paused)
+            {
                 timers.update(dt);
 
-                //Draw HUD Backgorunds
+                // Draw HUD Backgorunds
                 gfx::displayCrosshair(player.transform);
                 gfx::displayMiniMapBackground(totalTime);
                 gfx::displayAttitude(player.transform.rotation.x, player.transform.rotation.z);
@@ -91,25 +97,24 @@ namespace game {
                 gfx::displayFuel(player.fuel, totalTime);
                 gfx::displayEnemyMarkers(balloons, player.transform);
                 gfx::displayEnemyMarkers(ships, player.transform);
+                gfx::displayEnemyMarkers(planes, player.transform);
                 // gfx::displayPropMarkers(barrels, player.transform);
                 gfx::displayExplosions(explosions);
-
-                game::updateCamera(player, dt);
-                // to make the terrain infinite
-                game::generateNewChunks(permutations, chunktables, decorations);
 
                 totalTime += dt;
                 bool justcrashed = player.crashed;
                 player.checkIfCrashed(dt, permutations);
                 justcrashed = player.crashed ^ justcrashed;
-                //Update explosions
-                if (justcrashed) {
+                // Update explosions
+                if (justcrashed)
+                {
                     explosions.push_back(gameobjects::Explosion(player.transform.position));
                     // SNDSRC->playid("explosion", player.transform.position);
                     WARN("Plane Crashed");
                 }
                 player.update(dt);
-                if (player.fuel <= 20.0f) {
+                if (player.fuel <= 20.0f)
+                {
                     gfx::displayDanger(totalTime);
                     // TODO: also need to add a sound to indicate the danger.
                 }
@@ -129,12 +134,13 @@ namespace game {
                 gui.hudItems.fuel = player.fuel;
                 gui.hudItems.elapsedTime = getTime();
 
-                //Shoot bullets
+                // Shoot bullets
                 KeyState leftbutton = window.getButtonState(SDL_BUTTON_LEFT);
                 KeyState spacebar = window.getKeyState(SDLK_SPACE);
                 if (player.shoottimer <= 0.0f &&
                     (window.keyIsHeld(spacebar) || window.keyIsHeld(leftbutton)) &&
-                    !player.crashed) {
+                    !player.crashed)
+                {
                     // SNDSRC->playid("shoot", player.transform.position);
                     player.resetShootTimer();
                     bullets.push_back(gameobjects::Bullet(player, glm::vec3(-8.5f, -0.75f, 8.5f)));
@@ -155,49 +161,74 @@ namespace game {
                 game::checkForHit(enemyBullets, player, 10.0f);
 
                 // Spawn Balloons
-                if (timers.getTimer("spawn_balloon")) spawnBalloons(player, balloons, lcg, permutations);
+                if (timers.getTimer("spawn_balloon"))
+                    spawnBalloons(player, balloons, lcg, permutations);
                 // Update Balloons
-                for (auto &balloon: balloons) balloon.updateBalloon(dt);
-                //Destroy any enemies that are too far away or have run out of health
+                for (auto &balloon : balloons)
+                    balloon.updateBalloon(dt);
+                // Destroy any enemies that are too far away or have run out of health
                 destroyEnemies(player, balloons, explosions, BALLOON_EXPLOSION_SCALE, 24.0f, score);
 
                 // Spawn Ships
-                if (timers.getTimer("spawn_ship")) spawnShips(player, ships, lcg, permutations);
+                if (timers.getTimer("spawn_ship"))
+                    spawnShips(player, ships, lcg, permutations);
                 // Update Ships
-                for (auto &ship: ships) ship.updateShip(dt, player, enemyBullets);
-                //Destroy any enemies that are too far away or have run out of health
+                for (auto &ship : ships)
+                    ship.updateShip(dt, player, enemyBullets);
+                // Destroy any enemies that are too far away or have run out of health
                 destroyEnemies(player, ships, explosions, SHIP_EXPLOSION_SCALE, 50.0f, score);
 
+                // Spawn Planes
+                if (timers.getTimer("spawn_plane"))
+                    spawnPlanes(player, planes, lcg, permutations, totalTime);
+                // Update Planes
+                for (auto &plane : planes)
+                    plane.updatePlane(dt, player, enemyBullets, permutations);
+                // Destroy any enemies that are too far away or have run out of health
+                destroyEnemies(player, planes, explosions, SHIP_EXPLOSION_SCALE, 50.0f, score);
+
                 gui.drawHUD();
+
+                game::updateCamera(player, dt);
+                // to make the terrain infinite
+                game::generateNewChunks(permutations, chunktables, decorations);
             }
-            //paused
-            else {
-                switch (game::PauseMenuActions action = gui.drawPauseMenu()) {
-                    case EXIT:
-                        window.setIsRunning(false);
-                        break;
-                    case EXIT_TO_MAINMENU:
-                        return action;
-                        break;
-                    case RESUME:
-                        paused = false;
-                        break;
-                    case NONE:
-                        break;
-                    default:
-                        break;
+            // paused
+            else
+            {
+                switch (game::PauseMenuActions action = gui.drawPauseMenu())
+                {
+                case EXIT:
+                    window.setIsRunning(false);
+                    break;
+                case EXIT_TO_MAINMENU:
+                    return action;
+                    break;
+                case RESUME:
+                    paused = false;
+                    break;
+                case NONE:
+                    break;
+                default:
+                    break;
                 }
             }
 
-            if (window.getKeyState(SDLK_TAB) == JUST_PRESSED) draw_debug_gui = !draw_debug_gui;
-            if (window.getKeyState(SDLK_ESCAPE) == JUST_PRESSED) paused = !paused;
+            if (window.getKeyState(SDLK_TAB) == JUST_PRESSED)
+                draw_debug_gui = !draw_debug_gui;
+            if (window.getKeyState(SDLK_ESCAPE) == JUST_PRESSED)
+                paused = !paused;
             // Development Purposes
-            if (window.getKeyState(SDLK_p) == JUST_PRESSED) {
-                if (skybox == "skybox") skybox = "nightskybox";
-                else skybox = "skybox";
+            if (window.getKeyState(SDLK_p) == JUST_PRESSED)
+            {
+                if (skybox == "skybox")
+                    skybox = "nightskybox";
+                else
+                    skybox = "skybox";
             }
 
-            if (draw_debug_gui) {
+            if (draw_debug_gui)
+            {
                 gui.drawUI();
             }
 
