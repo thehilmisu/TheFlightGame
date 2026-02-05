@@ -22,10 +22,17 @@ bool AssetLoader::loadAssets(const std::string& assetBundlePath) {
     for (uint32_t i = 0; i < header.num_assets; ++i) {
         AssetIndexEntry entry;
         m_file.read(reinterpret_cast<char*>(&entry), sizeof(entry));
-        
-        m_index[entry.path] = { entry.offset, entry.size, entry.type };
+
+        std::string assetPath = entry.path;  // Ensure null-terminated string
+        m_index[assetPath] = { entry.offset, entry.size, entry.type };
+
+        // Debug: print first few impfiles
+        if (i < 10 || entry.type == ASSET_TYPE_IMPFILE) {
+            std::cout << "Loaded asset: [" << assetPath << "] type=" << (int)entry.type << std::endl;
+        }
     }
 
+    std::cout << "Total assets loaded: " << m_index.size() << std::endl;
     return true;
 }
 

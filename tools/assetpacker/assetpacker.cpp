@@ -6,36 +6,43 @@
 
 void AssetPacker::scanDirectory(const char* path) {
     std::cout << "Scanning assets directory: " << path << std::endl;
-    std::filesystem::path targetDir = path;
+    std::filesystem::path targetDir = std::filesystem::absolute(path);
+    std::filesystem::path parentDir = targetDir.parent_path();
+
     for (const auto& entry : std::filesystem::recursive_directory_iterator(targetDir)) {
 
         if (entry.is_directory()) continue; // Skip directories
         if (entry.path().filename() == ".DS_Store") continue; // Skip .DS_Store files
-        if (entry.path().extension() == ".impfile") continue; // Skip .impfile files
         if (entry.path().extension() == ".txt") continue; // Skip .txt files
+
+        // Get relative path from parent of assets directory (e.g., "assets/shaders/foo.glsl")
+        std::string relativePath = std::filesystem::relative(entry.path(), parentDir).string();
 
         if (entry.path().extension() == ".png" ||
             entry.path().extension() == ".jpg" ||
             entry.path().extension() == ".jpeg" ||
             entry.path().extension() == ".bmp") {
-            textures[entry.path().filename().string()] = entry.path().string();
+            textures[relativePath] = entry.path().string();
         } else if (entry.path().extension() == ".vert" ||
                    entry.path().extension() == ".frag" ||
                    entry.path().extension() == ".glsl") {
-            shaders[entry.path().filename().string()] = entry.path().string();
+            shaders[relativePath] = entry.path().string();
         } else if (entry.path().extension() == ".obj" ||
                    entry.path().extension() == ".fbx" ||
                    entry.path().extension() == ".gltf") {
-            models[entry.path().filename().string()] = entry.path().string();
+            models[relativePath] = entry.path().string();
         } else if (entry.path().extension() == ".mtl") {
-            materials[entry.path().filename().string()] = entry.path().string();
+            materials[relativePath] = entry.path().string();
         } else if (entry.path().extension() == ".ttf" ||
                    entry.path().extension() == ".otf") {
-            fonts[entry.path().filename().string()] = entry.path().string();
+            fonts[relativePath] = entry.path().string();
         } else if (entry.path().extension() == ".wav" ||
                    entry.path().extension() == ".mp3" ||
                    entry.path().extension() == ".ogg") {
-            sounds[entry.path().filename().string()] = entry.path().string();
+            sounds[relativePath] = entry.path().string();
+        } else if (entry.path().extension() == ".impfile") {
+            // Store impfiles with just filename, not full path
+            impfiles[entry.path().filename().string()] = entry.path().string();
         } else {
             std::cout << "Unknown asset type: " << entry.path() << std::endl;
         }
@@ -47,6 +54,7 @@ void AssetPacker::scanDirectory(const char* path) {
     std::cout << "Materials found: " << materials.size() << std::endl;
     std::cout << "Fonts found: " << fonts.size() << std::endl;
     std::cout << "Sounds found: " << sounds.size() << std::endl;
+    std::cout << "Impfiles found: " << impfiles.size() << std::endl;
 }
 
 void AssetPacker::packAssets(const char* outputPath) {
@@ -69,7 +77,7 @@ void AssetPacker::packAssets(const char* outputPath) {
     add(materials, ASSET_TYPE_MATERIAL);
     add(sounds, ASSET_TYPE_SOUND);
     add(fonts, ASSET_TYPE_FONT);
-    // add(configs, ASSET_TYPE_CONFIG); 
+    add(impfiles, ASSET_TYPE_IMPFILE); 
 
     std::ofstream outFile(outputPath, std::ios::binary);
     if (!outFile) return;

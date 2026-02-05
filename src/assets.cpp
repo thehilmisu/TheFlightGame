@@ -1,5 +1,7 @@
 #include "assets.h"
 #include "logger.h"
+#include "assetloader.h"
+#include <fstream>
 
 namespace assets {
 TextureManager *TextureManager::get() {
@@ -59,7 +61,17 @@ TextureInfo textureMetaDataToInfo(const TextureMetaData &metadata,
 }
 
 void TextureManager::importFromFile(const char *path) {
-  std::vector<impfile::Entry> entries = impfile::parseFile(path);
+  AssetLoader& loader = AssetLoader::getInstance();
+
+  // Load .impfile from packed assets
+  std::string impfileContent = loader.getAssetString(path);
+  if (impfileContent.empty()) {
+    fprintf(stderr, "Failed to load texture config: %s\n", path);
+    return;
+  }
+
+  // Parse in memory
+  std::vector<impfile::Entry> entries = impfile::parseBin(impfileContent);
 
   std::vector<unsigned int> textureids(entries.size());
   glGenTextures(entries.size(), &textureids[0]);
@@ -84,13 +96,50 @@ ShaderMetaData entryToShaderMetaData(const impfile::Entry &entry) {
 }
 
 void ShaderManager::importFromFile(const char *path) {
-  std::vector<impfile::Entry> entries = impfile::parseFile(path);
+  AssetLoader& loader = AssetLoader::getInstance();
 
+  // Load .impfile from packed assets
+  std::string impfileContent = loader.getAssetString(path);
+  if (impfileContent.empty()) {
+    fprintf(stderr, "Failed to load shader config: %s\n", path);
+    return;
+  }
+
+  // Parse in memory using parseBin
+  std::vector<impfile::Entry> entries = impfile::parseBin(impfileContent);
+  
   for (size_t i = 0; i < entries.size(); i++) {
     const impfile::Entry &entry = entries.at(i);
     ShaderMetaData metadata = entryToShaderMetaData(entry);
-    ShaderProgram program(metadata.vertpath.c_str(), metadata.fragpath.c_str());
+
+    // Load shader source from packed assets
+    std::string vertSource = loader.getAssetString(metadata.vertpath.c_str());
+    std::string fragSource = loader.getAssetString(metadata.fragpath.c_str());
+
+    if (vertSource.empty() || fragSource.empty()) {
+      fprintf(stderr, "Failed to load shader sources for: %s\n", metadata.name.c_str());
+      continue;
+    }
+
+    // Write to temp files (shader compiler needs file paths)
+    std::string tempVertPath = "/tmp/" + metadata.name + "_vert.glsl";
+    std::string tempFragPath = "/tmp/" + metadata.name + "_frag.glsl";
+
+    std::ofstream vertFile(tempVertPath);
+    vertFile << vertSource;
+    vertFile.close();
+
+    std::ofstream fragFile(tempFragPath);
+    fragFile << fragSource;
+    fragFile.close();
+
+    // Create shader program
+    ShaderProgram program(tempVertPath.c_str(), tempFragPath.c_str());
     shaders.insert({metadata.name, program});
+
+    // Cleanup temp files
+    std::remove(tempVertPath.c_str());
+    std::remove(tempFragPath.c_str());
   }
 }
 
@@ -126,12 +175,41 @@ VaoManager *VaoManager::get() {
 }
 
 void VaoManager::importFromFile(const char *path) {
-  std::vector<impfile::Entry> entries = impfile::parseFile(path);
+  AssetLoader& loader = AssetLoader::getInstance();
+
+  // Load .impfile from packed assets
+  std::string impfileContent = loader.getAssetString(path);
+  if (impfileContent.empty()) {
+    fprintf(stderr, "Failed to load model config: %s\n", path);
+    return;
+  }
+
+  // Parse in memory
+  std::vector<impfile::Entry> entries = impfile::parseBin(impfileContent);
 
   for (const auto &entry : entries) {
     ModelMetaData metadata = entryToModelMetaData(entry);
-    add(metadata.name,
-        gfx::createModelVao(mesh::loadObjModel(metadata.path.c_str())));
+
+    // Load model data from packed assets
+    auto modelData = loader.getAssetData(metadata.path.c_str());
+    if (modelData.empty()) {
+      fprintf(stderr, "Failed to load model: %s\n", metadata.path.c_str());
+      continue;
+    }
+
+    // Write to temp file (fast_obj needs file path)
+    std::string tempPath = "/tmp/" + metadata.name + ".obj";
+    std::ofstream tempFile(tempPath, std::ios::binary);
+    tempFile.write(reinterpret_cast<const char*>(modelData.data()), modelData.size());
+    tempFile.close();
+
+    // Load using existing function
+    mesh::Model model = mesh::loadObjModel(tempPath.c_str());
+    gfx::Vao vao = gfx::createModelVao(model);
+    add(metadata.name, vao);
+
+    // Cleanup
+    std::remove(tempPath.c_str());
   }
 }
 
@@ -178,8 +256,17 @@ FontMetaData entryToFontMetaData(const impfile::Entry &entry) {
 }
 
 void FontManager::importFromFile(const char *path) {
-  // State* state = State::get();
-  std::vector<impfile::Entry> entries = impfile::parseFile(path);
+  AssetLoader& loader = AssetLoader::getInstance();
+
+  // Load .impfile from packed assets
+  std::string impfileContent = loader.getAssetString(path);
+  if (impfileContent.empty()) {
+    fprintf(stderr, "Failed to load font config: %s\n", path);
+    return;
+  }
+
+  // Parse in memory
+  std::vector<impfile::Entry> entries = impfile::parseBin(impfileContent);
 
   // For whatever reason Nuklear crashes if I don't include this code here
   // do not delete this code despite the fact it doesn't load any fonts

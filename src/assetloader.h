@@ -29,6 +29,13 @@ public:
     // Get the raw bytes for an asset
     std::vector<uint8_t> getAssetData(const std::string& name);
 
+    // Get asset data as string (for text files like shaders, configs)
+    std::string getAssetString(const std::string& name) {
+        auto data = getAssetData(name);
+        if (data.empty()) return "";
+        return std::string(data.begin(), data.end());
+    }
+
     AssetInfo getInfo(const std::string& name) { return m_index[name]; }
 
 private:

@@ -58,7 +58,7 @@ namespace impfile {
 	//returns true if it can successfully parse an entry
 	Result parseEntry(Entry &entry, std::stringstream &stream);
 	
-	std::vector<Entry> parseFile(const char *path);
+	std::vector<Entry> parseBin(const std::string &content);
 	
 	//converts an entry into a string
 	std::string entryToString(const Entry &entry);

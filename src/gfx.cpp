@@ -8,6 +8,7 @@
 #include <unordered_map>
 
 #include "logger.h"
+#include "assetloader.h"
 
 namespace mesh {
 void addToMesh(Meshf &mesh, const glm::vec3 &v) {
@@ -477,9 +478,22 @@ GLenum getFormat(int channels) {
 }
 
 bool loadTexture(const char *path, unsigned int textureid, bool flipvertical) {
+  AssetLoader& loader = AssetLoader::getInstance();
+
+  // Load from packed assets
+  auto imageData = loader.getAssetData(path);
+  if (imageData.empty()) {
+    ERROR("Failed to load texture from assets: %s", path);
+    return false;
+  }
+
   stbi_set_flip_vertically_on_load(flipvertical);
   int width, height, channels;
-  unsigned char *data = stbi_load(path, &width, &height, &channels, 0);
+  unsigned char *data = stbi_load_from_memory(
+      imageData.data(),
+      imageData.size(),
+      &width, &height, &channels, 0);
+
   bool success = false;
   if (data) {
     success = true;
@@ -492,7 +506,7 @@ bool loadTexture(const char *path, unsigned int textureid, bool flipvertical) {
     glGenerateMipmap(GL_TEXTURE_2D);
     INFO("Texture loaded successfully : %s", path);
   } else
-    ERROR("Failed to open: %s", path);
+    ERROR("Failed to decode texture: %s", path);
 
   stbi_set_flip_vertically_on_load(false); // reset flag to false
   stbi_image_free(data);
@@ -501,21 +515,32 @@ bool loadTexture(const char *path, unsigned int textureid, bool flipvertical) {
 
 bool loadCubemap(const std::vector<std::string> &faces,
                  unsigned int textureid) {
+  AssetLoader& loader = AssetLoader::getInstance();
   bool success = true;
   int width, height, channels;
   assert(faces.size() == 6); // faces must have 6 elements in it
   glBindTexture(GL_TEXTURE_CUBE_MAP, textureid);
 
   for (int i = 0; i < 6; i++) {
-    unsigned char *data =
-        stbi_load(faces.at(i).c_str(), &width, &height, &channels, 0);
+    // Load from packed assets
+    auto imageData = loader.getAssetData(faces.at(i).c_str());
+    if (imageData.empty()) {
+      ERROR("Failed to load cubemap texture from assets: %s", faces.at(i).c_str());
+      success = false;
+      continue;
+    }
+
+    unsigned char *data = stbi_load_from_memory(
+        imageData.data(),
+        imageData.size(),
+        &width, &height, &channels, 0);
 
     if (data) {
       GLenum format = getFormat(channels);
       glTexImage2D(GL_TEXTURE_CUBE_MAP_POSITIVE_X + i, 0, format, width, height,
                    0, format, GL_UNSIGNED_BYTE, data);
     } else {
-      ERROR("Failed to open cubemap file: %s", faces.at(i).c_str());
+      ERROR("Failed to decode cubemap file: %s", faces.at(i).c_str());
       success = false;
     }
 

@@ -4,6 +4,8 @@
 #include "window.h"
 //#include "audio.hpp"
 #include <glm/gtc/matrix_transform.hpp>
+#include "assetloader.h"
+#include "logger.h"
 
 namespace game {
 	Transform::Transform()
@@ -64,19 +66,22 @@ namespace game {
 
 	void loadAssets()
 	{
+		AssetLoader &assetLoader = AssetLoader::getInstance();
+		if (!assetLoader.loadAssets("assets.bin")) ERROR("Failed to load assets"); 
+  			
 		//Vaos
 		VAOS->genSimple();
 		VAOS->add("pinetree", plants::createPineTreeModel(8));
 		VAOS->add("pinetreelowdetail", plants::createPineTreeModel(4));
 		VAOS->add("tree", plants::createTreeModel(6));
 		VAOS->add("treelowdetail", plants::createTreeModel(3));
-		VAOS->importFromFile("assets/models.impfile");
+		VAOS->importFromFile("models.impfile");
 		//Textures
-		TEXTURES->importFromFile("assets/textures.impfile");
+		TEXTURES->importFromFile("textures.impfile");
 		//Shaders
-		SHADERS->importFromFile("assets/shaders.impfile");
+		SHADERS->importFromFile("shaders.impfile");
 		//Fonts
-		FONTS->importFromFile("assets/fonts.impfile");
+		FONTS->importFromFile("fonts.impfile");
 		//Audio
 		//SFX->importFromFile("assets/sfx.impfile");
 	}

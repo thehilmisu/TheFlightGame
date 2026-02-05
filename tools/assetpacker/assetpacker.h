@@ -14,7 +14,7 @@ typedef enum AssetType {
     ASSET_TYPE_MATERIAL = 3,
     ASSET_TYPE_SOUND = 4,
     ASSET_TYPE_FONT = 5,
-    ASSET_TYPE_CONFIG = 6
+    ASSET_TYPE_IMPFILE = 6
 
 }AssetType;
 struct AssetBinHeader {
@@ -59,6 +59,7 @@ class AssetPacker {
         std::unordered_map<std::string, std::string> materials;
         std::unordered_map<std::string, std::string> fonts;
         std::unordered_map<std::string, std::string> sounds;
+        std::unordered_map<std::string, std::string> impfiles;
         std::unordered_map<std::string, std::vector<unsigned char>> assets;
 
 };
