@@ -190,6 +190,8 @@ void VaoManager::importFromFile(const char *path) {
   for (const auto &entry : entries) {
     ModelMetaData metadata = entryToModelMetaData(entry);
 
+    printf("DEBUG: Model '%s' path='%s'\n", metadata.name.c_str(), metadata.path.c_str());
+
     // Load model data from packed assets
     auto modelData = loader.getAssetData(metadata.path.c_str());
     if (modelData.empty()) {

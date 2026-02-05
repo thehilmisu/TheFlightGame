@@ -39,6 +39,7 @@ android/local.properties
 # IDE
 .vscode/
 .idea/
+.cache/
 *.swp
 *.swo
 *~

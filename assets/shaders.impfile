@@ -1,84 +1,84 @@
 # This is a list of shaders that are to be imported
 # Shaders must have the following variables:
-# 'vertex' - path to the vertex shader relative to the executable
-# 'fragment' - path to the fragment shader relative to the executable
+# 'vertex' - filename of the vertex shader
+# 'fragment' - filename of the fragment shader
 
 "terrain" {
-	"vertex" = "assets/shaders/terrainvert.glsl";
-	"fragment" = "assets/shaders/terrainfrag.glsl";
+	"vertex" = "terrainvert.glsl";
+	"fragment" = "terrainfrag.glsl";
 }
 
 "water" {
-	"vertex" = "assets/shaders/instancedvert.glsl";
-	"fragment" = "assets/shaders/waterfrag.glsl";
+	"vertex" = "instancedvert.glsl";
+	"fragment" = "waterfrag.glsl";
 }
 
 "skybox" {
-	"vertex" = "assets/shaders/skyboxvert.glsl";
-	"fragment" = "assets/shaders/skyboxfrag.glsl";
+	"vertex" = "skyboxvert.glsl";
+	"fragment" = "skyboxfrag.glsl";
 }
 
 "nightskybox" {
-	"vertex" = "assets/shaders/skyboxvert.glsl";
-	"fragment" = "assets/shaders/nightskyboxfrag.glsl";
+	"vertex" = "skyboxvert.glsl";
+	"fragment" = "nightskyboxfrag.glsl";
 }
 
 "tree" {
-	"vertex" = "assets/shaders/tree-vert.glsl";
-	"fragment" = "assets/shaders/textured-frag.glsl";
+	"vertex" = "tree-vert.glsl";
+	"fragment" = "textured-frag.glsl";
 }
 
 "textured" {
-	"vertex" = "assets/shaders/vert.glsl";
-	"fragment" = "assets/shaders/textured-frag.glsl";
+	"vertex" = "vert.glsl";
+	"fragment" = "textured-frag.glsl";
 }
 
 "explosion" {
-	"vertex" = "assets/shaders/explosionvert.glsl";
-	"fragment" = "assets/shaders/explosionfrag.glsl";
+	"vertex" = "explosionvert.glsl";
+	"fragment" = "explosionfrag.glsl";
 }
 
 "minimap" {
-	"vertex" = "assets/shaders/vert2d.glsl";
-	"fragment" = "assets/shaders/minimapfrag.glsl";
+	"vertex" = "vert2d.glsl";
+	"fragment" = "minimapfrag.glsl";
 }
 
 "attitude" {
-	"vertex" = "assets/shaders/vert2d.glsl";
-	"fragment" = "assets/shaders/attitudefrag.glsl";
+	"vertex" = "vert2d.glsl";
+	"fragment" = "attitudefrag.glsl";
 }
 
 "verticaltape" {
-	"vertex" = "assets/shaders/vert2d.glsl";
-	"fragment" = "assets/shaders/verticaltapefrag.glsl";
+	"vertex" = "vert2d.glsl";
+	"fragment" = "verticaltapefrag.glsl";
 }
 
 "fuel" {
-	"vertex" = "assets/shaders/vert2d.glsl";
-	"fragment" = "assets/shaders/fuelfrag.glsl";
+	"vertex" = "vert2d.glsl";
+	"fragment" = "fuelfrag.glsl";
 }
 
 "speed" {
-	"vertex" = "assets/shaders/vert2d.glsl";
-	"fragment" = "assets/shaders/speedfrag.glsl";
+	"vertex" = "vert2d.glsl";
+	"fragment" = "speedfrag.glsl";
 }
 
 "textured2d" {
-	"vertex" = "assets/shaders/vert2d.glsl";
-	"fragment" = "assets/shaders/textured-simple-frag.glsl";
+	"vertex" = "vert2d.glsl";
+	"fragment" = "textured-simple-frag.glsl";
 }
 
 "dangeroverlay" {
-	"vertex" = "assets/shaders/vert2d.glsl";
-	"fragment" = "assets/shaders/dangerfrag.glsl";
+	"vertex" = "vert2d.glsl";
+	"fragment" = "dangerfrag.glsl";
 }
 
 "trail" {
-	"vertex" = "assets/shaders/trailvert.glsl";
-	"fragment" = "assets/shaders/textured-simple-frag.glsl";
+	"vertex" = "trailvert.glsl";
+	"fragment" = "textured-simple-frag.glsl";
 }
 
 "fog" {
-	"vertex" = "assets/shaders/fogvert.glsl";
-	"fragment" = "assets/shaders/fogfrag.glsl";
+	"vertex" = "fogvert.glsl";
+	"fragment" = "fogfrag.glsl";
 }

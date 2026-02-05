@@ -12,165 +12,165 @@
 # this is the texture for the terrain 
 "terrain" {
 	"target" = "texture2d";
-	"path" = "assets/textures/terraintextures.png";
+	"path" = "terraintextures.png";
 	"flip" = "false";
 }
 
 # this is the texture for water
 "watermaps" {
 	"target" = "texture2d";
-	"path" = "assets/textures/watermaps.png";
+	"path" = "watermaps.png";
 	"flip" = "false";
 }
 
 # texture for pine tree
 "pinetree" {
 	"target" = "texture2d";
-	"path" = "assets/textures/pinetreetexture.png";
+	"path" = "pinetreetexture.png";
 	"flip" = "false";
 }
 
 # texture for tree
 "tree" {
 	"target" = "texture2d";
-	"path" = "assets/textures/treetexture.png";
+	"path" = "treetexture.png";
 	"flip" = "false";
 }
 
 # texture for plane
 "plane" {
 	"target" = "texture2d";
-	"path" = "assets/textures/planetexture.png";
+	"path" = "planetexture.png";
 	"flip" = "true";
 }
 
 # texture for second  plane (a26)
 "plane_douglas" {
 	"target" = "texture2d";
-	"path" = "assets/textures/gltf_embedded_1.jpeg";
+	"path" = "gltf_embedded_1.jpeg";
 	"flip" = "false";
 }
 
 # texture for enemy plane
 "enemy_plane" {
 	"target" = "texture2d";
-	"path" = "assets/textures/enemyplanetexture.png";
+	"path" = "enemyplanetexture.png";
 	"flip" = "true";
 }
 
 # texture for propeller
 "propeller" {
 	"target" = "texture2d";
-	"path" = "assets/textures/propellertexture.png";
+	"path" = "propellertexture.png";
 	"flip" = "true";
 }
 
 # texture for balloon
 "balloon" {
 	"target" = "texture2d";
-	"path" = "assets/textures/balloontexture.png";
+	"path" = "balloontexture.png";
 	"flip" = "true";
 }
 
 # texture for blimp
 "blimp" {
 	"target" = "texture2d";
-	"path" = "assets/textures/blimptexture.png";
+	"path" = "blimptexture.png";
 	"flip" = "true";
 }
 
 # ufo texture
 "ufo" {
 	"target" = "texture2d";
-	"path" = "assets/textures/ufotexture.png";
+	"path" = "ufotexture.png";
 	"flip" = "true";
 }
 
 # explosion particle
 "explosion_particle" {
 	"target" = "texture2d";
-	"path" = "assets/textures/explosionparticle.png";
+	"path" = "explosionparticle.png";
 	"flip" = "false";
 }
 
 # bullet texture
 "bullet" {
 	"target" = "texture2d";
-	"path" = "assets/textures/bullettexture.png";
+	"path" = "bullettexture.png";
 	"flip" = "false";
 }
 
 # player marker
 "player_marker" {
 	"target" = "texture2d";
-	"path" = "assets/textures/minimap/playermarker.png";
+	"path" = "playermarker.png";
 	"flip" = "false";
 }
 
 # enemy marker
 "enemy_marker" {
 	"target" = "texture2d";
-	"path" = "assets/textures/minimap/enemymarker.png";
+	"path" = "enemymarker.png";
 	"flip" = "false";
 }
 
 # crosshair
 "crosshair" {
 	"target" = "texture2d";
-	"path" = "assets/textures/crosshair.png";
+	"path" = "crosshair.png";
 	"flip" = "false";
 }
 
 # score background
 "score_background" {
 	"target" = "texture2d";
-	"path" = "assets/textures/skor-bg.png";
+	"path" = "skor-bg.png";
 	"flip" = "false";
 }
 
 # barrel texture
 "barrel" {
 	"target" = "texture2d";
-	"path" = "assets/textures/lambert1_baseColor.jpeg";
+	"path" = "lambert1_baseColor.jpeg";
 	"flip" = "false";
 }
 
 # Warship texture
 "warship" {
 	"target" = "texture2d";
-	"path" = "assets/textures/warship.png";
+	"path" = "warship.png";
 	"flip" = "true";
 }
 
 # cubemap for skybox
 "skybox" {
 	"target" = "cubemap";
-	"east" = "assets/textures/skybox/skybox_east.png";
-	"west" = "assets/textures/skybox/skybox_west.png";
-	"up" = "assets/textures/skybox/skybox_up.png";
-	"down" = "assets/textures/skybox/skybox_down.png";
-	"north" = "assets/textures/skybox/skybox_north.png";
-	"south" = "assets/textures/skybox/skybox_south.png";
+	"east" = "skybox_east.png";
+	"west" = "skybox_west.png";
+	"up" = "skybox_up.png";
+	"down" = "skybox_down.png";
+	"north" = "skybox_north.png";
+	"south" = "skybox_south.png";
 }
 
 # cubemap for nightskybox
 "nightskybox" {
 	"target" = "cubemap";
-	"east" = "assets/textures/skybox/nightskybox_east.png";
-	"west" = "assets/textures/skybox/nightskybox_west.png";
-	"up" = "assets/textures/skybox/nightskybox_up.png";
-	"down" = "assets/textures/skybox/nightskybox_down.png";
-	"north" = "assets/textures/skybox/nightskybox_north.png";
-	"south" = "assets/textures/skybox/nightskybox_south.png";
+	"east" = "nightskybox_east.png";
+	"west" = "nightskybox_west.png";
+	"up" = "nightskybox_up.png";
+	"down" = "nightskybox_down.png";
+	"north" = "nightskybox_north.png";
+	"south" = "nightskybox_south.png";
 }
 
 # cubemap for nightskybox
 "cloudynightskybox" {
 	"target" = "cubemap";
-	"east" = "assets/textures/skybox/Cloudy_Sky-Night_01-512x512.png";
-	"west" = "assets/textures/skybox/Cloudy_Sky-Night_02-512x512.png";
-	"up" = "assets/textures/skybox/Cloudy_Sky-Night_01-512x512.png";
-	"down" = "assets/textures/skybox/Cloudy_Sky-Night_01-512x512.png";
-	"north" = "assets/textures/skybox/Cloudy_Sky-Night_02-512x512.png";
-	"south" = "assets/textures/skybox/Cloudy_Sky-Night_02-512x512.png";
+	"east" = "Cloudy_Sky-Night_01-512x512.png";
+	"west" = "Cloudy_Sky-Night_02-512x512.png";
+	"up" = "Cloudy_Sky-Night_01-512x512.png";
+	"down" = "Cloudy_Sky-Night_01-512x512.png";
+	"north" = "Cloudy_Sky-Night_02-512x512.png";
+	"south" = "Cloudy_Sky-Night_02-512x512.png";
 }

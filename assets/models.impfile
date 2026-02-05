@@ -2,46 +2,46 @@
 
 # Plane model
 "plane" {
-	"path" = "assets/models/plane.obj";
+	"path" = "plane.obj";
 }
 
 # Second Plane model (a26)
 "plane_douglas" {
-	"path" = "assets/models/douglas.obj";
+	"path" = "douglas.obj";
 }
 
 
 # Propeller model
 "propeller" {
-	"path" = "assets/models/propeller.obj";
+	"path" = "propeller.obj";
 }
 
 # Balloon model
 "balloon" {
-	"path" = "assets/models/balloon.obj";
+	"path" = "balloon.obj";
 }
 
 # Blimp model
 "blimp" {
-	"path" = "assets/models/blimp.obj";
+	"path" = "blimp.obj";
 }
 
 # UFO model
 "ufo" {
-	"path" = "assets/models/ufo.obj";
+	"path" = "ufo.obj";
 }
 
 # Bullet model
 "bullet" {
-	"path" = "assets/models/bullet.obj";
+	"path" = "bullet.obj";
 }
 
 # Barrel model
 "barrel" {
-	"path" = "assets/models/barrel.obj";
+	"path" = "barrel.obj";
 }
 
 # Warship model
 "warship" {
-	"path" = "assets/models/warship.obj";
+	"path" = "warship.obj";
 }

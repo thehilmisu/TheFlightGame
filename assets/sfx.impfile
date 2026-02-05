@@ -2,21 +2,21 @@
 # Sound effects have one variable: 'path', the path the sfx file (a .wav file)
 
 "click" {
-	"path" = "assets/sfx/click.wav";
+	"path" = "click.wav";
 	"gain" = "4.0";
 }
 
 "explosion" {
-	"path" = "assets/sfx/explosion.wav";
+	"path" = "explosion.wav";
 	"gain" = "96.0";
 }
 
 "shoot" {
-	"path" = "assets/sfx/shoot.wav";
+	"path" = "shoot.wav";
 	"gain" = "0.4";
 }
 
 "hit" {
-	"path" = "assets/sfx/hit.wav";
+	"path" = "hit.wav";
 	"gain" = "0.1";
 }

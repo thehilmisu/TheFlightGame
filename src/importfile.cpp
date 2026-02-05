@@ -180,6 +180,11 @@ namespace impfile
 		while (stream.get(c) && c != '}')
 			entryContent << c;
 
+		fprintf(stderr, "DEBUG parseEntry: entry '%s' content = [%s]\n", entry.name.c_str(), entryContent.str().c_str());
+
+		// Reset read position to beginning after writing
+		entryContent.seekg(0);
+
 		while (entryContent.rdbuf()->in_avail())
 		{
 			// For some weird reason the code did not work parsing variables
@@ -196,9 +201,11 @@ namespace impfile
 				fprintf(stderr, "Error in \'%s\'\n", entry.name.c_str());
 				return res;
 			}
+			fprintf(stderr, "DEBUG parseEntry: parsed variable '%s' = '%s'\n", v.first.c_str(), v.second.c_str());
 			entry.variables.insert(v);
 		}
 
+		fprintf(stderr, "DEBUG parseEntry: entry '%s' has %zu variables\n", entry.name.c_str(), entry.variables.size());
 		return Result::Ok();
 	}
 

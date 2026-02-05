@@ -15,34 +15,33 @@ void AssetPacker::scanDirectory(const char* path) {
         if (entry.path().filename() == ".DS_Store") continue; // Skip .DS_Store files
         if (entry.path().extension() == ".txt") continue; // Skip .txt files
 
-        // Get relative path from parent of assets directory (e.g., "assets/shaders/foo.glsl")
-        std::string relativePath = std::filesystem::relative(entry.path(), parentDir).string();
+        // Use just the filename (no directory path)
+        std::string filename = entry.path().filename().string();
 
         if (entry.path().extension() == ".png" ||
             entry.path().extension() == ".jpg" ||
             entry.path().extension() == ".jpeg" ||
             entry.path().extension() == ".bmp") {
-            textures[relativePath] = entry.path().string();
+            textures[filename] = entry.path().string();
         } else if (entry.path().extension() == ".vert" ||
                    entry.path().extension() == ".frag" ||
                    entry.path().extension() == ".glsl") {
-            shaders[relativePath] = entry.path().string();
+            shaders[filename] = entry.path().string();
         } else if (entry.path().extension() == ".obj" ||
                    entry.path().extension() == ".fbx" ||
                    entry.path().extension() == ".gltf") {
-            models[relativePath] = entry.path().string();
+            models[filename] = entry.path().string();
         } else if (entry.path().extension() == ".mtl") {
-            materials[relativePath] = entry.path().string();
+            materials[filename] = entry.path().string();
         } else if (entry.path().extension() == ".ttf" ||
                    entry.path().extension() == ".otf") {
-            fonts[relativePath] = entry.path().string();
+            fonts[filename] = entry.path().string();
         } else if (entry.path().extension() == ".wav" ||
                    entry.path().extension() == ".mp3" ||
                    entry.path().extension() == ".ogg") {
-            sounds[relativePath] = entry.path().string();
+            sounds[filename] = entry.path().string();
         } else if (entry.path().extension() == ".impfile") {
-            // Store impfiles with just filename, not full path
-            impfiles[entry.path().filename().string()] = entry.path().string();
+            impfiles[filename] = entry.path().string();
         } else {
             std::cout << "Unknown asset type: " << entry.path() << std::endl;
         }
