@@ -145,8 +145,10 @@ namespace game
                 game::checkForHit(enemyBullets, player, 10.0f);
 
                 // Spawn Balloons
-                if (timers.getTimer("spawn_balloon"))
+                if (timers.getTimer("spawn_balloon")){
+                    INFO("BALLOONN");
                     spawnBalloons(player, balloons, lcg, permutations);
+                }
                 // Update Balloons
                 for (auto &balloon : balloons)
                     balloon.updateBalloon(dt);
@@ -276,6 +278,7 @@ namespace game
             window.swapBuffers();
             window.updateKeyStates();
             dt = getTime() - startTime;
+            timers.reset();
         }
 
         return NONE;
