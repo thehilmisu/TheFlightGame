@@ -60,21 +60,6 @@ namespace game {
 		glm::vec3 invRotate(const glm::vec3 &v) const;
 	};
 
-	struct Timer {
-		float time = 0.0f;
-		float maxtime = 0.0f;
-	};
-
-	struct TimerManager {
-		std::unordered_map<std::string, Timer> timers;
-		void addTimer(const std::string& name, float maxtime);
-		void addTimer(const std::string& name, float time, float maxtime);
-		void update(float dt);
-		//Resets all timers that have time below 0.0
-		void reset();
-		bool getTimer(const std::string &name);
-	};
-
 	void loadAssets();
 	//Initializes the shader uniforms
 	void initUniforms();

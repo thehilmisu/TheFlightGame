@@ -3,6 +3,7 @@
 #include "gui.h"
 #include <SDL.h>
 #include "timing.h"
+#include "timers.h"
 #include "logger.h"
 
 #define BALLOON_EXPLOSION_SCALE 2.5f
@@ -43,7 +44,7 @@ namespace game
         bool draw_debug_gui = false;
         game::GameState gameState = game::RUNNING;
 
-        TimerManager timers;
+        TimerManager &timers = TimerManager::getInstance();
         timers.addTimer("spawn_balloon", 0.0f, 50.0f);
         timers.addTimer("spawn_ship", 0.0f, 150.0f);
         timers.addTimer("spawn_plane", 0.0f, 100.0f);

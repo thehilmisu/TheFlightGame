@@ -3,6 +3,7 @@
 #include "gui.h"
 #include <SDL.h>
 #include "timing.h"
+#include "timers.h"
 
 
 namespace game {
@@ -39,7 +40,7 @@ namespace game {
     bool draw_debug_gui = false;
     bool paused = false;
 
-    TimerManager timers;
+    TimerManager &timers = TimerManager::getInstance();
     timers.addTimer("spawn_balloon", 0.0f, 20.0f);
     timers.addTimer("spawn_barrel", 0.0f, 20.0f);
 
