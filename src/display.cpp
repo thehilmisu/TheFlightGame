@@ -587,6 +587,41 @@ namespace gfx {
         glEnable(GL_DEPTH_TEST);
     }
 
+    void displayDashboardBackground() {
+        Window &window = Window::getInstance();
+
+        int w, h;
+        w = window.getWidth();
+        h = window.getHeight();
+        glm::mat4 screenMat = glm::scale(
+            glm::mat4(1.0f), glm::vec3(2.0f / float(w), 2.0f / float(h), 0.0f));
+
+        glEnable(GL_BLEND);
+        glDisable(GL_DEPTH_TEST);
+        glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+
+        VAOS->bind("quad");
+        SHADERS->use("dashboardbackground");
+        ShaderProgram &dashShader = SHADERS->getShader("dashboardbackground");
+        dashShader.uniformMat4x4("screen", screenMat);
+
+        glm::mat4 transform(1.0f);
+
+        float dashWidth = float(w) * 0.25f;  // 45% of screen width
+        float dashHeight = dashWidth * 0.75f; // Wide dashboard aspect ratio
+        // Position at bottom center of screen
+        transform = glm::translate(transform, glm::vec3(0.0f, (-float(h) / 2.0f) + (dashHeight / 2.0f) - 30.0f, 0.0f));
+        transform =
+                glm::scale(transform, glm::vec3(dashWidth, dashHeight, 0.0f));
+        transform =
+                glm::rotate(transform, glm::radians(90.0f), glm::vec3(1.0f, 0.0f, 0.0f));
+        dashShader.uniformMat4x4("transform", transform);
+        VAOS->draw();
+
+        glDisable(GL_BLEND);
+        glEnable(GL_DEPTH_TEST);
+    }
+
     void displayMiniMapBackground(float totalTime) {
         Window &window = Window::getInstance();
 

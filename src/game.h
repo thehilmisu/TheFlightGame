@@ -6,7 +6,7 @@
 constexpr float SPEED = 48.0f;
 constexpr float ACCELERATION = 12.0f;
 constexpr float BULLET_SPEED = 384.0f;
-constexpr unsigned int MAX_LOD = 5;
+constexpr unsigned int MAX_LOD = 20;
 constexpr float LOD_SCALE = 2.0f;
 
 constexpr float FOVY = glm::radians(75.0f);
@@ -350,6 +350,7 @@ namespace gfx {
 	void displaySpeed(float speed);
 	void displayDanger(float totalTime);
 	void displayFuel(float fuel, float totalTime);
+	void displayDashboardBackground();
 	void displayEnemyMarkers(
 		const std::vector<gameobjects::Enemy> &enemies,
 		const game::Transform &playertransform

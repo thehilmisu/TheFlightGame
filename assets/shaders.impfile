@@ -78,6 +78,11 @@
 	"fragment" = "textured-simple-frag.glsl";
 }
 
+"dashboardbackground" {
+	"vertex" = "vert2d.glsl";
+	"fragment" = "dashboardbackground.glsl";
+}
+
 "fog" {
 	"vertex" = "fogvert.glsl";
 	"fragment" = "fogfrag.glsl";

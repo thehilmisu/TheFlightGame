@@ -84,6 +84,8 @@ namespace game
             gfx::displaySkybox(skybox);
             // Fog
             gfx::displayFog();
+            // Dashboard Background
+            gfx::displayDashboardBackground();
 
             if (gameState == game::RUNNING) {
                 timers.update(dt);
@@ -117,28 +119,11 @@ namespace game
                     // TODO: also need to add a sound to indicate the danger.
                 }
                 updateExplosions(explosions, player.transform.position, dt);
-                gui.dItems.playerPosition = player.transform.position;
-                gui.dItems.cameraPosition = window.getCamera().position;
-                gui.dItems.shipCount = ships.size();
-                gui.dItems.balloonCount = balloons.size();
-
-                // Update HUD data
-                gui.hudItems.health = player.health;
-                gui.hudItems.speed = player.speed;
-                gui.hudItems.bulletCount = bullets.size();
-                gui.hudItems.altitude = player.transform.position.y;
-                gui.hudItems.score = score;
-                gui.hudItems.crashed = player.crashed;
-                gui.hudItems.fuel = player.fuel;
-                gui.hudItems.elapsedTime = getTime();
 
                 // Shoot bullets
                 KeyState leftbutton = window.getButtonState(SDL_BUTTON_LEFT);
                 KeyState spacebar = window.getKeyState(SDLK_SPACE);
-                if (player.shoottimer <= 0.0f &&
-                    (window.keyIsHeld(spacebar) || window.keyIsHeld(leftbutton)) &&
-                    !player.crashed)
-                {
+                if (player.shoottimer <= 0.0f && (window.keyIsHeld(spacebar) || window.keyIsHeld(leftbutton)) && !player.crashed){
                     // SNDSRC->playid("shoot", player.transform.position);
                     player.resetShootTimer();
                     bullets.push_back(gameobjects::Bullet(player, glm::vec3(-8.5f, -0.75f, 8.5f)));
@@ -150,8 +135,8 @@ namespace game
                 game::checkForBulletTerrainCollision(bullets, permutations);
                 checkForHit(bullets, balloons, 24.0f);
                 checkForHit(bullets, ships, 32.0f);
+                checkForHit(bullets, planes, 12.0f);
                 // checkForHit(bullets, ufos, 14.0f);
-                // checkForHit(bullets, planes, 12.0f);
                 // Update Enemy Bullets
                 game::checkBulletDist(enemyBullets, player);
                 game::updateBullets(enemyBullets, dt);
@@ -190,6 +175,22 @@ namespace game
                 game::updateCamera(player, dt);
                 // to make the terrain infinite
                 game::generateNewChunks(permutations, chunktables, decorations);
+
+                gui.dItems.playerPosition = player.transform.position;
+                gui.dItems.cameraPosition = window.getCamera().position;
+                gui.dItems.shipCount = ships.size();
+                gui.dItems.balloonCount = balloons.size();
+
+                // Update HUD data
+                gui.hudItems.health = player.health;
+                gui.hudItems.speed = player.speed;
+                gui.hudItems.bulletCount = bullets.size();
+                gui.hudItems.altitude = player.transform.position.y;
+                gui.hudItems.score = score;
+                gui.hudItems.crashed = player.crashed;
+                gui.hudItems.fuel = player.fuel;
+                gui.hudItems.elapsedTime = getTime();
+
             }
             else if (gameState == game::DEAD) {
                 // Death should not be handled instantly, otherwise the player won't see the explosion

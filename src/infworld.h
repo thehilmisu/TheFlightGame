@@ -14,8 +14,8 @@
 constexpr unsigned int PREC = 40;
 constexpr float CHUNK_SZ = 64.0f;
 constexpr float HEIGHT = 270.0f;
-constexpr float SCALE = 2.5f;
-constexpr float FREQUENCY = 720.0f;
+constexpr float SCALE = 1.5f;
+constexpr float FREQUENCY = 1000.0f;
 constexpr size_t CHUNK_VERT_SZ = 3;
 constexpr size_t CHUNK_VERT_SZ_BYTES = CHUNK_VERT_SZ * sizeof(float);
 constexpr unsigned int CHUNK_VERT_COUNT = PREC * PREC * 6;
