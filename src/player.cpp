@@ -7,11 +7,27 @@ constexpr unsigned int DEFAULT_HEALTH = 100;
 constexpr float DEFAULT_FUEL = 100.0f;
 constexpr float DAMAGE_COOLDOWN = 0.2f;
 constexpr float DAMAGE_TIMER = 1.0f;
-constexpr float ROTATION_Z_SPEED = 0.5f;
-constexpr float MAX_ROTATION_Z = glm::radians(15.0f);
-constexpr float ROTATION_Y_SPEED = 0.8f;
-constexpr float ROTATION_X_SPEED = 0.6f;
-constexpr float MAX_ROTATION_X = glm::radians(70.0f);
+// Roll (banking) parameters
+constexpr float ROLL_RATE = 2.5f;                          // rad/s input roll speed
+constexpr float MAX_ROLL_ANGLE = glm::radians(75.0f);      // max bank angle
+constexpr float ROLL_RETURN_RATE = 1.2f;                    // rad/s auto-level roll
+// Pitch parameters
+constexpr float PITCH_RATE = 1.2f;                          // rad/s input pitch speed
+constexpr float MAX_PITCH_ANGLE = glm::radians(70.0f);      // max pitch angle
+constexpr float PITCH_RETURN_RATE = 0.3f;                   // rad/s gentle auto-level pitch
+// Yaw derived from banking
+constexpr float BANK_TURN_FACTOR = 1.0f;                    // yaw = sin(roll) * this * speedFactor
+// Physics
+constexpr float GRAVITY = 18.0f;                            // units/s^2 arcade gravity
+constexpr float LIFT_FACTOR = 1.0f;                         // lift = gravity at cruise, wings level
+constexpr float PITCH_SPEED_TRANSFER = 15.0f;               // speed gain/loss from pitch
+// Smoothing (lerp factors per second)
+constexpr float ROLL_SMOOTHING = 6.0f;
+constexpr float PITCH_SMOOTHING = 5.0f;
+constexpr float YAW_SMOOTHING = 6.0f;
+// Safety
+constexpr float MIN_HEIGHT = 4.0f;
+
 constexpr float FUEL_CONSUMPTION_RATE = 2.0f;
 
 namespace gameobjects {
@@ -60,22 +76,22 @@ void Player::rotateWithMouse(float dt) {
   Window &window = Window::getInstance();
   double dx = window.getMouseDX(), dy = window.getMouseDY();
 
-  float speedx = 0.0f, speedy = ROTATION_Y_SPEED / 5.0f * dx;
+  float speedx = 0.0f, speedy = BANK_TURN_FACTOR / 5.0f * dx;
 
-  speedx = -ROTATION_X_SPEED * dy;
+  speedx = -PITCH_RATE * dy;
 
-  speedx = std::min(speedx, ROTATION_X_SPEED / 2.0f);
-  speedx = std::max(speedx, -ROTATION_X_SPEED / 2.0f);
-  speedy = std::min(speedy, ROTATION_Y_SPEED / 3.0f);
-  speedy = std::max(speedy, -ROTATION_Y_SPEED / 3.0f);
+  speedx = std::min(speedx, PITCH_RATE / 2.0f);
+  speedx = std::max(speedx, -PITCH_RATE / 2.0f);
+  speedy = std::min(speedy, BANK_TURN_FACTOR / 3.0f);
+  speedy = std::max(speedy, -BANK_TURN_FACTOR / 3.0f);
 
   if (yRotationDirection == Player::RY_NONE)
     transform.rotation.y -= speedy * dt;
 
   if (xRotationDirection == Player::RX_NONE) {
     transform.rotation.x -= speedx * dt;
-    transform.rotation.x = std::min(transform.rotation.x, MAX_ROTATION_X);
-    transform.rotation.x = std::max(transform.rotation.x, -MAX_ROTATION_X);
+    transform.rotation.x = std::min(transform.rotation.x, MAX_PITCH_ANGLE);
+    transform.rotation.x = std::max(transform.rotation.x, -MAX_PITCH_ANGLE);
   }
 }
 
@@ -101,7 +117,8 @@ void Player::update(float dt) {
 
   Window &window = Window::getInstance();
 
-  // Turn left/right
+  // --- Input: same keys as before ---
+  // A/D now control roll (banking), not direct yaw
   if (window.getKeyState(SDLK_d) == JUST_PRESSED)
     yRotationDirection = Player::RY_RIGHT;
   else if (window.getKeyState(SDLK_a) == JUST_PRESSED)
@@ -110,7 +127,7 @@ void Player::update(float dt) {
            window.getKeyState(SDLK_d) == RELEASED)
     yRotationDirection = Player::RY_NONE;
 
-  // Change pitch
+  // W/S control pitch
   if (window.getKeyState(SDLK_s) == JUST_PRESSED)
     xRotationDirection = Player::RX_UP;
   else if (window.getKeyState(SDLK_w) == JUST_PRESSED)
@@ -119,40 +136,75 @@ void Player::update(float dt) {
            window.getKeyState(SDLK_w) == RELEASED)
     xRotationDirection = Player::RX_NONE;
 
-  // Rotate with mouse
-#if 0
-		rotateWithMouse(dt);
-#endif
-  // Rotate on the y axis
-  if (yRotationDirection == Player::RY_RIGHT) {
-    transform.rotation.z += dt * ROTATION_Z_SPEED;
-    transform.rotation.z = std::min(transform.rotation.z, MAX_ROTATION_Z);
-    transform.rotation.y -= ROTATION_Y_SPEED * dt;
-  } else if (yRotationDirection == Player::RY_LEFT) {
-    transform.rotation.z -= dt * ROTATION_Z_SPEED;
-    transform.rotation.z = std::max(transform.rotation.z, -MAX_ROTATION_Z);
-    transform.rotation.y += ROTATION_Y_SPEED * dt;
-  } else {
-    if (transform.rotation.z < 0.0f)
-      transform.rotation.z += dt * ROTATION_Z_SPEED / 2.0f;
-    else if (transform.rotation.z > 0.0f)
-      transform.rotation.z -= dt * ROTATION_Z_SPEED / 2.0f;
+  // --- Compute target rotation rates ---
+  float targetRollRate = 0.0f;
+  float targetPitchRate = 0.0f;
 
-    if (std::abs(transform.rotation.z) < glm::radians(0.5f))
-      transform.rotation.z = 0.0f;
+  // Roll input
+  if (yRotationDirection == Player::RY_RIGHT)
+    targetRollRate = ROLL_RATE;
+  else if (yRotationDirection == Player::RY_LEFT)
+    targetRollRate = -ROLL_RATE;
+
+  // Pitch input
+  if (xRotationDirection == Player::RX_DOWN)
+    targetPitchRate = PITCH_RATE;
+  else if (xRotationDirection == Player::RX_UP)
+    targetPitchRate = -PITCH_RATE;
+
+  // --- Bank-to-turn: yaw derived purely from roll angle ---
+  // No direct yaw from A/D - roll first, then the bank produces the turn
+  float speedFactor = speed / SPEED; // 1.0 at cruise speed
+  float targetYawRate = -std::sin(transform.rotation.z) * BANK_TURN_FACTOR * speedFactor;
+
+  // --- Smooth rotation rates (inertia) ---
+  float rollLerp = 1.0f - std::exp(-ROLL_SMOOTHING * dt);
+  float pitchLerp = 1.0f - std::exp(-PITCH_SMOOTHING * dt);
+  float yawLerp = 1.0f - std::exp(-YAW_SMOOTHING * dt);
+
+  currentRollRate += (targetRollRate - currentRollRate) * rollLerp;
+  currentPitchRate += (targetPitchRate - currentPitchRate) * pitchLerp;
+  currentYawRate += (targetYawRate - currentYawRate) * yawLerp;
+
+  // --- Apply roll ---
+  transform.rotation.z += currentRollRate * dt;
+
+  // Auto-level roll when no A/D input
+  if (yRotationDirection == Player::RY_NONE) {
+    if (transform.rotation.z > 0.0f) {
+      transform.rotation.z -= ROLL_RETURN_RATE * dt;
+      if (transform.rotation.z < 0.0f) transform.rotation.z = 0.0f;
+    } else if (transform.rotation.z < 0.0f) {
+      transform.rotation.z += ROLL_RETURN_RATE * dt;
+      if (transform.rotation.z > 0.0f) transform.rotation.z = 0.0f;
+    }
   }
 
-  // Rotate on the x axis
-  if (xRotationDirection == Player::RX_UP) {
-    transform.rotation.x -= dt * ROTATION_X_SPEED;
-    transform.rotation.x = std::max(transform.rotation.x, -MAX_ROTATION_X);
-  } else if (xRotationDirection == Player::RX_DOWN) {
-    transform.rotation.x += dt * ROTATION_X_SPEED;
-    transform.rotation.x = std::min(transform.rotation.x, MAX_ROTATION_X);
+  // Clamp roll
+  transform.rotation.z = std::max(-MAX_ROLL_ANGLE, std::min(MAX_ROLL_ANGLE, transform.rotation.z));
+
+  // --- Apply pitch ---
+  transform.rotation.x += currentPitchRate * dt;
+
+  // Auto-level pitch gently when no W/S input
+  if (xRotationDirection == Player::RX_NONE) {
+    if (transform.rotation.x > 0.0f) {
+      transform.rotation.x -= PITCH_RETURN_RATE * dt;
+      if (transform.rotation.x < 0.0f) transform.rotation.x = 0.0f;
+    } else if (transform.rotation.x < 0.0f) {
+      transform.rotation.x += PITCH_RETURN_RATE * dt;
+      if (transform.rotation.x > 0.0f) transform.rotation.x = 0.0f;
+    }
   }
 
-  transform.position += transform.direction() * speed / 2.0f * dt;
-  // Acceleration
+  // Clamp pitch
+  transform.rotation.x = std::max(-MAX_PITCH_ANGLE, std::min(MAX_PITCH_ANGLE, transform.rotation.x));
+
+  // --- Apply yaw (derived from bank) ---
+  transform.rotation.y += currentYawRate * dt;
+
+  // --- Speed: throttle + pitch-based speed transfer ---
+  // Throttle (same keys: Shift accelerate, Ctrl decelerate)
   if (window.keyIsHeld(window.getKeyState(SDLK_LSHIFT)))
     speed += ACCELERATION * dt;
   else if (window.getScrollSpeed() > 0.0)
@@ -161,9 +213,32 @@ void Player::update(float dt) {
     speed -= ACCELERATION * dt;
   else if (window.getScrollSpeed() < 0.0)
     speed -= ACCELERATION * 4.0f * dt;
-  speed = std::min(speed, SPEED * 3.0f);
-  speed = std::max(speed, SPEED);
-  transform.position += transform.direction() * speed / 2.0f * dt;
+
+  // Diving speeds up, climbing slows down
+  speed += std::sin(transform.rotation.x) * PITCH_SPEED_TRANSFER * dt;
+
+  // Clamp speed
+  speed = std::max(SPEED * 0.5f, std::min(SPEED * 3.0f, speed));
+
+  // --- Gravity and Lift ---
+  // Lift depends on speed and how level the wings are (cos of roll)
+  float liftAccel = LIFT_FACTOR * GRAVITY * (speed / SPEED) * std::cos(transform.rotation.z);
+  // Net vertical acceleration: lift - gravity
+  float netVertAccel = liftAccel - GRAVITY;
+  verticalVelocity += netVertAccel * dt;
+  // Dampen vertical velocity to prevent wild oscillation
+  verticalVelocity *= std::exp(-3.0f * dt);
+
+  // --- Position integration ---
+  transform.position += transform.direction() * speed * dt;
+  transform.position.y += verticalVelocity * dt;
+
+  // Safety floor
+  if (transform.position.y < MIN_HEIGHT) {
+    transform.position.y = MIN_HEIGHT;
+    if (verticalVelocity < 0.0f)
+      verticalVelocity = 0.0f;
+  }
 }
 
 void Player::resetShootTimer() { shoottimer = 0.2f; }

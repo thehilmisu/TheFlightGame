@@ -85,7 +85,7 @@ namespace game
             // Fog
             gfx::displayFog();
             // Dashboard Background
-            gfx::displayDashboardBackground();
+            // gfx::displayDashboardBackground();
 
             if (gameState == game::RUNNING) {
                 timers.update(dt);
@@ -173,6 +173,7 @@ namespace game
                 gui.drawHUD();
 
                 game::updateCamera(player, dt);
+
                 // to make the terrain infinite
                 game::generateNewChunks(permutations, chunktables, decorations);
 
@@ -196,12 +197,12 @@ namespace game
                 // Death should not be handled instantly, otherwise the player won't see the explosion
                 // TRACE("Player Deathtimer: %.2f", player.deathtimer);
                 if (player.deathtimer > 2.0f) {
-                    switch (game::DeathMenuActions action = gui.drawDeathMenu())
+                    switch (gui.drawDeathMenu())
                     {
-                    case EXIT:
+                    case DEATH_EXIT:
                         window.setIsRunning(false);
                         break;
-                    case EXIT_TO_MAINMENU:
+                    case DEATH_EXIT_TO_MAINMENU:
                         return game::EXIT_TO_MAINMENU;
                         break;
                     case TRY_AGAIN:
@@ -215,9 +216,6 @@ namespace game
                         planes.clear();
                         explosions.clear();
                         barrels.clear();
-                        // Reset timers
-                        // timers.reset();
-                        // Set game state to running
                         gameState = game::RUNNING;
                         break;
                     case NONE:
