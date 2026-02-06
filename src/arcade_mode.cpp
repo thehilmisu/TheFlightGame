@@ -41,7 +41,7 @@ namespace game
         float dt = 0.0f;
         unsigned int score = 0; // Player score
         bool draw_debug_gui = false;
-        bool paused = false;
+        game::GameState gameState = game::RUNNING;
 
         TimerManager timers;
         timers.addTimer("spawn_balloon", 0.0f, 50.0f);
@@ -85,8 +85,7 @@ namespace game
             // Fog
             gfx::displayFog();
 
-            if (!paused)
-            {
+            if (gameState == game::RUNNING) {
                 timers.update(dt);
 
                 // Draw HUD Backgorunds
@@ -106,15 +105,14 @@ namespace game
                 player.checkIfCrashed(dt, permutations);
                 justcrashed = player.crashed ^ justcrashed;
                 // Update explosions
-                if (justcrashed)
-                {
+                if (justcrashed) {
                     explosions.push_back(gameobjects::Explosion(player.transform.position));
                     // SNDSRC->playid("explosion", player.transform.position);
                     WARN("Plane Crashed");
+                    gameState = game::DEAD;
                 }
                 player.update(dt);
-                if (player.fuel <= 20.0f)
-                {
+                if (player.fuel <= 20.0f) {
                     gfx::displayDanger(totalTime);
                     // TODO: also need to add a sound to indicate the danger.
                 }
@@ -193,11 +191,48 @@ namespace game
                 // to make the terrain infinite
                 game::generateNewChunks(permutations, chunktables, decorations);
             }
-            // paused
-            else
-            {
-                switch (game::PauseMenuActions action = gui.drawPauseMenu())
-                {
+            else if (gameState == game::DEAD) {
+                // Death should not be handled instantly, otherwise the player won't see the explosion
+                // TRACE("Player Deathtimer: %.2f", player.deathtimer);
+                if (player.deathtimer > 2.0f) {
+                    switch (game::DeathMenuActions action = gui.drawDeathMenu())
+                    {
+                    case EXIT:
+                        window.setIsRunning(false);
+                        break;
+                    case EXIT_TO_MAINMENU:
+                        return game::EXIT_TO_MAINMENU;
+                        break;
+                    case TRY_AGAIN:
+                        // Reset player
+                        player = gameobjects::Player(glm::vec3(0.0f, HEIGHT * SCALE * 0.5f, 0.0f));
+                        // Clear bullets and enemies
+                        bullets.clear();
+                        enemyBullets.clear();
+                        balloons.clear();
+                        ships.clear();
+                        planes.clear();
+                        explosions.clear();
+                        barrels.clear();
+                        // Reset timers
+                        // timers.reset();
+                        // Set game state to running
+                        gameState = game::RUNNING;
+                        break;
+                    case NONE:
+                        break;
+                    default:
+                        break;
+                    }
+                }else {
+                    player.update(dt);
+                    updateExplosions(explosions, player.transform.position, dt);
+                    gfx::displayExplosions(explosions);
+                }
+            }
+            else if (gameState == game::PAUSED) {
+                // Pause should be handled instantly
+                switch (game::PauseMenuActions action = gui.drawPauseMenu()) {
                 case EXIT:
                     window.setIsRunning(false);
                     break;
@@ -205,7 +240,7 @@ namespace game
                     return action;
                     break;
                 case RESUME:
-                    paused = false;
+                    gameState = game::RUNNING;
                     break;
                 case NONE:
                     break;
@@ -216,8 +251,12 @@ namespace game
 
             if (window.getKeyState(SDLK_TAB) == JUST_PRESSED)
                 draw_debug_gui = !draw_debug_gui;
-            if (window.getKeyState(SDLK_ESCAPE) == JUST_PRESSED)
-                paused = !paused;
+            if (window.getKeyState(SDLK_ESCAPE) == JUST_PRESSED){
+                if (gameState == game::RUNNING)
+                    gameState = game::PAUSED;
+                else if (gameState == game::PAUSED)
+                    gameState = game::RUNNING;
+            }
             // Development Purposes
             if (window.getKeyState(SDLK_p) == JUST_PRESSED)
             {

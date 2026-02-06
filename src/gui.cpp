@@ -7,7 +7,8 @@
 #include "window.h"
 #include <glm/glm.hpp>
 
-Gui::Gui()  {
+Gui::Gui()
+{
 
   IMGUI_CHECKVERSION();
 
@@ -19,21 +20,21 @@ Gui::Gui()  {
   ImGui::StyleColorsDark();
 
   // SDL2 backend
-  Window& window = Window::getInstance();
-  #ifdef __ANDROID__
-    const char *glsl_version = "#version 300 es";
-  #else
-    #if defined(__APPLE__)
-      const char *glsl_version = "#version 150";
-    #else
-      const char *glsl_version = "#version 130";
-    #endif
-  #endif
+  Window &window = Window::getInstance();
+#ifdef __ANDROID__
+  const char *glsl_version = "#version 300 es";
+#else
+#if defined(__APPLE__)
+  const char *glsl_version = "#version 150";
+#else
+  const char *glsl_version = "#version 130";
+#endif
+#endif
 
   ImGui_ImplSDL2_InitForOpenGL(window.getSDLWindow(), window.getGLContext());
   ImGui_ImplOpenGL3_Init(glsl_version);
   // ImGui_ImplOpenGL3_Init(nullptr);
-  
+
   dItems.playerPosition = glm::vec3(0.0f);
   dItems.cameraPosition = glm::vec3(0.0f);
   dItems.shipCount = 0;
@@ -42,24 +43,28 @@ Gui::Gui()  {
   hudItems.fuel = 100.0f;
 }
 
-Gui::~Gui() {
+Gui::~Gui()
+{
   ImGui_ImplOpenGL3_Shutdown();
   ImGui_ImplSDL2_Shutdown();
   ImGui::DestroyContext();
 }
 
-void Gui::newFrame() {
+void Gui::newFrame()
+{
   ImGui_ImplOpenGL3_NewFrame();
   ImGui_ImplSDL2_NewFrame();
   ImGui::NewFrame();
 }
 
-void Gui::render() {
+void Gui::render()
+{
   ImGui::Render();
   ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
 }
 
-void Gui::drawUI() {
+void Gui::drawUI()
+{
   const ImGuiViewport *viewport = ImGui::GetMainViewport();
 
   float sidebarwidth = 250.0f;
@@ -72,7 +77,8 @@ void Gui::drawUI() {
 
   ImGui::PushStyleVar(ImGuiStyleVar_WindowRounding, 0.0f);
 
-  if (ImGui::Begin("Debug Window", nullptr, sidebarflags)) {
+  if (ImGui::Begin("Debug Window", nullptr, sidebarflags))
+  {
     ImGui::Text("Debug Window");
     ImGui::Separator();
 
@@ -98,13 +104,59 @@ void Gui::drawUI() {
   ImGui::PopStyleVar();
 }
 
-game::DeathMenuActions Gui::drawDeathMenu() {
+game::DeathMenuActions Gui::drawDeathMenu()
+{
   game::DeathMenuActions action = game::DEATH_NONE;
+  ImGui::SetNextWindowPos(ImVec2(150.0f, 500.0f), ImGuiCond_Always,
+                          ImVec2(0.5f, 0.5f));
+  ImGui::SetNextWindowSize(ImVec2(300, 400));
 
+  // Use flags to remove the typical window frame for a cleaner "Game Menu" look
+  ImGuiWindowFlags window_flags =
+      ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoResize |
+      ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoBackground;
+
+  if (ImGui::Begin("GameDeathMenu", nullptr, window_flags))
+  {
+    ImGui::PushStyleVar(ImGuiStyleVar_FrameRounding, 5.0f); // Round the buttons
+
+    // Title Text
+    ImGui::SetWindowFontScale(2.0f);
+    float text_width = ImGui::CalcTextSize("River Raid 3D").x;
+    ImGui::SetCursorPosX((ImGui::GetWindowSize().x - text_width) * 0.5f);
+    ImGui::Text("River Raid 3D");
+    ImGui::SetWindowFontScale(1.0f);
+
+    ImGui::Spacing();
+    ImGui::Separator();
+    ImGui::Spacing();
+
+    if (ImGui::Button("TRY AGAIN", ImVec2(-1.0f, 50.0f))) {
+      action = game::TRY_AGAIN;
+    }
+
+    if (ImGui::Button("LOAD GAME", ImVec2(-1.0f, 50.0f))) {
+      // Load menu logic
+    }
+
+    if (ImGui::Button("EXIT TO MAIN MENU", ImVec2(-1.0f, 50.0f))) {
+      action = game::DEATH_EXIT_TO_MAINMENU;
+    }
+
+    ImGui::Spacing();
+
+    if (ImGui::Button("EXIT", ImVec2(-1.0f, 50.0f))) {
+      action = game::DEATH_EXIT;
+    }
+
+    ImGui::PopStyleVar();
+    ImGui::End();
+  }
   return action;
 }
 
-game::PauseMenuActions Gui::drawPauseMenu() {
+game::PauseMenuActions Gui::drawPauseMenu()
+{
   game::PauseMenuActions action = game::NONE;
 
   ImGui::SetNextWindowPos(ImVec2(150.0f, 500.0f), ImGuiCond_Always,
@@ -116,7 +168,7 @@ game::PauseMenuActions Gui::drawPauseMenu() {
       ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoResize |
       ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoBackground;
 
-  if (ImGui::Begin("GameMainMenu", nullptr, window_flags)) {
+  if (ImGui::Begin("GamePauseMenu", nullptr, window_flags)) {
     ImGui::PushStyleVar(ImGuiStyleVar_FrameRounding, 5.0f); // Round the buttons
 
     // Title Text
@@ -154,100 +206,104 @@ game::PauseMenuActions Gui::drawPauseMenu() {
 
   return action;
 }
-game::MainMenuActions Gui::drawMainMenu() {
-    game::MainMenuActions action = game::NONE_SELECTED;
-    Window& window = Window::getInstance();
-    int w = window.getWidth();
-    int h = window.getHeight();
+game::MainMenuActions Gui::drawMainMenu()
+{
+  game::MainMenuActions action = game::NONE_SELECTED;
+  Window &window = Window::getInstance();
+  int w = window.getWidth();
+  int h = window.getHeight();
 
-    float pos_x = (w * 0.3f) + 100.0f;
-    float pos_y = float(h + 75.0f);
+  float pos_x = (w * 0.3f) + 100.0f;
+  float pos_y = float(h + 75.0f);
 
-    ImGui::SetNextWindowPos(ImVec2(pos_x, pos_y), ImGuiCond_Always,
-                            ImVec2(1.0f, 1.0f));
-    ImGui::SetNextWindowSize(ImVec2((w*0.30f), (h * 0.7f)));
+  ImGui::SetNextWindowPos(ImVec2(pos_x, pos_y), ImGuiCond_Always,
+                          ImVec2(1.0f, 1.0f));
+  ImGui::SetNextWindowSize(ImVec2((w * 0.30f), (h * 0.7f)));
 
-    // Use flags to remove the typical window frame for a cleaner "Game Menu" look
-    ImGuiWindowFlags window_flags =
-        ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoResize |
-        ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoBackground;
+  // Use flags to remove the typical window frame for a cleaner "Game Menu" look
+  ImGuiWindowFlags window_flags =
+      ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoResize |
+      ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoBackground;
 
-    if (ImGui::Begin("GameMainMenu", nullptr, window_flags)) {
-      ImGui::PushStyleVar(ImGuiStyleVar_FrameRounding, 5.0f);
+  if (ImGui::Begin("GameMainMenu", nullptr, window_flags)) {
+    ImGui::PushStyleVar(ImGuiStyleVar_FrameRounding, 5.0f);
 
-      // Title Text
-      ImGui::SetWindowFontScale(2.0f);
-      float text_width = ImGui::CalcTextSize("River Raid 3D").x;
-      ImGui::SetCursorPosX((ImGui::GetWindowSize().x - text_width) * 0.5f);
-      ImGui::Text("River Raid 3D");
-      ImGui::SetWindowFontScale(1.0f);
+    // Title Text
+    ImGui::SetWindowFontScale(2.0f);
+    float text_width = ImGui::CalcTextSize("River Raid 3D").x;
+    ImGui::SetCursorPosX((ImGui::GetWindowSize().x - text_width) * 0.5f);
+    ImGui::Text("River Raid 3D");
+    ImGui::SetWindowFontScale(1.0f);
 
-      ImGui::Spacing();
-      ImGui::Separator();
-      ImGui::Spacing();
+    ImGui::Spacing();
+    ImGui::Separator();
+    ImGui::Spacing();
 
-      if (ImGui::Button("NEW GAME", ImVec2(-1.0f, 50.0f))) {
-        action = game::START_GAME;
-      }
-
-      if (ImGui::Button("LOAD GAME", ImVec2(-1.0f, 50.0f))) {
-        action = game::LOAD_GAME;
-      }
-
-      if (ImGui::Button("OPTIONS", ImVec2(-1.0f, 50.0f))) {
-        // Settings logic
-      }
-
-      ImGui::Spacing();
-
-      if (ImGui::Button("EXIT", ImVec2(-1.0f, 50.0f))) {
-        action = game::EXIT_GAME;
-      }
-
-      ImGui::Spacing();
-      ImGui::PopStyleVar();
-      ImGui::End();
+    if (ImGui::Button("NEW GAME", ImVec2(-1.0f, 50.0f))) {
+      action = game::START_GAME;
     }
 
-    pos_x = (w / 2.0f) + 300.0f;
-    pos_y = float(h - 50.0f);
-    ImGui::SetNextWindowPos(ImVec2(pos_x, pos_y), ImGuiCond_Always,
-                            ImVec2(1.0f, 1.0f));
-    ImGui::SetNextWindowSize(ImVec2(300, 75));
-
-    if (ImGui::Begin("PlaneArrows", nullptr, window_flags)) {
-      ImGui::PushStyleVar(ImGuiStyleVar_FrameRounding, 5.0f);
-      ImGui::SetWindowFontScale(2.0f);
-
-      if (ImGui::Button("<<", ImVec2(150.0f, 50.0f))) {
-        action = game::CHANGE_PLANE_MINUS;
-      }
-      ImGui::SameLine();
-      if (ImGui::Button(">>", ImVec2(150.0f, 50.0f))) {
-        action = game::CHANGE_PLANE_PLUS;
-      }
-
-      ImGui::PopStyleVar();
-      ImGui::End();
+    if (ImGui::Button("LOAD GAME", ImVec2(-1.0f, 50.0f))) {
+      action = game::LOAD_GAME;
     }
 
-    return action;
- }
+    if (ImGui::Button("OPTIONS", ImVec2(-1.0f, 50.0f))) {
+      // Settings logic
+    }
 
-void Gui::drawHUD() {
+    ImGui::Spacing();
+
+    if (ImGui::Button("EXIT", ImVec2(-1.0f, 50.0f))) {
+      action = game::EXIT_GAME;
+    }
+
+    ImGui::Spacing();
+    ImGui::PopStyleVar();
+    ImGui::End();
+  }
+
+  pos_x = (w / 2.0f) + 300.0f;
+  pos_y = float(h - 50.0f);
+  ImGui::SetNextWindowPos(ImVec2(pos_x, pos_y), ImGuiCond_Always,
+                          ImVec2(1.0f, 1.0f));
+  ImGui::SetNextWindowSize(ImVec2(300, 75));
+
+  if (ImGui::Begin("PlaneArrows", nullptr, window_flags)) {
+    ImGui::PushStyleVar(ImGuiStyleVar_FrameRounding, 5.0f);
+    ImGui::SetWindowFontScale(2.0f);
+
+    if (ImGui::Button("<<", ImVec2(150.0f, 50.0f))) {
+      action = game::CHANGE_PLANE_MINUS;
+    }
+
+    ImGui::SameLine();
+    
+    if (ImGui::Button(">>", ImVec2(150.0f, 50.0f))){
+      action = game::CHANGE_PLANE_PLUS;
+    }
+
+    ImGui::PopStyleVar();
+    ImGui::End();
+  }
+
+  return action;
+}
+
+void Gui::drawHUD()
+{
 
   ImGuiViewport *viewport = ImGui::GetMainViewport();
   const float padding = 10.0f;
 
   ImGuiWindowFlags hudWindowFlags = ImGuiWindowFlags_NoDecoration |
-                              ImGuiWindowFlags_NoInputs |
-                              // ImGuiWindowFlags_NoBackground |
-                              ImGuiWindowFlags_NoSavedSettings;
+                                    ImGuiWindowFlags_NoInputs |
+                                    // ImGuiWindowFlags_NoBackground |
+                                    ImGuiWindowFlags_NoSavedSettings;
 
   // TOP-CENTER: Elapsed Time
   {
     float textWidth = ImGui::CalcTextSize("00:00").x;
-  
+
     ImGui::SetNextWindowPos(ImVec2(viewport->GetCenter().x - textWidth / 2.0f,
                                    viewport->WorkPos.y + padding));
 
@@ -279,7 +335,7 @@ void Gui::drawHUD() {
 
       ImGui::End();
     }
- }
+  }
 
   // // TOP-RIGHT: Score + Ammo
   // {

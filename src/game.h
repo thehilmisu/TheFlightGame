@@ -18,6 +18,13 @@ constexpr int RANGE = 4;
 const glm::vec3 LIGHT = glm::normalize(glm::vec3(-1.0f));
 
 namespace game {
+	enum GameState {
+		RUNNING,
+		PAUSED,
+		DEAD,
+		GAME_EXIT_TO_MAINMENU,
+		GAME_EXIT
+	};
 	enum MainMenuActions {
 		NONE_SELECTED,
 		START_GAME,
