@@ -1,4 +1,5 @@
 #include "game.h"
+#include "logger.h"
 #include "window.h"
 #include <glm/gtc/matrix_transform.hpp>
 #include <algorithm>
@@ -172,6 +173,7 @@ namespace game {
 				if(dist < hitdist) {
 					bullet.destroyed = true;
 					enemy.hitpoints--;
+					TRACE("You have hit the enemy with bullets!")
 				}
 			}
 		}
