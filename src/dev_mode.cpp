@@ -32,7 +32,6 @@ namespace game {
 		std::vector<gameobjects::Enemy> balloons;
 		std::vector<gameobjects::Explosion> explosions;
 		std::vector<gameobjects::Props> barrels;
-
   	float totalTime = 0.0f;
   	float dt = 0.0f;
     unsigned int chunksPerSecond = 0; //Number of chunks drawn per second

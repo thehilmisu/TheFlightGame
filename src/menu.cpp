@@ -77,6 +77,7 @@ namespace game
       gfx::outputErrors();
       totalTime += dt;
 
+      unsigned int current_selected = player.getCurrentIndex();
       switch (selected)
       {
       case OPTIONS: // Fall through
@@ -86,17 +87,15 @@ namespace game
         break;
       case CHANGE_PLANE_MINUS:
       {
-        int c = player.getCurrentIndex();
-        c = (c - 1) % 2;
-        player.setPlayerObj(c);
+        current_selected = (current_selected - 1) % 2;
+        player.setPlayerObj(current_selected);
         skybox = "skybox";
         break;
       }
       case CHANGE_PLANE_PLUS:
       {
-        int c = player.getCurrentIndex();
-        c = (c + 1) % 2;
-        player.setPlayerObj(c);
+        current_selected = (current_selected + 1) % 2;
+        player.setPlayerObj(current_selected);
         skybox = "nightskybox";
         break;
       }
