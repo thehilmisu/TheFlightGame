@@ -14,7 +14,7 @@ constexpr glm::vec3 TERRAIN_LOD_COLORS[] = {
 };
 
 constexpr float MINIMAP_SIZE = 100.0f;
-constexpr float ATTITUDE_SIZE = 120.0f;
+constexpr float ATTITUDE_SIZE = 60.0f;
 
 namespace gobjs = gameobjects;
 

@@ -248,7 +248,7 @@ game::MainMenuActions Gui::drawMainMenu()
     }
 
     if (ImGui::Button("OPTIONS", ImVec2(-1.0f, 50.0f))) {
-      // Settings logic
+      action = game::OPTIONS;
     }
 
     ImGui::Spacing();

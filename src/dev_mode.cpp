@@ -79,6 +79,9 @@ namespace game {
           //Draw HUD Backgorunds
           gfx::displayCrosshair(player.transform);
           gfx::displayMiniMapBackground(totalTime);
+          gfx::displayAttitude(player.transform.rotation.x, player.transform.rotation.z);
+          gfx::displaySpeed(player.speed);
+          gfx::displayFuel(player.fuel, totalTime);
           gfx::displayEnemyMarkers(balloons, player.transform);
           // gfx::displayPropMarkers(barrels, player.transform);
           gfx::displayExplosions(explosions);
@@ -97,7 +100,7 @@ namespace game {
   					// SNDSRC->playid("explosion", player.transform.position);	
   					printf("Just crashed \n");
   				}
-          player.update(dt);
+          player.update(0.0f);
           updateExplosions(explosions, player.transform.position, dt);
           gui.dItems.playerPosition = player.transform.position;
           gui.dItems.cameraPosition = window.getCamera().position;
