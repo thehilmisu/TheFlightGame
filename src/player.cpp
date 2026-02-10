@@ -41,12 +41,25 @@ Player::Player(glm::vec3 position) {
   speed = SPEED;
   health = DEFAULT_HEALTH;
   fuel = DEFAULT_FUEL;
-  model_name.push_back("plane_douglas");
-  model_name.push_back("plane");
+
+  PlayerModel model_douglas = {
+    .name = "plane_douglas",
+    .scale = 2.7f
+  };
+  PlayerModel model_default = {
+    .name = "plane",
+    .scale = 1.0f
+  };
+  
+  player_model.push_back(model_douglas);
+  player_model.push_back(model_default);
   current_model = 0;
 }
 
-void Player::setPlayerObj(int current) { current_model = current; }
+void Player::setPlayerObj(int current) {
+  current_model = current;
+  transform.scale = glm::vec3(player_model.at(current_model).scale);
+}
 
 void Player::damage(unsigned int amount) {
   if (damagecooldown > 0.0f)

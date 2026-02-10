@@ -119,8 +119,11 @@ namespace gameobjects {
 		float damagecooldown = 0.0f;
 		unsigned int health;
 		Player(glm::vec3 position);
-
-		std::vector<std::string> model_name;
+		struct PlayerModel {
+			std::string name;
+			float scale;
+		};
+		std::vector<PlayerModel> player_model;
 		int current_model;
 		void damage(unsigned int amount);
 		//Returns the percentage of health left, rounded down
@@ -132,7 +135,7 @@ namespace gameobjects {
 		void resetShootTimer();
 		void checkIfCrashed(float dt, const infworld::worldseed &permutations);
 		void setPlayerObj(int current);
-		std::string getPlayerObj() { return model_name[current_model]; }
+		PlayerModel getPlayerObj() { return player_model[current_model]; }
 		int getCurrentIndex() { return current_model; }
 	};
 
@@ -325,7 +328,7 @@ namespace gfx {
 	void displayDecorations(infworld::DecorationTable &decorations, float totalTime);
 	unsigned int displayTerrain(infworld::ChunkTable *chunktables, int maxlod, float lodscale);	
 	void generateDecorationOffsets(infworld::DecorationTable &decorations);
-	void displayPlayerPlane(float totalTime, const game::Transform &transform, const std::string& plane_model);
+	void displayPlayerPlane(float totalTime, const game::Transform &transform, const gameobjects::Player::PlayerModel &plane_model);
 	void displayExplosions(const std::vector<gameobjects::Explosion> &explosions);
 	void displayBalloons(const std::vector<gameobjects::Enemy> &balloons);
 	void displayBarrels(const std::vector<gameobjects::Props> &barrels);

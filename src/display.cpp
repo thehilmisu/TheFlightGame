@@ -180,7 +180,7 @@ namespace gfx {
     }
 
     void displayPlayerPlane(float totalTime, const game::Transform &transform,
-                            const std::string &plane_model) {
+                            const gameobjects::Player::PlayerModel &plane_model) {
         Window &window = Window::getInstance();
         Camera &cam = window.getCamera();
         ShaderProgram &shader = SHADERS->getShader("textured");
@@ -194,11 +194,11 @@ namespace gfx {
         // Display plane body
         glm::mat4 transformMat = transform.getTransformMat();
         glm::mat4 normal = glm::mat3(glm::transpose(glm::inverse(transformMat)));
-        TEXTURES->bindTexture(plane_model, GL_TEXTURE0);
+        TEXTURES->bindTexture(plane_model.name, GL_TEXTURE0);
         shader.uniformFloat("specularfactor", 0.5f);
         shader.uniformMat4x4("transform", transformMat);
         shader.uniformMat3x3("normalmat", normal);
-        VAOS->bind(plane_model);
+        VAOS->bind(plane_model.name);
         VAOS->draw();
 
         // Display propeller
