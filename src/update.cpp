@@ -173,7 +173,7 @@ namespace game {
 				if(dist < hitdist) {
 					bullet.destroyed = true;
 					enemy.hitpoints--;
-					TRACE("You have hit the enemy with bullets!")
+					TRACE("You have hit the enemy with bullets!");
 				}
 			}
 		}

@@ -34,7 +34,7 @@ namespace game
 
     float dt = 0.0f;
     float totalTime = 0.0f;
-    std::string skybox = "nightskybox";
+    std::string skybox = "rainskybox";
     float mRotation = enemy.transform.rotation.y;
     float rotationDirection = 1.0f;
     while (!window.shouldClose())

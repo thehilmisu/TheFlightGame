@@ -23,6 +23,11 @@
 	"fragment" = "nightskyboxfrag.glsl";
 }
 
+"rainskybox" {
+	"vertex" = "skyboxvert.glsl";
+	"fragment" = "rainskyboxfrag.glsl";
+}
+
 "tree" {
 	"vertex" = "tree-vert.glsl";
 	"fragment" = "textured-frag.glsl";

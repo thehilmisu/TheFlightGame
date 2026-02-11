@@ -181,3 +181,14 @@
 	"north" = "Cloudy_Sky-Night_02-512x512.png";
 	"south" = "Cloudy_Sky-Night_02-512x512.png";
 }
+
+# cubemap for rainy skybox
+"rainskybox" {
+	"target" = "cubemap";
+	"east" = "rain_sky_east.png";
+	"west" = "rain_sky_west.png";
+	"up" = "rain_sky_up.png";
+	"down" = "rain_sky_down.png";
+	"north" = "rain_sky_north.png";
+	"south" = "rain_sky_south.png";
+}

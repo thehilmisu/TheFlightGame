@@ -13,5 +13,5 @@ uniform samplerCube skybox;
 void main()
 {
 	float v = clamp((0.4 - fragpos.y) * 4.0, 0.0, 1.0);
-	color = mix(texture(skybox, fragpos), vec4(0.25, 0.25, 0.25, 0.6), v);
+	color = mix(texture(skybox, fragpos), vec4(0.66, 0.66, 0.66, 1.0), v);
 }

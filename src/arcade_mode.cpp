@@ -51,7 +51,9 @@ namespace game
         // timers.addTimer("spawn_barrel", 0.0f, 70.0f);
 
         game::updateCamera(player);
-        std::string skybox = "skybox";
+
+        std::vector<std::string> skyboxes = {"rainskybox", "nightskybox", "skybox"};
+        std::string skybox = skyboxes.at(0);
 
         while (!window.shouldClose() && window.isRunnning())
         {
@@ -259,13 +261,13 @@ namespace game
                 else if (gameState == game::PAUSED)
                     gameState = game::RUNNING;
             }
-            // Development Purposes
+
             if (window.getKeyState(SDLK_p) == JUST_PRESSED)
             {
-                if (skybox == "skybox")
-                    skybox = "nightskybox";
-                else
-                    skybox = "skybox";
+                static int i = 0;
+                skybox = skyboxes.at(i);
+                i = (i + 1) % skyboxes.size();
+                // TRACE("selected skybox index = %d", i);
             }
 
             if (draw_debug_gui)
