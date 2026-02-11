@@ -67,6 +67,8 @@ namespace game
             gfx::displayTerrain(chunktables, MAX_LOD, LOD_SCALE);
             // Display trees
             gfx::displayDecorations(decorations, totalTime);
+            // Rain
+            gfx::displayRain(totalTime);
             // Display plane
             if (!player.crashed)
                 gfx::displayPlayerPlane(totalTime, player.transform, player.getPlayerObj());

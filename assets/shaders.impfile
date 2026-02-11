@@ -78,6 +78,11 @@
 	"fragment" = "dangerfrag.glsl";
 }
 
+"rain" {
+	"vertex" = "vert2d.glsl";
+	"fragment" = "rainfrag.glsl";
+}
+
 "trail" {
 	"vertex" = "trailvert.glsl";
 	"fragment" = "textured-simple-frag.glsl";

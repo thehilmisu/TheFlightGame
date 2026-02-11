@@ -341,6 +341,7 @@ namespace gfx {
 	void displayAttitude(float pitch, float roll);
 	void displaySpeed(float speed);
 	void displayDanger(float totalTime);
+	void displayRain(float totalTime);
 	void displayFuel(float fuel, float totalTime);
 	void displayDashboardBackground();
 	void displayEnemyMarkers(
