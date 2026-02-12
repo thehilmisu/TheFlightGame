@@ -124,7 +124,7 @@ void Player::update(float dt) {
   damagetimer -= dt;
 
   // Fuel Consumption
-  fuel -= dt * FUEL_CONSUMPTION_RATE;
+  // fuel -= dt * FUEL_CONSUMPTION_RATE; 
   if (fuel < 0.0f)
     fuel = 0.0f;
 

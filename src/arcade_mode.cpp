@@ -252,7 +252,7 @@ namespace game
                     break;
                 }
             }
-            if (window.getKeyState(SDLK_m) == JUST_PRESSED) window.getCamera().shakeCamera(5.0f, 2.0f);
+            if (window.getKeyState(SDLK_m) == JUST_PRESSED) window.getCamera().shakeCamera(2.0f, 0.5f);
             if (window.getKeyState(SDLK_r) == JUST_PRESSED) draw_rain = !draw_rain;
 
             if (window.getKeyState(SDLK_TAB) == JUST_PRESSED)

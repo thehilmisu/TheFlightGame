@@ -88,11 +88,20 @@ void Camera::fly(float dt, float speed)
 //Returns the view matrix
 glm::mat4 Camera::viewMatrix()
 {
-	glm::vec3 effectivePosition = position + shakeOffset;
-	
-	return glm::rotate(glm::mat4(1.0f), pitch, glm::vec3(1.0f, 0.0f, 0.0f)) *
+	glm::mat4 view =
+		   glm::rotate(glm::mat4(1.0f), pitch, glm::vec3(1.0f, 0.0f, 0.0f)) *
 		   glm::rotate(glm::mat4(1.0f), yaw, glm::vec3(0.0f, 1.0f, 0.0f)) *
-		   glm::translate(glm::mat4(1.0f), -effectivePosition);
+		   glm::translate(glm::mat4(1.0f), -position);
+
+	// Apply shake as angular rotation in view space so the whole screen
+	// jitters uniformly instead of translating objects in world space
+	if (shakeDuration > 0.0f) {
+		view = glm::rotate(glm::mat4(1.0f), shakeOffset.x, glm::vec3(1.0f, 0.0f, 0.0f)) *
+			   glm::rotate(glm::mat4(1.0f), shakeOffset.y, glm::vec3(0.0f, 1.0f, 0.0f)) *
+			   view;
+	}
+
+	return view;
 }
 
 glm::vec3 Camera::forward()
@@ -188,16 +197,15 @@ void Camera::updateCamera(gameobjects::Player &player)
 void Camera::updateCamera(gameobjects::Player &player, float dt)
 {
 	if (shakeDuration > 0) {
-			// Generate random offset within the intensity range
-       float x = ((float)rand() / RAND_MAX * 2.0f - 1.0f) * shakeIntensity;
-       float y = ((float)rand() / RAND_MAX * 2.0f - 1.0f) * shakeIntensity;
-       float z = ((float)rand() / RAND_MAX * 2.0f - 1.0f) * shakeIntensity;
-
-       shakeOffset = glm::vec3(x, y, z);
-       shakeDuration -= dt;
-   } else {
-       shakeOffset = glm::vec3(0.0f);
-   }
+		// Generate small random angles (radians) for view-space rotation
+		float scale = shakeIntensity * 0.01f * (shakeDuration / (shakeDuration + dt));
+		float x = ((float)rand() / RAND_MAX * 2.0f - 1.0f) * scale;
+		float y = ((float)rand() / RAND_MAX * 2.0f - 1.0f) * scale;
+		shakeOffset = glm::vec3(x, y, 0.0f);
+		shakeDuration -= dt;
+	} else {
+		shakeOffset = glm::vec3(0.0f);
+	}
    //Update camera
 	position = getCameraFollowPos(player.transform);
 	float
