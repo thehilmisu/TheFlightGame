@@ -63,22 +63,10 @@ namespace game {
 	void loadAssets();
 	//Initializes the shader uniforms
 	void initUniforms();
-	void generateChunks(
-		const infworld::worldseed &permutations,
-		infworld::ChunkTable *chunktables,
-		unsigned int range
-	);
-	void generateNewChunks(
-		const infworld::worldseed &permutations,
-		infworld::ChunkTable *chunktables,
-		infworld::DecorationTable &decorations
-	);
+	void generateChunks(const infworld::worldseed &permutations, infworld::ChunkTable *chunktables, unsigned int range);
+	void generateNewChunks(const infworld::worldseed &permutations,	infworld::ChunkTable *chunktables,	infworld::DecorationTable &decorations);
 
-	//This is the game loop for "Fight Mode"
-	//In fight mode, there are other things in the sky you need to shoot down
-	//and some of those things will shoot back at you so you must try to
-	//destroy as many things as possible before being shot down yourself
-	//returns the final score the player acheives
+	//Game Loop. Returns the action from the pause menu
 	game::PauseMenuActions arcadeModeGameLoop();
 	//Development Purposes
 	game::PauseMenuActions devModeGameLoop();
@@ -185,16 +173,8 @@ namespace gameobjects {
 	Enemy spawnBalloon(const glm::vec3 &position, const infworld::worldseed &permutations);
 	Enemy spawnBlimp(const glm::vec3 &position, float rotation);
 	Enemy spawnShip(const glm::vec3 &position, const infworld::worldseed &permutations);
-	Enemy spawnUfo(
-		const glm::vec3 &position,
-		float rotation,
-		const infworld::worldseed &permutations
-	);
-	Enemy spawnPlane(
-		const glm::vec3 &position,
-		float rotation,
-		const infworld::worldseed &permutations
-	);
+	Enemy spawnUfo(const glm::vec3 &position,	float rotation,	const infworld::worldseed &permutations);
+	Enemy spawnPlane(const glm::vec3 &position,	float rotation,	const infworld::worldseed &permutations);
 
 	struct Props {
 			//How many points the player gets if they kill the enemy
@@ -287,11 +267,6 @@ namespace game {
 	void checkForCollision(std::vector<gameobjects::Enemy> &enemies, float hitdist);
 	//Check for collision among props
 	void checkForCollision(std::vector<gameobjects::Props> &props, float hitdist);
-	//Returns the position the camera should be following
-	glm::vec3 getCameraFollowPos(const Transform &playertransform);
-	//Have the camera follow the player	
-	void updateCamera(gameobjects::Player &player);
-	void updateCamera(gameobjects::Player &player, float dt);
 	//Update explosions
 	void updateExplosions(
 		std::vector<gameobjects::Explosion> &explosions, 
@@ -344,10 +319,7 @@ namespace gfx {
 	void displayRain(float totalTime);
 	void displayFuel(float fuel, float totalTime);
 	void displayDashboardBackground();
-	void displayEnemyMarkers(
-		const std::vector<gameobjects::Enemy> &enemies,
-		const game::Transform &playertransform
-	);
+	void displayEnemyMarkers(const std::vector<gameobjects::Enemy> &enemies, const game::Transform &playertransform);
 	void displayCrosshair(const game::Transform &playertransform);
 	void displayHUDBackGrounds();
 	void displayFog();

@@ -1,6 +1,7 @@
 #ifndef __CAMERA_H__
 #include <glm/glm.hpp>
 #include "geometry.h"
+#include "game.h"
 
 enum MovementDirection {
 	NONE,
@@ -26,6 +27,9 @@ MovementDirection handleRelease(MovementDirection currentDir, MovementDirection 
 struct Camera {
 	glm::vec3 position = glm::vec3(0.0f);
 	float pitch = 0.0f, yaw = 0.0f;
+	float shakeIntensity;
+	float shakeDuration;
+	glm::vec3 shakeOffset;
 
 	MovementDirection 
 		movementDirection = NONE,
@@ -41,8 +45,14 @@ struct Camera {
 	Camera(glm::vec3 pos);
 	glm::vec3 velocity();
 	void fly(float dt, float speed);
+	void shakeCamera(float intensity, float duration);
 	void rotateCamera(float dmousex, float dmousey, float sensitivity);
 	void updateMovement(CameraMovement m, bool pressed);
+	//Returns the position the camera should be following
+	glm::vec3 getCameraFollowPos(const game::Transform &playertransform);
+	//Have the camera follow the player	
+	void updateCamera(gameobjects::Player &player);
+	void updateCamera(gameobjects::Player &player, float dt);
 	geo::Frustum getViewFrustum(float znear, float zfar, float aspect, float fovy);
 };
 

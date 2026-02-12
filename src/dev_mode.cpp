@@ -43,7 +43,7 @@ namespace game {
     timers.addTimer("spawn_balloon", 0.0f, 20.0f);
     timers.addTimer("spawn_barrel", 0.0f, 20.0f);
 
-    game::updateCamera(player);
+    window.getCamera().updateCamera(player);
     
     while (!window.shouldClose() && window.isRunnning()) {
         float startTime = getTime();
@@ -85,7 +85,7 @@ namespace game {
           // gfx::displayPropMarkers(barrels, player.transform);
           gfx::displayExplosions(explosions);
         
-          game::updateCamera(player, dt);
+          window.getCamera().updateCamera(player, dt);
           // to make the terrain infinite
           game::generateNewChunks(permutations, chunktables, decorations);
 

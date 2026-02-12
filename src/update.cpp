@@ -75,37 +75,6 @@ namespace gameobjects {
 }
 
 namespace game {
-	glm::vec3 getCameraFollowPos(const Transform &playertransform)
-	{
-		// Only apply yaw and pitch to the camera offset, NOT roll.
-		// This prevents the camera from swinging sideways when the plane banks.
-		glm::mat4 rotationMat(1.0f);
-		rotationMat = glm::rotate(rotationMat, playertransform.rotation.y, glm::vec3(0.0f, 1.0f, 0.0f));
-		rotationMat = glm::rotate(rotationMat, playertransform.rotation.x, glm::vec3(1.0f, 0.0f, 0.0f));
-		glm::vec4 offset = rotationMat * glm::vec4(0.0f, 28.0f, -60.0f, 1.0f);
-		return playertransform.position + glm::vec3(offset);
-	}
-
-	void updateCamera(gobjs::Player &player)
-	{
-		Camera& cam = Window::getInstance().getCamera();
-		//Update camera
-		cam.position = game::getCameraFollowPos(player.transform);
-		cam.yaw = -(player.transform.rotation.y + glm::radians(180.0f));
-		cam.pitch = player.transform.rotation.x;
-	}
-
-	void updateCamera(gobjs::Player &player, float dt)
-	{
-		Camera& cam = Window::getInstance().getCamera();
-		//Update camera
-		cam.position = game::getCameraFollowPos(player.transform);
-		float
-			yaw = -(player.transform.rotation.y + glm::radians(180.0f)),
-			pitch = player.transform.rotation.x;
-		cam.yaw += (yaw - cam.yaw) * 6.0f * dt;
-		cam.pitch += (pitch - cam.pitch) * 7.0f * dt;
-	}	
 
 	void updateExplosions(
 		std::vector<gobjs::Explosion> &explosions, 

@@ -1,7 +1,8 @@
 #define _USE_MATH_DEFINES
 #include <math.h>
 #include "camera.h"
-#include <glm/gtc/matrix_transform.hpp>
+
+#include <glm/gtc/matrix_transform.hpp> 
 
 CameraMovement::CameraMovement(
 	MovementDirection m,
@@ -16,11 +17,17 @@ CameraMovement::CameraMovement(
 Camera::Camera()
 {
 	position = glm::vec3(0.0f);
+	shakeDuration = 0.0f;
+	shakeIntensity = 0.0f;
+	shakeOffset = glm::vec3(0.0f);
 }
 
 Camera::Camera(glm::vec3 pos)
 {
 	position = pos;
+	shakeDuration = 0.0f;
+	shakeIntensity = 0.0f;
+	shakeOffset = glm::vec3(0.0f);
 }
 
 glm::vec3 Camera::velocity()
@@ -81,9 +88,11 @@ void Camera::fly(float dt, float speed)
 //Returns the view matrix
 glm::mat4 Camera::viewMatrix()
 {
+	glm::vec3 effectivePosition = position + shakeOffset;
+	
 	return glm::rotate(glm::mat4(1.0f), pitch, glm::vec3(1.0f, 0.0f, 0.0f)) *
 		   glm::rotate(glm::mat4(1.0f), yaw, glm::vec3(0.0f, 1.0f, 0.0f)) *
-		   glm::translate(glm::mat4(1.0f), -position);
+		   glm::translate(glm::mat4(1.0f), -effectivePosition);
 }
 
 glm::vec3 Camera::forward()
@@ -124,6 +133,10 @@ void Camera::rotateCamera(float dmousex, float dmousey, float sensitivity)
 		pitch = M_PI / 2.0f;
 }
 
+void Camera::shakeCamera(float intensity, float duration) {
+	shakeDuration = duration;
+	shakeIntensity = intensity;
+}
 
 MovementDirection handlePress(MovementDirection currentDir, MovementDirection d)
 {
@@ -151,6 +164,47 @@ void Camera::updateMovement(CameraMovement m, bool pressed)
 		strafeDirection = handleRelease(strafeDirection, m.strafe);
 		flyingDirection = handleRelease(flyingDirection, m.flying);
 	}
+}
+
+glm::vec3 Camera::getCameraFollowPos(const game::Transform &playertransform)
+{
+	// Only apply yaw and pitch to the camera offset, NOT roll.
+	// This prevents the camera from swinging sideways when the plane banks.
+	glm::mat4 rotationMat(1.0f);
+	rotationMat = glm::rotate(rotationMat, playertransform.rotation.y, glm::vec3(0.0f, 1.0f, 0.0f));
+	rotationMat = glm::rotate(rotationMat, playertransform.rotation.x, glm::vec3(1.0f, 0.0f, 0.0f));
+	glm::vec4 offset = rotationMat * glm::vec4(0.0f, 28.0f, -60.0f, 1.0f);
+	return playertransform.position + glm::vec3(offset);
+}
+
+void Camera::updateCamera(gameobjects::Player &player)
+{
+	//Update camera
+	position = getCameraFollowPos(player.transform);
+	yaw = -(player.transform.rotation.y + glm::radians(180.0f));
+	pitch = player.transform.rotation.x;
+}
+
+void Camera::updateCamera(gameobjects::Player &player, float dt)
+{
+	if (shakeDuration > 0) {
+			// Generate random offset within the intensity range
+       float x = ((float)rand() / RAND_MAX * 2.0f - 1.0f) * shakeIntensity;
+       float y = ((float)rand() / RAND_MAX * 2.0f - 1.0f) * shakeIntensity;
+       float z = ((float)rand() / RAND_MAX * 2.0f - 1.0f) * shakeIntensity;
+
+       shakeOffset = glm::vec3(x, y, z);
+       shakeDuration -= dt;
+   } else {
+       shakeOffset = glm::vec3(0.0f);
+   }
+   //Update camera
+	position = getCameraFollowPos(player.transform);
+	float
+		_yaw = -(player.transform.rotation.y + glm::radians(180.0f)),
+		_pitch = player.transform.rotation.x;
+	yaw += (_yaw - yaw) * 6.0f * dt;
+	pitch += (_pitch - pitch) * 7.0f * dt;
 }
 
 geo::Frustum Camera::getViewFrustum(float znear, float zfar, float aspect, float fovy)

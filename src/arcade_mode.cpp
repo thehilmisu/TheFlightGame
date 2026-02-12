@@ -42,6 +42,7 @@ namespace game
         float dt = 0.0f;
         unsigned int score = 0; // Player score
         bool draw_debug_gui = false;
+        bool draw_rain = true;
         game::GameState gameState = game::RUNNING;
 
         TimerManager &timers = TimerManager::getInstance();
@@ -50,7 +51,7 @@ namespace game
         timers.addTimer("spawn_plane", 0.0f, 100.0f);
         // timers.addTimer("spawn_barrel", 0.0f, 70.0f);
 
-        game::updateCamera(player);
+        window.getCamera().updateCamera(player);
 
         std::vector<std::string> skyboxes = {"rainskybox", "nightskybox", "skybox"};
         std::string skybox = skyboxes.at(0);
@@ -68,7 +69,8 @@ namespace game
             // Display trees
             gfx::displayDecorations(decorations, totalTime);
             // Rain
-            gfx::displayRain(totalTime);
+            if (draw_rain)
+                gfx::displayRain(totalTime);
             // Display plane
             if (!player.crashed)
                 gfx::displayPlayerPlane(totalTime, player.transform, player.getPlayerObj());
@@ -89,9 +91,7 @@ namespace game
             gfx::displaySkybox(skybox);
             // Fog
             gfx::displayFog();
-            // Dashboard Background
-            // gfx::displayDashboardBackground();
-
+         
             if (gameState == game::RUNNING) {
                 timers.update(dt);
 
@@ -179,7 +179,7 @@ namespace game
 
                 gui.drawHUD();
 
-                game::updateCamera(player, dt);
+                window.getCamera().updateCamera(player, dt);
 
                 // to make the terrain infinite
                 game::generateNewChunks(permutations, chunktables, decorations);
@@ -225,8 +225,6 @@ namespace game
                         barrels.clear();
                         gameState = game::RUNNING;
                         break;
-                    case NONE:
-                        break;
                     default:
                         break;
                     }
@@ -254,6 +252,8 @@ namespace game
                     break;
                 }
             }
+            if (window.getKeyState(SDLK_m) == JUST_PRESSED) window.getCamera().shakeCamera(10.0f, 2.0f);
+            if (window.getKeyState(SDLK_r) == JUST_PRESSED) draw_rain = !draw_rain;
 
             if (window.getKeyState(SDLK_TAB) == JUST_PRESSED)
                 draw_debug_gui = !draw_debug_gui;
