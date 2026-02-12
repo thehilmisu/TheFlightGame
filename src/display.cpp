@@ -14,7 +14,7 @@ constexpr glm::vec3 TERRAIN_LOD_COLORS[] = {
 };
 
 constexpr float MINIMAP_SIZE = 100.0f;
-constexpr float ATTITUDE_SIZE = 120.0f;
+constexpr float ATTITUDE_SIZE = 80.0f;
 
 namespace gobjs = gameobjects;
 
@@ -473,7 +473,7 @@ namespace gfx {
         attitudeshader.uniformFloat("u_speed", speed);
         attitudeshader.uniformFloat("u_maxSpeed", 150.0f);
         glm::mat4 transform(1.0f);
-        transform = glm::translate(transform, glm::vec3((w - 60.0f), 130.0f, 0.0f));
+        transform = glm::translate(transform, glm::vec3((w - 90.0f), 130.0f, 0.0f));
         transform = glm::translate(
             transform, glm::vec3(-float(w) / 2.0f, -float(h) / 2.0f, 0.0f));
         transform =
@@ -508,7 +508,7 @@ namespace gfx {
         attitudeshader.uniformFloat("u_lowFuelWarning", 0.15f);
         attitudeshader.uniformFloat("u_time", totalTime);
         glm::mat4 transform(1.0f);
-        transform = glm::translate(transform, glm::vec3(w - 130.0f, 130.0f, 0.0f));
+        transform = glm::translate(transform, glm::vec3(w - 300.0f, 130.0f, 0.0f));
         transform = glm::translate(
             transform, glm::vec3(-float(w) / 2.0f, -float(h) / 2.0f, 0.0f));
         transform =

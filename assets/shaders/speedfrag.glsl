@@ -1,48 +1,97 @@
+#ifdef GL_ES
+#version 300 es
+precision highp float;
+#else
 #version 330 core
+#endif
 
 in vec2 pos2d;
 uniform float u_speed;    // Current speed
-uniform float u_maxSpeed; // e.g., 500.0
+uniform float u_maxSpeed; // e.g., 150.0
 
 out vec4 color;
 
-// Helper to draw a rectangle
-float drawRect(vec2 uv, vec2 center, vec2 size) {
-    vec2 d = abs(uv - center) - size;
-    return step(max(d.x, d.y), 0.0);
-}
-
 void main() {
-    // 1. Normalize speed (0.0 to 1.0)
+    // Fix inverted Y caused by the 90-degree X-axis rotation in the transform
+    vec2 uv = vec2(pos2d.x, -pos2d.y);
     float speedPct = clamp(u_speed / u_maxSpeed, 0.0, 1.0);
 
-    // 2. Vertical Track Geometry (The background bar)
-    // Centered at x=0, height from -0.8 to 0.8
-    float trackMask = drawRect(pos2d, vec2(0.0, 0.0), vec2(0.1, 0.8));
+    float dist = length(uv);
+    // Angle: 0 at top, negative = left, positive = right
+    float angle = atan(uv.x, uv.y);
 
-    // 3. Handle Logic (The moving horizontal bar)
-    // Map speedPct (0 to 1) to the Y coordinate range (-0.8 to 0.8)
-    float handleY = -0.8 + (speedPct * 1.6);
-    
-    // Draw a horizontal handle that is wider than the track
-    float handle = drawRect(pos2d, vec2(0.0, handleY), vec2(0.25, 0.02));
+    // Arc sweep: ~264 degrees total
+    float arcStart = -2.3;
+    float arcEnd = 2.3;
+    float arcSpan = arcEnd - arcStart;
 
-    // 4. Tick Marks (Static scale)
-    // Draw small lines every 10% of the gauge
+    // --- Gauge Face ---
+    float face = smoothstep(0.96, 0.92, dist);
+    vec3 col = vec3(0.06);
+
+    // --- Outer Bezel ---
+    float bezel = smoothstep(0.96, 0.93, dist) - smoothstep(0.90, 0.87, dist);
+    col = mix(col, vec3(0.2), bezel);
+
+    // --- Major Tick Marks (6 ticks: 0, 30, 60, 90, 120, 150) ---
     float ticks = 0.0;
-    for(float i = -0.8; i <= 0.81; i += 0.16) {
-        ticks += drawRect(pos2d, vec2(0.15, i), vec2(0.05, 0.005));
+    for (int i = 0; i <= 5; i++) {
+        float t = float(i) / 5.0;
+        float ta = arcStart + t * arcSpan;
+        ticks += smoothstep(0.03, 0.012, abs(angle - ta))
+               * smoothstep(0.58, 0.62, dist)
+               * smoothstep(0.87, 0.85, dist);
     }
 
-    // 5. Coloring
-    vec4 trackCol = vec4(0.1, 0.1, 0.1, 0.6);   // Dark track
-    vec4 handleCol = vec4(1.0, 1.0, 0.0, 1.0);  // Bright yellow handle
-    vec4 tickCol = vec4(1.0, 1.0, 1.0, 0.8);    // White ticks
+    // --- Minor Tick Marks (every 10 units = 15 intervals) ---
+    for (int i = 0; i <= 15; i++) {
+        float t = float(i) / 15.0;
+        float ta = arcStart + t * arcSpan;
+        ticks += smoothstep(0.014, 0.006, abs(angle - ta))
+               * smoothstep(0.70, 0.73, dist)
+               * smoothstep(0.87, 0.85, dist);
+    }
+    col = mix(col, vec3(0.85), clamp(ticks, 0.0, 1.0));
 
-    // Layering: Track -> Ticks -> Handle
-    vec4 finalColor = mix(vec4(0.0), trackCol, trackMask);
-    finalColor = mix(finalColor, tickCol, ticks);
-    finalColor = mix(finalColor, handleCol, handle);
+    // --- Colored Fill Arc ---
+    float needleAngle = arcStart + speedPct * arcSpan;
+    float inArc = step(arcStart, angle) * step(angle, arcEnd);
+    float arcBand = smoothstep(0.86, 0.84, dist) - smoothstep(0.79, 0.77, dist);
+    float fillMask = step(angle, needleAngle) * inArc * arcBand;
 
-    color = finalColor;
+    // Blue -> cyan -> yellow -> red gradient
+    float normPos = clamp((angle - arcStart) / arcSpan, 0.0, 1.0);
+    vec3 arcColor;
+    if (normPos < 0.6) {
+        arcColor = mix(vec3(0.1, 0.5, 0.9), vec3(0.1, 0.85, 0.8), normPos / 0.6);
+    } else if (normPos < 0.8) {
+        arcColor = mix(vec3(0.1, 0.85, 0.8), vec3(1.0, 0.7, 0.0), (normPos - 0.6) / 0.2);
+    } else {
+        arcColor = mix(vec3(1.0, 0.7, 0.0), vec3(0.9, 0.1, 0.0), (normPos - 0.8) / 0.2);
+    }
+    col = mix(col, arcColor, fillMask);
+
+    // Dim outline for unfilled portion
+    float emptyMask = step(needleAngle, angle) * inArc * arcBand;
+    col = mix(col, vec3(0.14), emptyMask);
+
+    // --- Danger Zone Marks (top 20% of arc) ---
+    float dangerStart = arcStart + 0.8 * arcSpan;
+    float dangerBand = smoothstep(0.87, 0.86, dist) - smoothstep(0.85, 0.84, dist);
+    float dangerMask = step(dangerStart, angle) * step(angle, arcEnd) * dangerBand;
+    col = mix(col, vec3(0.8, 0.1, 0.0), dangerMask);
+
+    // --- Needle ---
+    float needleMask = smoothstep(0.022, 0.007, abs(angle - needleAngle))
+                     * smoothstep(0.09, 0.12, dist)
+                     * smoothstep(0.77, 0.74, dist);
+    col = mix(col, vec3(1.0, 0.15, 0.0), needleMask);
+
+    // --- Center Pivot ---
+    float pivot = smoothstep(0.11, 0.09, dist);
+    col = mix(col, vec3(0.22), pivot);
+    float pivotInner = smoothstep(0.06, 0.04, dist);
+    col = mix(col, vec3(0.35), pivotInner);
+
+    color = vec4(col, face);
 }
