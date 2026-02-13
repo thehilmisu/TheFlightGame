@@ -12,6 +12,11 @@ struct DebugItems{
   glm::vec3 cameraPosition;
   int shipCount;
   int balloonCount;
+  int planeCount;
+  float shakeIntensity;
+  float shakeDuration;
+  bool drawRain;
+  int selectedSkybox;
 };
 
 struct HUDItems {

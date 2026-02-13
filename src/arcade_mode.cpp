@@ -126,9 +126,9 @@ namespace game
                 updateExplosions(explosions, player.transform.position, dt);
 
                 // Shoot bullets
-                KeyState leftbutton = window.getButtonState(SDL_BUTTON_LEFT);
+                // KeyState leftbutton = window.getButtonState(SDL_BUTTON_LEFT);
                 KeyState spacebar = window.getKeyState(SDLK_SPACE);
-                if (player.shoottimer <= 0.0f && (window.keyIsHeld(spacebar) || window.keyIsHeld(leftbutton)) && !player.crashed){
+                if (player.shoottimer <= 0.0f && (window.keyIsHeld(spacebar) /*|| window.keyIsHeld(leftbutton)*/) && !player.crashed){
                     // SNDSRC->playid("shoot", player.transform.position);
                     player.resetShootTimer();
                     bullets.push_back(gameobjects::Bullet(player, glm::vec3(-8.5f, -0.75f, 8.5f)));
@@ -188,6 +188,7 @@ namespace game
                 gui.dItems.cameraPosition = window.getCamera().position;
                 gui.dItems.shipCount = ships.size();
                 gui.dItems.balloonCount = balloons.size();
+                gui.dItems.planeCount = planes.size();
 
                 // Update HUD data
                 gui.hudItems.health = player.health;

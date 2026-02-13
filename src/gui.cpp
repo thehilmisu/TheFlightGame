@@ -39,6 +39,9 @@ Gui::Gui()
   dItems.cameraPosition = glm::vec3(0.0f);
   dItems.shipCount = 0;
   dItems.balloonCount = 0;
+  dItems.planeCount = 0;
+  dItems.shakeIntensity = 0.0f;
+  dItems.shakeDuration = 0.0f;
 
   hudItems.fuel = 100.0f;
 }
@@ -67,12 +70,12 @@ void Gui::drawUI()
 {
   const ImGuiViewport *viewport = ImGui::GetMainViewport();
 
-  float sidebarwidth = 250.0f;
+  float sidebarwidth = 350.0f;
   ImGui::SetNextWindowPos(viewport->WorkPos);
   ImGui::SetNextWindowSize(ImVec2(sidebarwidth, viewport->WorkSize.y));
 
   ImGuiWindowFlags sidebarflags =
-      ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoMove |
+      ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_AlwaysAutoResize |
       ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoSavedSettings;
 
   ImGui::PushStyleVar(ImGuiStyleVar_WindowRounding, 0.0f);
@@ -97,6 +100,28 @@ void Gui::drawUI()
     ImGui::Text("Ship Count : %d", dItems.shipCount);
     ImGui::Separator();
     ImGui::Text("Balloon Count : %d", dItems.balloonCount);
+    ImGui::Separator();
+    ImGui::Text("Plane Count : %d", dItems.planeCount);
+    ImGui::Separator();
+    ImGui::SliderFloat("Shake Intensity", &dItems.shakeIntensity, 0.0f, 10.0f);
+    ImGui::Separator();
+    ImGui::SliderFloat("Shake Duration", &dItems.shakeDuration, 0.0f, 10.0f);
+    ImGui::Separator();
+    ImGui::Checkbox("Rain ", &dItems.drawRain);
+    ImGui::Separator();
+    const char* items[] = { "Cloudy Sky", "Open Sky", "Night Sky"};
+    ImGui::Combo("Skybox ", &dItems.selectedSkybox, items, IM_ARRAYSIZE(items));
+    ImGui::Separator();
+    if (ImGui::Button("Spawn Ship", ImVec2(-1.0f, 50.0f))) {
+    }
+    ImGui::Separator();
+    if (ImGui::Button("Spawn Plane", ImVec2(-1.0f, 50.0f))) {
+    }
+    ImGui::Separator();
+    if (ImGui::Button("Spawn Balloon", ImVec2(-1.0f, 50.0f))) {
+    }
+    ImGui::Separator();
+        
 
     ImGui::End();
   }
@@ -250,8 +275,6 @@ game::MainMenuActions Gui::drawMainMenu()
     if (ImGui::Button("OPTIONS", ImVec2(-1.0f, 50.0f))) {
       action = game::OPTIONS;
     }
-
-    ImGui::Spacing();
 
     if (ImGui::Button("EXIT", ImVec2(-1.0f, 50.0f))) {
       action = game::EXIT_GAME;
