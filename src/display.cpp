@@ -752,10 +752,10 @@ namespace gfx {
         glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
         VAOS->bind("quad");
-        SHADERS->use("textured2d");
-        TEXTURES->bindTexture("enemy_marker", GL_TEXTURE0);
-        ShaderProgram &texture2dshader = SHADERS->getShader("textured2d");
-        texture2dshader.uniformMat4x4("screen", screenMat);
+        SHADERS->use("marker");
+        ShaderProgram &markershader = SHADERS->getShader("marker");
+        markershader.uniformMat4x4("screen", screenMat);
+        markershader.uniformVec3("u_color", glm::vec3(1.0f, 0.15f, 0.05f));
         glm::vec2 center(playertransform.position.x, playertransform.position.z);
         for (const auto &enemy: enemies) {
             // Calculate distance to player
@@ -786,7 +786,7 @@ namespace gfx {
             transform = glm::scale(transform, glm::vec3(8.0f, 8.0f, 0.0f));
             transform = glm::rotate(transform, glm::radians(90.0f),
                                     glm::vec3(1.0f, 0.0f, 0.0f));
-            texture2dshader.uniformMat4x4("transform", transform);
+            markershader.uniformMat4x4("transform", transform);
             VAOS->draw();
         }
         glDisable(GL_BLEND);

@@ -88,6 +88,11 @@
 	"fragment" = "planehealthfrag.glsl";
 }
 
+"marker" {
+	"vertex" = "vert2d.glsl";
+	"fragment" = "markerfrag.glsl";
+}
+
 "trail" {
 	"vertex" = "trailvert.glsl";
 	"fragment" = "textured-simple-frag.glsl";
