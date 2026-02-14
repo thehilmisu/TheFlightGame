@@ -317,6 +317,7 @@ namespace gfx {
 	void displaySpeed(float speed);
 	void displayDanger(float totalTime);
 	void displayRain(float totalTime);
+	void displayPlaneHealth(float health, float totalTime);
 	void displayFuel(float fuel, float totalTime);
 	void displayDashboardBackground();
 	void displayEnemyMarkers(const std::vector<gameobjects::Enemy> &enemies, const game::Transform &playertransform);

@@ -83,6 +83,11 @@
 	"fragment" = "rainfrag.glsl";
 }
 
+"planehealth" {
+	"vertex" = "vert2d.glsl";
+	"fragment" = "planehealthfrag.glsl";
+}
+
 "trail" {
 	"vertex" = "trailvert.glsl";
 	"fragment" = "textured-simple-frag.glsl";

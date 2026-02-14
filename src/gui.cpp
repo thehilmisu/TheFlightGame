@@ -361,18 +361,18 @@ void Gui::drawHUD()
   }
 
   // // TOP-RIGHT: Score + Ammo
-  {
-    float textWidth = ImGui::CalcTextSize("Score : 0000").x;
-    ImGui::SetNextWindowPos(ImVec2(viewport->WorkSize.x - (padding + textWidth), viewport->WorkPos.y + padding));
+  // {
+  //   float textWidth = ImGui::CalcTextSize("Score : 0000").x;
+  //   ImGui::SetNextWindowPos(ImVec2(viewport->WorkSize.x - (padding + textWidth), viewport->WorkPos.y + padding));
 
-    if (ImGui::Begin("HUD_TopRight", nullptr, hudWindowFlags)) {
-      ImGui::SetWindowFontScale(1.2f);
+  //   if (ImGui::Begin("HUD_TopRight", nullptr, hudWindowFlags)) {
+  //     ImGui::SetWindowFontScale(1.2f);
 
-      ImGui::Text("Score: %u", hudItems.score);
+  //     ImGui::Text("Score: %u", hudItems.score);
 
-      ImGui::End();
-    }
-  }
+  //     ImGui::End();
+  //   }
+  // }
 
   // // BOTTOM-RIGHT: Altitude
   // {

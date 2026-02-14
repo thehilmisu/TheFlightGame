@@ -94,6 +94,8 @@ namespace game
          
             if (gameState == game::RUNNING) {
                 timers.update(dt);
+                static float temp_health = 100.0f;
+                temp_health -= dt * 10.0f;
 
                 // Draw HUD Backgorunds
                 gfx::displayCrosshair(player.transform);
@@ -101,6 +103,7 @@ namespace game
                 gfx::displayAttitude(player.transform.rotation.x, player.transform.rotation.z);
                 gfx::displaySpeed(player.speed);
                 gfx::displayFuel(player.fuel, totalTime);
+                gfx::displayPlaneHealth(temp_health, totalTime);
                 gfx::displayEnemyMarkers(balloons, player.transform);
                 gfx::displayEnemyMarkers(ships, player.transform);
                 gfx::displayEnemyMarkers(planes, player.transform);
