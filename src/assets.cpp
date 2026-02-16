@@ -67,7 +67,7 @@ void TextureManager::importFromFile(const char *path) {
   // Load .impfile from packed assets
   std::string impfileContent = loader.getAssetString(path);
   if (impfileContent.empty()) {
-    fprintf(stderr, "Failed to load texture config: %s\n", path);
+    ERROR("Failed to load texture config: %s", path);
     return;
   }
 
@@ -102,7 +102,7 @@ void ShaderManager::importFromFile(const char *path) {
   // Load .impfile from packed assets
   std::string impfileContent = loader.getAssetString(path);
   if (impfileContent.empty()) {
-    fprintf(stderr, "Failed to load shader config: %s\n", path);
+    ERROR("Failed to load shader config: %s", path);
     return;
   }
 
@@ -183,7 +183,7 @@ void VaoManager::importFromFile(const char *path) {
   // Load .impfile from packed assets
   std::string impfileContent = loader.getAssetString(path);
   if (impfileContent.empty()) {
-    fprintf(stderr, "Failed to load model config: %s\n", path);
+    ERROR("Failed to load model config: %s", path);
     return;
   }
 
@@ -196,7 +196,7 @@ void VaoManager::importFromFile(const char *path) {
     // Load model data from packed assets
     auto modelData = loader.getAssetData(metadata.path.c_str());
     if (modelData.empty()) {
-      fprintf(stderr, "Failed to load model: %s\n", metadata.path.c_str());
+      ERROR("Failed to load model: %s", metadata.path.c_str());
       continue;
     }
 
@@ -266,30 +266,11 @@ void FontManager::importFromFile(const char *path) {
   // Load .impfile from packed assets
   std::string impfileContent = loader.getAssetString(path);
   if (impfileContent.empty()) {
-    fprintf(stderr, "Failed to load font config: %s\n", path);
+    ERROR("Failed to load font config: %s", path);
     return;
   }
-
   // Parse in memory
   std::vector<impfile::Entry> entries = impfile::parseBin(impfileContent);
-
-  // For whatever reason Nuklear crashes if I don't include this code here
-  // do not delete this code despite the fact it doesn't load any fonts
-  //  nk_glfw3_font_stash_begin(state->getNkGlfw(), &fontatlas);
-  //  nk_glfw3_font_stash_end(state->getNkGlfw());
-
-  // nk_glfw3_font_stash_begin(state->getNkGlfw(), &fontatlas);
-  // for(const auto &entry : entries) {
-  // 	FontMetaData fontmetadata = entryToFontMetaData(entry);
-  // 	nk_font* font = nk_font_atlas_add_from_file(
-  // 		fontatlas,
-  // 		fontmetadata.path.c_str(),
-  // 		fontmetadata.fontsize,
-  // 		0
-  // 	);
-  // 	fonts.insert({ fontmetadata.name, font });
-  // }
-  // nk_glfw3_font_stash_end(state->getNkGlfw());
 }
 
 FontManager *FontManager::get() {
@@ -299,15 +280,7 @@ FontManager *FontManager::get() {
 
 void FontManager::pushFont(const std::string &fontname) {
   (void)fontname;
-  // State* state = State::get();
 
-  // if(!fonts.count(fontname))
-  // 	return;
-
-  // nk_style_push_font(
-  // 	state->getNkContext(),
-  // 	&fonts.at(fontname)->handle
-  // );
 }
 
 void FontManager::popFont() {
