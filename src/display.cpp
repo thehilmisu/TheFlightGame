@@ -453,6 +453,34 @@ namespace gfx {
         }
     }
 
+  void displayRockets(const std::vector<gameobjects::Rocket> &rockets) {
+        if (rockets.empty())
+            return;
+
+        Window &window = Window::getInstance();
+        Camera &cam = window.getCamera();
+
+        VAOS->bind("bullet");
+        TEXTURES->bindTexture("bullet", GL_TEXTURE0);
+        SHADERS->use("trail");
+        ShaderProgram &trailshader = SHADERS->getShader("trail");
+        trailshader.uniformMat4x4("persp", window.getPerspective());
+        trailshader.uniformMat4x4("view", cam.viewMatrix());
+        trailshader.uniformFloat("specularfactor", 1.0f);
+        trailshader.uniformVec3("lightdir", LIGHT);
+        trailshader.uniformVec3("camerapos", cam.position);
+        for (const auto &rocket: rockets) {
+            glm::mat4 transform = rocket.transform.getTransformMat();
+            glm::mat3 normal = glm::mat3(glm::transpose(glm::inverse(transform)));
+            glm::vec3 velocity = rocket.transform.direction() * ROCKET_SPEED;
+            trailshader.uniformFloat("time", rocket.time);
+            trailshader.uniformVec3("velocity", velocity);
+            trailshader.uniformMat4x4("transform", transform);
+            trailshader.uniformMat3x3("normalmat", normal);
+            VAOS->drawInstanced(32);
+        }
+    }
+
     void displaySpeed(float speed) {
         Window &window = Window::getInstance();
 

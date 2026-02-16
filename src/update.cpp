@@ -72,6 +72,40 @@ namespace gameobjects {
 		time += dt;
 		transform.position += transform.direction() * dt * speed;
 	}	
+
+	Rocket::Rocket(const Player &player, const glm::vec3 &offset)
+	{
+		time = 0.0f;
+		transform.position = 
+			player.transform.rotate(offset) +
+			player.transform.position;
+		transform.rotation = player.transform.rotation;
+		transform.scale = glm::vec3(1.0f);
+		speed = ROCKET_SPEED + player.speed - SPEED;
+	}
+
+	Rocket::Rocket(const game::Transform &t, float addspeed, const glm::vec3 &offset)
+	{
+		time = 0.0f;
+		transform.position = 
+			t.rotate(offset) +
+			t.position;
+		transform.rotation = t.rotation;
+		transform.scale = glm::vec3(1.0f);
+		speed = ROCKET_SPEED + addspeed - SPEED;
+	}
+
+	Rocket::Rocket()
+	{
+		time = 0.0f;
+		speed = BULLET_SPEED;
+	}
+
+	void Rocket::update(float dt)
+	{
+		time += dt;
+		transform.position += transform.direction() * dt * speed;
+	}	
 }
 
 namespace game {
@@ -102,6 +136,20 @@ namespace game {
 				return glm::length(d1) > glm::length(d2);
 			}
 		);
+	}
+
+	void updateRockets(std::vector<gobjs::Rocket> &rockets, float dt)
+	{
+		for(auto &rocket: rockets)
+			rocket.update(dt);
+	
+		rockets.erase(std::remove_if(
+			rockets.begin(),
+			rockets.end(),
+			[](gobjs::Rocket &rocket) {
+				return rocket.destroyed || rocket.transform.position.y < 0.0f;
+			}
+		), rockets.end());
 	}
 
 	void updateBullets(std::vector<gobjs::Bullet> &bullets, float dt)

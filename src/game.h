@@ -6,6 +6,7 @@
 constexpr float SPEED = 48.0f;
 constexpr float ACCELERATION = 12.0f;
 constexpr float BULLET_SPEED = 384.0f;
+constexpr float ROCKET_SPEED = 84.0f;
 constexpr unsigned int MAX_LOD = 10;
 constexpr float LOD_SCALE = 2.0f;
 
@@ -148,7 +149,19 @@ namespace gameobjects {
 		void update(float dt);
 	};
 
+	struct Rocket {
+			bool destroyed = false;
+			game::Transform transform;
+			float time;
+			float speed;
+			Rocket(const Player &player, const glm::vec3 &offset);
+			Rocket(const game::Transform &t, float addspeed, const glm::vec3 &offset);
+			Rocket();
+			void update(float dt);
+	};
+
 	struct Enemy {
+
 		//How many points the player gets if they kill the enemy
 		unsigned int scorevalue;
 		game::Transform transform;
@@ -295,6 +308,8 @@ namespace game {
 		std::vector<gameobjects::Bullet> &bullets,
 		infworld::worldseed &permutations
 	);
+
+	void updateRockets(std::vector<gameobjects::Rocket> &rockets, float dt);
 }
 
 namespace gfx {
@@ -312,6 +327,7 @@ namespace gfx {
 	void displayUfos(const std::vector<gameobjects::Enemy> &ufos);
 	void displayPlanes(float totalTime, const std::vector<gameobjects::Enemy> &planes);
 	void displayBullets(const std::vector<gameobjects::Bullet> &bullets);
+	void displayRockets(const std::vector<gameobjects::Rocket> &rockets);
 	void displayMiniMapBackground(float totalTime);
 	void displayAttitude(float pitch, float roll);
 	void displaySpeed(float speed);

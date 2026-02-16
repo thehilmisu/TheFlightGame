@@ -31,6 +31,7 @@ namespace game
         // Gameobjects
         gameobjects::Player player(glm::vec3(0.0f, HEIGHT * SCALE * 0.5f, 0.0f));
         std::vector<gameobjects::Bullet> bullets;
+        std::vector<gameobjects::Rocket> rockets;
         std::vector<gameobjects::Bullet> enemyBullets;
         std::vector<gameobjects::Enemy> balloons;
         std::vector<gameobjects::Enemy> ships;
@@ -85,6 +86,8 @@ namespace game
             // Display bullets
             gfx::displayBullets(bullets);
             gfx::displayBullets(enemyBullets);
+            // Display Rockets
+            gfx::displayRockets(rockets);
             // Display water
             gfx::displayWater(totalTime);
             // Draw skybox
@@ -137,6 +140,11 @@ namespace game
                     bullets.push_back(gameobjects::Bullet(player, glm::vec3(-8.5f, -0.75f, 8.5f)));
                     bullets.push_back(gameobjects::Bullet(player, glm::vec3(8.5f, -0.75f, 8.5f)));
                 }
+                // Rockets
+                if (window.getKeyState(SDLK_g)) {
+                    rockets.push_back(gameobjects::Rocket(player, glm::vec3(-8.5f, -0.75f, 8.5f)));
+                }
+                game::updateRockets(rockets, dt);
                 // Update bullets
                 game::checkBulletDist(bullets, player);
                 game::updateBullets(bullets, dt);
