@@ -14,3 +14,8 @@
 	"path" = "Armata-Regular.ttf";
 	"fontsz" = "96";
 }
+
+"jetbrainsmono_bold" {
+	"path" = "JetBrainsMono-Bold.ttf";
+	"fontsz" = "18";
+}

@@ -6,6 +6,8 @@
 #include "imgui_impl_sdl2.h"
 #include "window.h"
 #include <glm/glm.hpp>
+#include "assetloader.h"
+#include "logger.h"
 
 Gui::Gui()
 {
@@ -16,10 +18,10 @@ Gui::Gui()
   ImGuiIO &io = ImGui::GetIO();
   (void)io;
   io.ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard;
-
+ 
   ImGui::StyleColorsDark();
 
-  // SDL2 backend
+  // SDL2 backend 
   Window &window = Window::getInstance();
 #ifdef __ANDROID__
   const char *glsl_version = "#version 300 es";
@@ -34,6 +36,13 @@ Gui::Gui()
   ImGui_ImplSDL2_InitForOpenGL(window.getSDLWindow(), window.getGLContext());
   ImGui_ImplOpenGL3_Init(glsl_version);
   // ImGui_ImplOpenGL3_Init(nullptr);
+
+  // AssetLoader &aLoader = AssetLoader::getInstance();
+  // std::vector<uint8_t> fontData = aLoader.getAssetData("jetbrainsmono_bold");
+  // TRACE("Font size : %d ", fontData.size());
+
+  // jetBrainsMonoBold = io.Fonts->AddFontFromMemoryTTF(fontData.data(), fontData.size(), 18.0f);
+  // jetBrainsMonoBold = io.Fonts->AddFontFromFileTTF("assets/fonts/JetBrainsMono-Bold.ttf", 18.0f);
 
   dItems.playerPosition = glm::vec3(0.0f);
   dItems.cameraPosition = glm::vec3(0.0f);
@@ -252,6 +261,7 @@ game::MainMenuActions Gui::drawMainMenu()
 
   if (ImGui::Begin("GameMainMenu", nullptr, window_flags)) {
     ImGui::PushStyleVar(ImGuiStyleVar_FrameRounding, 5.0f);
+    // ImGui::PushFont(jetBrainsMonoBold);
 
     // Title Text
     ImGui::SetWindowFontScale(2.0f);
@@ -281,6 +291,7 @@ game::MainMenuActions Gui::drawMainMenu()
     }
 
     ImGui::Spacing();
+    // ImGui::PopFont();
     ImGui::PopStyleVar();
     ImGui::End();
   }

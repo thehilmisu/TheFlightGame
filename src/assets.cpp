@@ -3,6 +3,7 @@
 #include "assetloader.h"
 #include <fstream>
 #include <filesystem>
+#include "logger.h"
 
 namespace assets {
 TextureManager *TextureManager::get() {
@@ -261,6 +262,7 @@ FontMetaData entryToFontMetaData(const impfile::Entry &entry) {
 }
 
 void FontManager::importFromFile(const char *path) {
+  TRACE(" ########### fonts count ");
   AssetLoader& loader = AssetLoader::getInstance();
 
   // Load .impfile from packed assets
@@ -271,6 +273,11 @@ void FontManager::importFromFile(const char *path) {
   }
   // Parse in memory
   std::vector<impfile::Entry> entries = impfile::parseBin(impfileContent);
+
+  for (size_t i = 0; i < entries.size(); i++) {
+    FontMetaData meta = entryToFontMetaData(entries.at(i));
+    TRACE("Font name : %s", meta.name.c_str());
+  }
 }
 
 FontManager *FontManager::get() {
