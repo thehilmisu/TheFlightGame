@@ -1,4 +1,5 @@
 #include "assetloader.h"
+#include "logger.h"
 
 bool AssetLoader::loadAssets(const std::string& assetBundlePath) {
     m_file.open(assetBundlePath, std::ios::binary);
@@ -38,7 +39,7 @@ bool AssetLoader::loadAssets(const std::string& assetBundlePath) {
 
 std::vector<uint8_t> AssetLoader::getAssetData(const std::string& name) {
     if (m_index.find(name) == m_index.end()) {
-        std::cerr << "Asset not found: " << name << std::endl;
+        ERROR("Asset not found: %s", name);
         return {};
     }
 

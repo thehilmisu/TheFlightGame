@@ -85,14 +85,15 @@ namespace assets {
 	};
 
 	class FontManager {
-		// std::unordered_map<std::string, nk_font*> fonts = {};
-		// nk_font_atlas* fontatlas;
+		std::unordered_map<std::string, std::string> fonts = {};
+		void add(const std::string &name, const std::string &data);
 		FontManager() {}
 	public:
 		void importFromFile(const char *path);
 		static FontManager* get();
 		void pushFont(const std::string &fontname);
 		void popFont();
+		std::string& getFontData(const std::string &name);
 	};
 
 	//assumes the entry has the following variables:

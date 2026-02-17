@@ -262,7 +262,6 @@ FontMetaData entryToFontMetaData(const impfile::Entry &entry) {
 }
 
 void FontManager::importFromFile(const char *path) {
-  TRACE(" ########### fonts count ");
   AssetLoader& loader = AssetLoader::getInstance();
 
   // Load .impfile from packed assets
@@ -277,12 +276,27 @@ void FontManager::importFromFile(const char *path) {
   for (size_t i = 0; i < entries.size(); i++) {
     FontMetaData meta = entryToFontMetaData(entries.at(i));
     TRACE("Font name : %s", meta.name.c_str());
+    add(meta.name.c_str(), loader.getAssetString(meta.name.c_str()));
   }
 }
 
 FontManager *FontManager::get() {
   static FontManager *fontmanager = new FontManager;
   return fontmanager;
+}
+
+void FontManager::add(const std::string &name, const std::string &data) {
+  fonts.insert({name, data});
+}
+
+std::string& FontManager::getFontData(const std::string &name) {
+  
+  if (!fonts.count(name)) {
+    ERROR("font %s does not exist!", name.c_str());
+    exit(1);
+  }
+
+  return fonts.at(name);
 }
 
 void FontManager::pushFont(const std::string &fontname) {
