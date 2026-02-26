@@ -39,6 +39,7 @@ namespace game
         std::vector<gameobjects::Explosion> explosions;
         std::vector<gameobjects::Props> barrels;
 
+
         float totalTime = 0.0f;
         float dt = 0.0f;
         unsigned int score = 0; // Player score
@@ -53,6 +54,7 @@ namespace game
         // timers.addTimer("spawn_barrel", 0.0f, 70.0f);
 
         window.getCamera().updateCamera(player);
+
 
         std::vector<std::string> skyboxes = {"rainskybox", "nightskybox", "skybox"};
         std::string skybox = skyboxes.at(0);

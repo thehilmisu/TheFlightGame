@@ -262,7 +262,7 @@ game::MainMenuActions Gui::drawMainMenu()
 
   if (ImGui::Begin("GameMainMenu", nullptr, window_flags)) {
     ImGui::PushStyleVar(ImGuiStyleVar_FrameRounding, 5.0f);
-    ImGui::PushFont(FONTS->getFontData("jetbrainsmono_bold"));
+    // ImGui::PushFont(FONTS->getFontData("jetbrainsmono_bold"));
 
     // Title Text
     ImGui::SetWindowFontScale(2.0f);
@@ -283,6 +283,10 @@ game::MainMenuActions Gui::drawMainMenu()
       action = game::LOAD_GAME;
     }
 
+    if (ImGui::Button("HANGAR", ImVec2(-1.0f, 50.0f))) {
+      action = game::HANGAR;
+    }
+
     if (ImGui::Button("OPTIONS", ImVec2(-1.0f, 50.0f))) {
       action = game::OPTIONS;
     }
@@ -292,34 +296,34 @@ game::MainMenuActions Gui::drawMainMenu()
     }
 
     ImGui::Spacing();
-    ImGui::PopFont();
+    // ImGui::PopFont();
     ImGui::PopStyleVar();
     ImGui::End();
   }
 
-  pos_x = (w / 2.0f) + 300.0f;
-  pos_y = float(h - 50.0f);
-  ImGui::SetNextWindowPos(ImVec2(pos_x, pos_y), ImGuiCond_Always,
-                          ImVec2(1.0f, 1.0f));
-  ImGui::SetNextWindowSize(ImVec2(300, 75));
+  // pos_x = (w / 2.0f) + 300.0f;
+  // pos_y = float(h - 50.0f);
+  // ImGui::SetNextWindowPos(ImVec2(pos_x, pos_y), ImGuiCond_Always,
+  //                         ImVec2(1.0f, 1.0f));
+  // ImGui::SetNextWindowSize(ImVec2(300, 75));
 
-  if (ImGui::Begin("PlaneArrows", nullptr, window_flags)) {
-    ImGui::PushStyleVar(ImGuiStyleVar_FrameRounding, 5.0f);
-    ImGui::SetWindowFontScale(2.0f);
+  // if (ImGui::Begin("PlaneArrows", nullptr, window_flags)) {
+  //   ImGui::PushStyleVar(ImGuiStyleVar_FrameRounding, 5.0f);
+  //   ImGui::SetWindowFontScale(2.0f);
 
-    if (ImGui::Button("<<", ImVec2(150.0f, 50.0f))) {
-      action = game::CHANGE_PLANE_MINUS;
-    }
+  //   if (ImGui::Button("<<", ImVec2(150.0f, 50.0f))) {
+  //     action = game::CHANGE_PLANE_MINUS;
+  //   }
 
-    ImGui::SameLine();
+  //   ImGui::SameLine();
     
-    if (ImGui::Button(">>", ImVec2(150.0f, 50.0f))){
-      action = game::CHANGE_PLANE_PLUS;
-    }
+  //   if (ImGui::Button(">>", ImVec2(150.0f, 50.0f))){
+  //     action = game::CHANGE_PLANE_PLUS;
+  //   }
 
-    ImGui::PopStyleVar();
-    ImGui::End();
-  }
+  //   ImGui::PopStyleVar();
+  //   ImGui::End();
+  // }
 
   return action;
 }

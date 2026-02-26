@@ -28,7 +28,7 @@ bool AssetLoader::loadAssets(const std::string& assetBundlePath) {
         m_index[assetPath] = { entry.offset, entry.size, entry.type };
 
         // Debug: print first few assets and impfiles
-        if (i < 10 || entry.type == ASSET_TYPE_IMPFILE) {
+        if (i < 10 || entry.type == ASSET_TYPE_FONT) {
             std::cout << "Loaded asset: [" << assetPath << "] type=" << (int)entry.type << std::endl;
         }
     }
@@ -38,6 +38,9 @@ bool AssetLoader::loadAssets(const std::string& assetBundlePath) {
 }
 
 std::vector<uint8_t> AssetLoader::getAssetData(const std::string& name) {
+    // for (auto i : m_index) {
+    //     std::cout << "TEST : " << i.first << std::endl;
+    // }
     if (m_index.find(name) == m_index.end()) {
         ERROR("Asset not found: %s", name.c_str());
         return {};

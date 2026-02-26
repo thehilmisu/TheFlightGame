@@ -265,7 +265,6 @@ FontMetaData entryToFontMetaData(const impfile::Entry &entry) {
 void FontManager::importFromFile(const char *path) {
   AssetLoader& loader = AssetLoader::getInstance();
 
-  // Load .impfile from packed assets
   std::string impfileContent = loader.getAssetString(path);
   if (impfileContent.empty()) {
     ERROR("Failed to load font config: %s", path);
@@ -277,7 +276,7 @@ void FontManager::importFromFile(const char *path) {
   ImGuiIO& io = ImGui::GetIO();
   for (size_t i = 0; i < entries.size(); i++) {
     FontMetaData meta = entryToFontMetaData(entries.at(i));
-    TRACE("Font name : %s", meta.name.c_str());
+    INFO("Font name : %s, path : %s", meta.name.c_str(), meta.path.c_str());
 
     std::vector<uint8_t> fontData = loader.getAssetData(meta.name.c_str());
     if (fontData.empty()) {
@@ -286,16 +285,16 @@ void FontManager::importFromFile(const char *path) {
     }
 
     // ImGui takes ownership of this buffer, so allocate with IM_ALLOC
-    void* buf = IM_ALLOC(fontData.size());
-    memcpy(buf, fontData.data(), fontData.size());
+    // void* buf = IM_ALLOC(fontData.size());
+    // memcpy(buf, fontData.data(), fontData.size());
 
-    ImFont* font = io.Fonts->AddFontFromMemoryTTF(buf, (int)fontData.size(), (float)meta.fontsize);
-    if (font) {
-      add(meta.name, font);
-    } else {
-      ERROR("Failed to register font with ImGui: %s", meta.name.c_str());
-      IM_FREE(buf);
-    }
+    // ImFont* font = io.Fonts->AddFontFromMemoryTTF(buf, (int)fontData.size(), (float)meta.fontsize);
+    // if (font) {
+    //   add(meta.name, font);
+    // } else {
+    //   ERROR("Failed to register font with ImGui: %s", meta.name.c_str());
+    //   IM_FREE(buf);
+    // }
   }
 }
 

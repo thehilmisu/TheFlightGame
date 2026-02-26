@@ -29,6 +29,7 @@ namespace game {
 	enum MainMenuActions {
 		NONE_SELECTED,
 		START_GAME,
+		HANGAR,
 		LOAD_GAME,
 		OPTIONS,
 		CREDITS,
@@ -71,6 +72,8 @@ namespace game {
 	game::PauseMenuActions arcadeModeGameLoop();
 	//Development Purposes
 	game::PauseMenuActions devModeGameLoop();
+	//Hangar Loop
+	game::PauseMenuActions hangarGameLoop();
 	//Main menu
 	//Returns the game mode selected
 	game::MainMenuActions mainMenu();

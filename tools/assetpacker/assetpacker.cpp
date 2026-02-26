@@ -67,7 +67,10 @@ void AssetPacker::packAssets(const char* outputPath) {
     std::vector<InternalEntry> allAssets;
 
     auto add = [&](auto& map, AssetType type) {
-        for (const auto& [name, path] : map) allAssets.push_back({name, path, type});
+        for (const auto& [name, path] : map) {
+            if (type == ASSET_TYPE_FONT) std::cout << "Begin to pack font " <<  name << " from  " <<  path << std::endl;
+            allAssets.push_back({name, path, type});
+        }
     };
 
     add(shaders, ASSET_TYPE_SHADER);

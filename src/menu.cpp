@@ -80,7 +80,8 @@ namespace game
       unsigned int current_selected = player.getCurrentIndex();
       switch (selected)
       {
-      case OPTIONS: // Fall through
+      case HANGAR:
+        return selected;
       case START_GAME:
         return selected;
       case CREDITS:

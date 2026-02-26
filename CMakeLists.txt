@@ -47,6 +47,7 @@ set(COMMON_SOURCES
     src/assetloader.cpp
     src/plane.cpp
     src/timers.cpp
+    src/hangar.cpp
 )
 
 # ImGui sources
