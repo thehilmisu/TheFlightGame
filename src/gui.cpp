@@ -7,6 +7,7 @@
 #include "window.h"
 #include <glm/glm.hpp>
 #include "assetloader.h"
+#include "assets.h"
 #include "logger.h"
 
 Gui::Gui()
@@ -261,7 +262,7 @@ game::MainMenuActions Gui::drawMainMenu()
 
   if (ImGui::Begin("GameMainMenu", nullptr, window_flags)) {
     ImGui::PushStyleVar(ImGuiStyleVar_FrameRounding, 5.0f);
-    // ImGui::PushFont(jetBrainsMonoBold);
+    ImGui::PushFont(FONTS->getFontData("jetbrainsmono_bold"));
 
     // Title Text
     ImGui::SetWindowFontScale(2.0f);
@@ -291,7 +292,7 @@ game::MainMenuActions Gui::drawMainMenu()
     }
 
     ImGui::Spacing();
-    // ImGui::PopFont();
+    ImGui::PopFont();
     ImGui::PopStyleVar();
     ImGui::End();
   }

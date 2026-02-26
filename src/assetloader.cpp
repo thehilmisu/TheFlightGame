@@ -39,7 +39,7 @@ bool AssetLoader::loadAssets(const std::string& assetBundlePath) {
 
 std::vector<uint8_t> AssetLoader::getAssetData(const std::string& name) {
     if (m_index.find(name) == m_index.end()) {
-        ERROR("Asset not found: %s", name);
+        ERROR("Asset not found: %s", name.c_str());
         return {};
     }
 

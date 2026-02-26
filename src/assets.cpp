@@ -3,6 +3,7 @@
 #include "assetloader.h"
 #include <fstream>
 #include <filesystem>
+#include <cstring>
 #include "logger.h"
 
 namespace assets {
@@ -273,10 +274,28 @@ void FontManager::importFromFile(const char *path) {
   // Parse in memory
   std::vector<impfile::Entry> entries = impfile::parseBin(impfileContent);
 
+  ImGuiIO& io = ImGui::GetIO();
   for (size_t i = 0; i < entries.size(); i++) {
     FontMetaData meta = entryToFontMetaData(entries.at(i));
     TRACE("Font name : %s", meta.name.c_str());
-    add(meta.name.c_str(), loader.getAssetString(meta.name.c_str()));
+
+    std::vector<uint8_t> fontData = loader.getAssetData(meta.name.c_str());
+    if (fontData.empty()) {
+      ERROR("Failed to load font data: %s", meta.name.c_str());
+      continue;
+    }
+
+    // ImGui takes ownership of this buffer, so allocate with IM_ALLOC
+    void* buf = IM_ALLOC(fontData.size());
+    memcpy(buf, fontData.data(), fontData.size());
+
+    ImFont* font = io.Fonts->AddFontFromMemoryTTF(buf, (int)fontData.size(), (float)meta.fontsize);
+    if (font) {
+      add(meta.name, font);
+    } else {
+      ERROR("Failed to register font with ImGui: %s", meta.name.c_str());
+      IM_FREE(buf);
+    }
   }
 }
 
@@ -285,17 +304,15 @@ FontManager *FontManager::get() {
   return fontmanager;
 }
 
-void FontManager::add(const std::string &name, const std::string &data) {
-  fonts.insert({name, data});
+void FontManager::add(const std::string &name, ImFont* font) {
+  fonts.insert({name, font});
 }
 
-std::string& FontManager::getFontData(const std::string &name) {
-  
+ImFont* FontManager::getFontData(const std::string &name) {
   if (!fonts.count(name)) {
     ERROR("font %s does not exist!", name.c_str());
-    exit(1);
+    return nullptr;
   }
-
   return fonts.at(name);
 }
 

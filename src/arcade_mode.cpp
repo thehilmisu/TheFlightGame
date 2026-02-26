@@ -142,6 +142,7 @@ namespace game
                 }
                 // Rockets
                 if (window.getKeyState(SDLK_g)) {
+                    player.resetShootTimer();
                     rockets.push_back(gameobjects::Rocket(player, glm::vec3(-8.5f, -0.75f, 8.5f)));
                 }
                 game::updateRockets(rockets, dt);
