@@ -281,6 +281,7 @@ namespace gfx {
         Window &window = Window::getInstance();
         Camera &cam = window.getCamera();
 
+        glDisable(GL_CULL_FACE);
         VAOS->bind("hangar");
         SHADERS->use("textured");
         ShaderProgram &shader = SHADERS->getShader("textured");
@@ -311,48 +312,7 @@ namespace gfx {
                 TEXTURES->bindTexture("hangar_transparent", GL_TEXTURE0);
             VAOS->drawRange(group.startIndex, group.indexCount);
         }
-    }
-
-    void displayHangar3(float scale) {
-        Window &window = Window::getInstance();
-        Camera &cam = window.getCamera();
-
-        glDisable(GL_CULL_FACE);
-        VAOS->bind("hangar3");
-        SHADERS->use("textured");
-        TEXTURES->bindTexture("hangar3", GL_TEXTURE0);
-        ShaderProgram &shader = SHADERS->getShader("textured");
-        shader.uniformMat4x4("persp", window.getPerspective());
-        shader.uniformMat4x4("view", cam.viewMatrix());
-        shader.uniformFloat("specularfactor", 0.0f);
-        shader.uniformVec3("lightdir", LIGHT);
-        shader.uniformVec3("camerapos", cam.position);
-        glm::mat4 transform = glm::scale(glm::mat4(1.0f), glm::vec3(scale));
-        glm::mat3 normal = glm::mat3(glm::transpose(glm::inverse(transform)));
-        shader.uniformMat4x4("transform", transform);
-        shader.uniformMat3x3("normalmat", normal);
-        VAOS->draw();
         glEnable(GL_CULL_FACE);
-    }
-
-    void displayHangar2(float scale) {
-        Window &window = Window::getInstance();
-        Camera &cam = window.getCamera();
-
-        VAOS->bind("hangar2");
-        SHADERS->use("flatcolor");
-        ShaderProgram &shader = SHADERS->getShader("flatcolor");
-        shader.uniformMat4x4("persp", window.getPerspective());
-        shader.uniformMat4x4("view", cam.viewMatrix());
-        shader.uniformFloat("specularfactor", 0.0f);
-        shader.uniformVec3("lightdir", LIGHT);
-        shader.uniformVec3("camerapos", cam.position);
-        shader.uniformVec3("basecolor", glm::vec3(0.8f, 0.8f, 0.8f));
-        glm::mat4 transform = glm::scale(glm::mat4(1.0f), glm::vec3(scale));
-        glm::mat3 normal = glm::mat3(glm::transpose(glm::inverse(transform)));
-        shader.uniformMat4x4("transform", transform);
-        shader.uniformMat3x3("normalmat", normal);
-        VAOS->draw();
     }
 
     void displayBarrels(const std::vector<gameobjects::Props> &barrels) {

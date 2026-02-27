@@ -196,19 +196,19 @@
 "hangar" {
 	"target" = "texture2d";
 	"path" = "HangarMaterial_baseColor.png";
-	"flip" = "false";
+	"flip" = "true";
 }
 
 "hangar_add" {
 	"target" = "texture2d";
 	"path" = "HangarAddMaterial_baseColor.png";
-	"flip" = "false";
+	"flip" = "true";
 }
 
 "hangar_transparent" {
 	"target" = "texture2d";
 	"path" = "HangarTransparentMaterial_baseColor.png";
-	"flip" = "false";
+	"flip" = "true";
 }
 
 "hangar3" {

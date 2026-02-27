@@ -14,7 +14,7 @@ namespace game {
     Gui& gui = Gui::getInstance();
 
     //Gameobjects
-		gameobjects::Player player(glm::vec3(40.0f, 9.0f, 50.0f));
+		gameobjects::Player player(glm::vec3(-71.0, 5.0f, 32.0f));
   	float totalTime = 0.0f;
   	float dt = 0.0f;
     bool paused = false;
@@ -24,9 +24,9 @@ namespace game {
 
     // Position camera inside the hangar, looking at the plane
     Camera& cam = window.getCamera();
-    cam.position = glm::vec3(40.0f, 28.0f, 100.0f);
-    cam.yaw = 0.0f;    // look in -Z toward the plane
-    cam.pitch = 0.18f; // slight downward tilt (~15 degrees)
+    cam.position = glm::vec3(-102.f, 11.0f, 34.0f);
+    cam.yaw = -4.7f;    
+    cam.pitch = 0.07f; 
 
     
     unsigned int current_selected = player.getCurrentIndex();
@@ -38,7 +38,7 @@ namespace game {
         gui.newFrame();
 
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-        gfx::displayHangar3(45.0f);
+        gfx::displayHangar(5.0f);
         //Display plane
         gfx::displayPlayerPlane(totalTime, player.transform, player.getPlayerObj());
         game::MainMenuActions ac = gui.drawPlaneSelectionUI();
@@ -86,7 +86,27 @@ namespace game {
         }
         
         if (window.getKeyState(SDLK_ESCAPE) == JUST_PRESSED) paused = !paused;
+#if 0
+        if (window.getKeyState(SDLK_w) == HELD) cam.position.z -= 1.0f;
+        if (window.getKeyState(SDLK_a) == HELD) cam.position.x -= 1.0f;
+        if (window.getKeyState(SDLK_s) == HELD) cam.position.z += 1.0f;
+        if (window.getKeyState(SDLK_d) == HELD) cam.position.x += 1.0f;
+        if (window.getKeyState(SDLK_q) == HELD) cam.position.y += 1.0f;
+        if (window.getKeyState(SDLK_e) == HELD) cam.position.y -= 1.0f;
 
+        cam.rotateCamera(window.getMouseDX(), window.getMouseDY(), 0.5f);
+        // TRACE("x : %f, y : %f, dx : %f, dy : %f", window.getMouseX(), window.getMouseY(), window.getMouseDX(), window.getMouseDY());
+        TRACE("x : %f, y : %f, z : %f", cam.position.x, cam.position.y, cam.position.z);
+        TRACE("pitch : %f, yaw : %f", cam.pitch, cam.yaw);
+        if (window.getKeyState(SDLK_w) == HELD) player.transform.position.z -= 1.0f;
+        if (window.getKeyState(SDLK_a) == HELD) player.transform.position.x -= 1.0f;
+        if (window.getKeyState(SDLK_s) == HELD) player.transform.position.z += 1.0f;
+        if (window.getKeyState(SDLK_d) == HELD) player.transform.position.x += 1.0f;
+        if (window.getKeyState(SDLK_q) == HELD) player.transform.position.y += 1.0f;
+        if (window.getKeyState(SDLK_e) == HELD) player.transform.position.y -= 1.0f;
+
+        TRACE("x : %f, y : %f, z : %f", player.transform.position.x, player.transform.position.y, player.transform.position.z);
+#endif
         gui.render();
 
         window.swapBuffers();

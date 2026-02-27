@@ -55,13 +55,3 @@
 "hangar" {
 	"path" = "hangar.obj";
 }
-
-# Hangar2 model
-"hangar2" {
-	"path" = "hangar2.obj";
-}
-
-# Hangar3 model
-"hangar3" {
-	"path" = "hangar3.obj";
-}

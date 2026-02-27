@@ -343,7 +343,5 @@ namespace gfx {
 	void displayCrosshair(const game::Transform &playertransform);
 	void displayHUDBackGrounds();
 	void displayHangar(float angle = 0.0f);
-	void displayHangar2(float scale = 1.0f);
-	void displayHangar3(float scale = 1.0f);
 	void displayFog();
 }
