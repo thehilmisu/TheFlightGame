@@ -33,12 +33,19 @@ namespace mesh {
 	void addToMesh(Meshf &mesh, const glm::vec3 &v);
 	void addToMesh(Meshf &mesh, const glm::vec2 &v);	
 
+	struct MaterialGroup {
+		std::string name;
+		unsigned int startIndex;
+		unsigned int indexCount;
+	};
+
 	//Combination of vertex, normal, and texture coordinate data
 	struct Model {
 		std::vector<glm::vec3> vertices;
 		std::vector<glm::vec3> normals;
 		std::vector<glm::vec2> texturecoords;
 		std::vector<unsigned int> indices;
+		std::vector<MaterialGroup> materialGroups;
 
 		Meshf vertData() const;
 		Meshf normalData() const;

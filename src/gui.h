@@ -47,6 +47,7 @@ public:
   void drawUI();
   void drawHUD();
   game::MainMenuActions drawMainMenu();
+  game::MainMenuActions drawPlaneSelectionUI(); 
   game::PauseMenuActions drawPauseMenu();
   game::DeathMenuActions drawDeathMenu();
   DebugItems dItems;

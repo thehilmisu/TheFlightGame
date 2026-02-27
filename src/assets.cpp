@@ -214,6 +214,8 @@ void VaoManager::importFromFile(const char *path) {
     mesh::Model model = mesh::loadObjModel(tempPath.c_str());
     gfx::Vao vao = gfx::createModelVao(model);
     add(metadata.name, vao);
+    if (!model.materialGroups.empty())
+      materialGroups.insert({metadata.name, model.materialGroups});
 
     // Cleanup
     std::remove(tempPath.c_str());
@@ -244,6 +246,19 @@ void VaoManager::draw() {
 
 void VaoManager::drawInstanced(unsigned int count) {
   glDrawElementsInstanced(GL_TRIANGLES, vertcount, GL_UNSIGNED_INT, 0, count);
+}
+
+void VaoManager::drawRange(unsigned int startIndex, unsigned int indexCount) {
+  glDrawElements(GL_TRIANGLES, indexCount, GL_UNSIGNED_INT,
+                 (void*)(startIndex * sizeof(unsigned int)));
+}
+
+const std::vector<mesh::MaterialGroup>& VaoManager::getMaterialGroups(const std::string &name) {
+  static const std::vector<mesh::MaterialGroup> empty;
+  auto it = materialGroups.find(name);
+  if (it == materialGroups.end())
+    return empty;
+  return it->second;
 }
 
 gfx::Vao &VaoManager::getVao(const std::string &name) {

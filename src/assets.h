@@ -58,6 +58,7 @@ namespace assets {
 	class VaoManager {
 		unsigned int vertcount = 0;
 		std::unordered_map<std::string, gfx::Vao> vaos = {};
+		std::unordered_map<std::string, std::vector<mesh::MaterialGroup>> materialGroups = {};
 		VaoManager() {}
 	public:
 		static VaoManager* get();
@@ -71,6 +72,10 @@ namespace assets {
 		void bind(const std::string &name);
 		void draw();
 		void drawInstanced(unsigned int count);
+		// Draw a sub-range of the currently bound VAO's index buffer
+		void drawRange(unsigned int startIndex, unsigned int indexCount);
+		// Returns material groups for a named model (empty if none)
+		const std::vector<mesh::MaterialGroup>& getMaterialGroups(const std::string &name);
 	};
 
 	class ShaderManager {

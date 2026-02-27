@@ -1,0 +1,47 @@
+# Blender 4.4.1 MTL File: 'None'
+# www.blender.org
+
+newmtl HangarAddMaterial
+Ks 0.500000 0.500000 0.500000
+Ke 0.000000 0.000000 0.000000
+Ni 1.500000
+illum 2
+Pr 0.830821
+Pm 0.000000
+Ps 0.000000
+Pc 0.000000
+Pcr 0.030000
+aniso 0.000000
+anisor 0.000000
+map_Kd HangarAddMaterial_baseColor.png
+map_d HangarAddMaterial_baseColor.png
+
+newmtl HangarMaterial
+Ks 0.500000 0.500000 0.500000
+Ke 0.000000 0.000000 0.000000
+Ni 1.500000
+d 1.000000
+illum 2
+Pr 0.830821
+Pm 0.000000
+Ps 0.000000
+Pc 0.000000
+Pcr 0.030000
+aniso 0.000000
+anisor 0.000000
+map_Kd HangarMaterial_baseColor.png
+
+newmtl HangarTransparentMaterial
+Ks 0.500000 0.500000 0.500000
+Ke 0.000000 0.000000 0.000000
+Ni 1.500000
+illum 2
+Pr 0.830821
+Pm 0.000000
+Ps 0.000000
+Pc 0.000000
+Pcr 0.030000
+aniso 0.000000
+anisor 0.000000
+map_Kd HangarTransparentMaterial_baseColor.png
+map_d HangarTransparentMaterial_baseColor.png

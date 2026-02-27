@@ -192,3 +192,27 @@
 	"north" = "rain_sky_north.png";
 	"south" = "rain_sky_south.png";
 }
+
+"hangar" {
+	"target" = "texture2d";
+	"path" = "HangarMaterial_baseColor.png";
+	"flip" = "false";
+}
+
+"hangar_add" {
+	"target" = "texture2d";
+	"path" = "HangarAddMaterial_baseColor.png";
+	"flip" = "false";
+}
+
+"hangar_transparent" {
+	"target" = "texture2d";
+	"path" = "HangarTransparentMaterial_baseColor.png";
+	"flip" = "false";
+}
+
+"hangar3" {
+	"target" = "texture2d";
+	"path" = "hangar3.png";
+	"flip" = "false";
+}

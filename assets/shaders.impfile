@@ -38,6 +38,11 @@
 	"fragment" = "textured-frag.glsl";
 }
 
+"flatcolor" {
+	"vertex" = "vert.glsl";
+	"fragment" = "flatcolor-frag.glsl";
+}
+
 "explosion" {
 	"vertex" = "explosionvert.glsl";
 	"fragment" = "explosionfrag.glsl";

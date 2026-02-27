@@ -301,33 +301,47 @@ game::MainMenuActions Gui::drawMainMenu()
     ImGui::End();
   }
 
-  // pos_x = (w / 2.0f) + 300.0f;
-  // pos_y = float(h - 50.0f);
-  // ImGui::SetNextWindowPos(ImVec2(pos_x, pos_y), ImGuiCond_Always,
-  //                         ImVec2(1.0f, 1.0f));
-  // ImGui::SetNextWindowSize(ImVec2(300, 75));
-
-  // if (ImGui::Begin("PlaneArrows", nullptr, window_flags)) {
-  //   ImGui::PushStyleVar(ImGuiStyleVar_FrameRounding, 5.0f);
-  //   ImGui::SetWindowFontScale(2.0f);
-
-  //   if (ImGui::Button("<<", ImVec2(150.0f, 50.0f))) {
-  //     action = game::CHANGE_PLANE_MINUS;
-  //   }
-
-  //   ImGui::SameLine();
-    
-  //   if (ImGui::Button(">>", ImVec2(150.0f, 50.0f))){
-  //     action = game::CHANGE_PLANE_PLUS;
-  //   }
-
-  //   ImGui::PopStyleVar();
-  //   ImGui::End();
-  // }
-
+  
   return action;
 }
 
+game::MainMenuActions Gui::drawPlaneSelectionUI() {
+  
+  game::MainMenuActions action = game::NONE_SELECTED;
+  Window &window = Window::getInstance();
+  int w = window.getWidth();
+  int h = window.getHeight();
+
+  float pos_x = (w / 2.0f) - 150.0f;
+  float pos_y = float(h - 50.0f);
+  ImGui::SetNextWindowPos(ImVec2(pos_x, pos_y), ImGuiCond_Always,
+                         ImVec2(1.0f, 1.0f));
+  ImGui::SetNextWindowSize(ImVec2(400, 75));
+
+  ImGuiWindowFlags window_flags =
+      ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoResize |
+      ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoBackground;
+
+  if (ImGui::Begin("PlaneArrows", nullptr, window_flags)) {
+   ImGui::PushStyleVar(ImGuiStyleVar_FrameRounding, 5.0f);
+   ImGui::SetWindowFontScale(2.0f);
+
+    if (ImGui::Button("<<", ImVec2(150.0f, 50.0f))) {
+      action = game::CHANGE_PLANE_MINUS;
+    }
+
+    ImGui::SameLine();
+    
+    if (ImGui::Button(">>", ImVec2(150.0f, 50.0f))){
+      action = game::CHANGE_PLANE_PLUS;
+    }
+
+     ImGui::PopStyleVar();
+     ImGui::End();
+ }
+
+ return action;
+}
 void Gui::drawHUD()
 {
 

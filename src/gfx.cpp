@@ -311,22 +311,55 @@ Model loadObjModel(const char *path) {
     texturecoords.push_back(tc);
   }
 
-  std::unordered_map<std::string, unsigned int> indices;
+  std::unordered_map<std::string, unsigned int> indexMap;
   model.indices.reserve(m->index_count);
-  unsigned int index = 0;
-  for (size_t i = 0; i < m->index_count; i++) {
-    fastObjIndex ind = m->indices[i];
-    std::string indstr = indicesToStr(ind.p, ind.t, ind.n);
-    if (indices.count(indstr))
-      model.indices.push_back(indices.at(indstr));
-    else {
-      model.vertices.push_back(vertices.at(ind.p));
-      model.normals.push_back(normals.at(ind.n));
-      model.texturecoords.push_back(texturecoords.at(ind.t));
-      model.indices.push_back(index);
-      indices.insert({indstr, index});
-      index++;
+  unsigned int nextIndex = 0;
+
+  // Walk face-by-face to track material group boundaries
+  int currentMaterial = -1;
+  unsigned int groupStart = 0;
+  unsigned int globalOffset = 0;
+
+  for (unsigned int f = 0; f < m->face_count; f++) {
+    unsigned int faceVerts = m->face_vertices[f];
+    int mat = (int)m->face_materials[f];
+
+    if (mat != currentMaterial) {
+      if (currentMaterial >= 0) {
+        MaterialGroup group;
+        group.name = m->materials[currentMaterial].name;
+        group.startIndex = groupStart;
+        group.indexCount = (unsigned int)model.indices.size() - groupStart;
+        model.materialGroups.push_back(group);
+      }
+      currentMaterial = mat;
+      groupStart = (unsigned int)model.indices.size();
     }
+
+    for (unsigned int v = 0; v < faceVerts; v++) {
+      fastObjIndex ind = m->indices[globalOffset + v];
+      std::string indstr = indicesToStr(ind.p, ind.t, ind.n);
+      if (indexMap.count(indstr)) {
+        model.indices.push_back(indexMap.at(indstr));
+      } else {
+        model.vertices.push_back(vertices.at(ind.p));
+        model.normals.push_back(normals.at(ind.n));
+        model.texturecoords.push_back(texturecoords.at(ind.t));
+        model.indices.push_back(nextIndex);
+        indexMap.insert({indstr, nextIndex});
+        nextIndex++;
+      }
+    }
+    globalOffset += faceVerts;
+  }
+
+  // Push the last material group
+  if (currentMaterial >= 0) {
+    MaterialGroup group;
+    group.name = m->materials[currentMaterial].name;
+    group.startIndex = groupStart;
+    group.indexCount = (unsigned int)model.indices.size() - groupStart;
+    model.materialGroups.push_back(group);
   }
 
   fast_obj_destroy(m);
