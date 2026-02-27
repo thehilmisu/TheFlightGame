@@ -35,6 +35,7 @@ namespace game {
 		CREDITS,
 		CHANGE_PLANE_MINUS,
 		CHANGE_PLANE_PLUS,
+		PLANE_SELECTED,
 		EXIT_GAME,
 	};
 	enum PauseMenuActions {
@@ -113,9 +114,12 @@ namespace gameobjects {
 		Player(glm::vec3 position);
 		struct PlayerModel {
 			std::string name;
+			std::string plane_name;
+			std::string description;
+			//TODO: maybe attributes?
 			float scale;
 		};
-		std::vector<PlayerModel> player_model;
+		std::vector<PlayerModel> player_models;
 		int current_model;
 		void damage(unsigned int amount);
 		//Returns the percentage of health left, rounded down
@@ -127,7 +131,7 @@ namespace gameobjects {
 		void resetShootTimer();
 		void checkIfCrashed(float dt, const infworld::worldseed &permutations);
 		void setPlayerObj(int current);
-		PlayerModel getPlayerObj() { return player_model[current_model]; }
+		PlayerModel getPlayerObj() { return player_models[current_model]; }
 		int getCurrentIndex() { return current_model; }
 	};
 

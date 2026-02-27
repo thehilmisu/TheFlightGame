@@ -30,6 +30,7 @@ namespace game {
 
     
     unsigned int current_selected = player.getCurrentIndex();
+    game::PauseMenuActions action = NONE;
 
     while (!window.shouldClose() && window.isRunnning()) {
         float startTime = getTime();
@@ -41,14 +42,18 @@ namespace game {
         gfx::displayHangar(5.0f);
         //Display plane
         gfx::displayPlayerPlane(totalTime, player.transform, player.getPlayerObj());
-        game::MainMenuActions ac = gui.drawPlaneSelectionUI();
+        game::MainMenuActions ac = gui.drawPlaneSelectionUI(player.getPlayerObj());
         if (ac == CHANGE_PLANE_MINUS) {
-          current_selected = (current_selected - 1) % 2;
+          current_selected = (current_selected - 1) % 5;
           player.setPlayerObj(current_selected);          
         }
         else if (ac == CHANGE_PLANE_PLUS) {
-          current_selected = (current_selected + 1) % 2;
+          current_selected = (current_selected + 1) % 5;
           player.setPlayerObj(current_selected);
+        }
+        else if (ac == PLANE_SELECTED) {
+          player.setPlayerObj(current_selected);
+          return EXIT_TO_MAINMENU;
         }
         
         if (!paused) {
@@ -62,30 +67,8 @@ namespace game {
             rotationDirection *= -1.0f;
 
           player.transform.rotation.y = mRotation;
-
-
         }
-        //paused
-        else{
-          game::PauseMenuActions action = gui.drawPauseMenu();
-          switch (action) {
-            case EXIT:
-              window.setIsRunning(false);
-              break;
-            case EXIT_TO_MAINMENU:
-              return action;
-              break;
-            case RESUME:
-              paused = false;
-              break;
-            case NONE:
-              break;
-            default:
-            break;
-           }
-        }
-        
-        if (window.getKeyState(SDLK_ESCAPE) == JUST_PRESSED) paused = !paused;
+               
 #if 0 //Debugging purposes
         if (window.getKeyState(SDLK_w) == HELD) cam.position.z -= 1.0f;
         if (window.getKeyState(SDLK_a) == HELD) cam.position.x -= 1.0f;

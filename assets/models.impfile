@@ -10,6 +10,20 @@
 	"path" = "douglas.obj";
 }
 
+# Third Plane (savoia marchetti sm 79t)
+"plane_savoia" {
+	"path" = "sm-79T.obj"
+}
+
+# Fourth Plane (grumman)
+"plane_grumman" {
+	"path" = "f4f.obj"
+}
+
+# Fifth Plane (f4 phantom)
+"plane_phantom" {
+	"path" = "F4phantom.obj"
+}
 
 # Propeller model
 "propeller" {

@@ -51,6 +51,20 @@
 	"flip" = "false";
 }
 
+# texture for third plane (sm-79T)
+"plane_savoia" {
+	"target" = "texture2d";
+	"path" = "texture.png";
+	"flip" = "true";
+}
+
+# texture for fourth plane (grumman)
+"plane_grumman" {
+	"target" = "texture2d";
+	"path" = "texture_grumman.png";
+	"flip" = "true";
+}
+
 # texture for enemy plane
 "enemy_plane" {
 	"target" = "texture2d";

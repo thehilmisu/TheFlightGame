@@ -305,18 +305,19 @@ game::MainMenuActions Gui::drawMainMenu()
   return action;
 }
 
-game::MainMenuActions Gui::drawPlaneSelectionUI() {
-  
+
+game::MainMenuActions Gui::drawPlaneSelectionUI(const gameobjects::Player::PlayerModel& pModel) {
+
   game::MainMenuActions action = game::NONE_SELECTED;
   Window &window = Window::getInstance();
   int w = window.getWidth();
   int h = window.getHeight();
 
-  float pos_x = (w / 2.0f) - 150.0f;
+  float pos_x = (w / 2.0f);
   float pos_y = float(h - 50.0f);
   ImGui::SetNextWindowPos(ImVec2(pos_x, pos_y), ImGuiCond_Always,
-                         ImVec2(1.0f, 1.0f));
-  ImGui::SetNextWindowSize(ImVec2(400, 75));
+                         ImVec2(0.5f, 1.0f));
+  ImGui::SetNextWindowSize(ImVec2(900, 75));
 
   ImGuiWindowFlags window_flags =
       ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoResize |
@@ -332,20 +333,25 @@ game::MainMenuActions Gui::drawPlaneSelectionUI() {
 
     ImGui::SameLine();
     
-    if (ImGui::Button(">>", ImVec2(150.0f, 50.0f))){
+    if (ImGui::Button(">>", ImVec2(150.0f, 50.0f))) {
       action = game::CHANGE_PLANE_PLUS;
     }
 
+    ImGui::SameLine(0.0f, 250.0f);
+    if (ImGui::Button("Select Plane", ImVec2(250.0, 50.0f))) {
+      action = game::PLANE_SELECTED;  
+    }
+    
     ImGui::PopStyleVar();
     ImGui::End();
     
     // Selected Plane information
-    pos_x = (w / 2.0f) + 400.0f;
+    pos_x = (w / 2.0f) + 500.0f;
     pos_y = 300.0f;
     
     ImGui::SetNextWindowPos(ImVec2(pos_x, pos_y), ImGuiCond_Always,
                          ImVec2(1.0f, 1.0f));
-    ImGui::SetNextWindowSize(ImVec2(400, 250));
+    ImGui::SetNextWindowSize(ImVec2(500, 250));
 
     window_flags =
       ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoResize |
@@ -355,11 +361,13 @@ game::MainMenuActions Gui::drawPlaneSelectionUI() {
        ImGui::PushStyleVar(ImGuiStyleVar_FrameRounding, 5.0f);
        ImGui::SetWindowFontScale(2.5f);
 
-       ImGui::Text("Selected Plane  ");
+       //TODO: fix this potential issue
+       ImGui::Text(pModel.plane_name.c_str());
        ImGui::Separator();
 
-       ImGui::SetWindowFontScale(2.0f);
-       ImGui::Text("Douglas XC2");
+       ImGui::SetWindowFontScale(1.5f);
+       //TODO: fix this potential issue
+       ImGui::Text(pModel.description.c_str());
        
      }
      ImGui::PopStyleVar();

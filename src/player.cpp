@@ -44,21 +44,45 @@ Player::Player(glm::vec3 position) {
 
   PlayerModel model_douglas = {
     .name = "plane_douglas",
+    .plane_name = "Douglas A-01",
+    .description = "Douglas A-01, default player plane.",
     .scale = 2.7f
   };
   PlayerModel model_default = {
     .name = "plane",
+    .plane_name = "Temporary plane model",
+    .description = "Temporary",
     .scale = 1.0f
   };
-  
-  player_model.push_back(model_douglas);
-  player_model.push_back(model_default);
+  PlayerModel model_sm79t = {
+    .name = "plane_savoia",
+    .plane_name = "Savoia Marchetti-sm-79-t",
+    .description = "Savoia-marchetti-sm-79-t fast plane",
+    .scale = 2.0f
+  };
+  PlayerModel model_grumman = {
+    .name = "plane_grumman",
+    .plane_name = "Grumman-f4f-wildcat",
+    .description = "Grumman-f4f-wildcat warrior plane",
+    .scale = 2.5f
+  };
+  PlayerModel model_phantom= {
+    .name = "plane_phantom",
+    .plane_name = "F4-Phantom",
+    .description = "F4 Phantom warrior plane",
+    .scale = 2.5f
+  };
+  player_models.push_back(model_douglas);
+  player_models.push_back(model_default);
+  player_models.push_back(model_sm79t);
+  player_models.push_back(model_grumman);
+  player_models.push_back(model_phantom);
   current_model = 0;
 }
 
 void Player::setPlayerObj(int current) {
   current_model = current;
-  transform.scale = glm::vec3(player_model.at(current_model).scale);
+  transform.scale = glm::vec3(player_models.at(current_model).scale);
 }
 
 void Player::damage(unsigned int amount) {
