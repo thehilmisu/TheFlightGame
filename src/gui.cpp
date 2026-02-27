@@ -265,11 +265,11 @@ game::MainMenuActions Gui::drawMainMenu()
     // ImGui::PushFont(FONTS->getFontData("jetbrainsmono_bold"));
 
     // Title Text
-    ImGui::SetWindowFontScale(2.0f);
+    ImGui::SetWindowFontScale(2.5f);
     float text_width = ImGui::CalcTextSize("River Raid 3D").x;
     ImGui::SetCursorPosX((ImGui::GetWindowSize().x - text_width) * 0.5f);
     ImGui::Text("River Raid 3D");
-    ImGui::SetWindowFontScale(1.0f);
+    ImGui::SetWindowFontScale(2.0f);
 
     ImGui::Spacing();
     ImGui::Separator();
@@ -336,6 +336,32 @@ game::MainMenuActions Gui::drawPlaneSelectionUI() {
       action = game::CHANGE_PLANE_PLUS;
     }
 
+    ImGui::PopStyleVar();
+    ImGui::End();
+    
+    // Selected Plane information
+    pos_x = (w / 2.0f) + 400.0f;
+    pos_y = 300.0f;
+    
+    ImGui::SetNextWindowPos(ImVec2(pos_x, pos_y), ImGuiCond_Always,
+                         ImVec2(1.0f, 1.0f));
+    ImGui::SetNextWindowSize(ImVec2(400, 250));
+
+    window_flags =
+      ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoResize |
+      ImGuiWindowFlags_NoMove;
+
+     if (ImGui::Begin("PlaneInformation", nullptr, window_flags)) {
+       ImGui::PushStyleVar(ImGuiStyleVar_FrameRounding, 5.0f);
+       ImGui::SetWindowFontScale(2.5f);
+
+       ImGui::Text("Selected Plane  ");
+       ImGui::Separator();
+
+       ImGui::SetWindowFontScale(2.0f);
+       ImGui::Text("Douglas XC2");
+       
+     }
      ImGui::PopStyleVar();
      ImGui::End();
  }

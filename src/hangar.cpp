@@ -86,7 +86,7 @@ namespace game {
         }
         
         if (window.getKeyState(SDLK_ESCAPE) == JUST_PRESSED) paused = !paused;
-#if 0
+#if 0 //Debugging purposes
         if (window.getKeyState(SDLK_w) == HELD) cam.position.z -= 1.0f;
         if (window.getKeyState(SDLK_a) == HELD) cam.position.x -= 1.0f;
         if (window.getKeyState(SDLK_s) == HELD) cam.position.z += 1.0f;
