@@ -29,8 +29,11 @@ namespace game
 
     gobjs::Player player(glm::vec3(14.0f, -8.0f, -40.0f));
     gobjs::Enemy enemy(glm::vec3(0.0f, 50.0f, -100.0f), 2, 100);
+    gobjs::Enemy balloon(glm::vec3(100.0f, 50.0f, -150.0f), 2, 100);
+    gobjs::Enemy balloon1(glm::vec3(-100.0f, 20.0f, -200.0f), 2, 100);
     enemy.transform.rotation.x = glm::radians(40.0f);
     std::vector<gobjs::Enemy> enemies = {enemy};
+    std::vector<gobjs::Enemy> balloons = {balloon, balloon1};
 
     float dt = 0.0f;
     float totalTime = 0.0f;
@@ -51,6 +54,7 @@ namespace game
 
       gfx::displayPlayerPlane(totalTime, player.transform, player.getPlayerObj());
       gfx::displayPlanes(totalTime, enemies);
+      gfx::displayBalloons(balloons);
 
       // Display skybox
       gfx::displaySkybox(skybox);
@@ -62,7 +66,7 @@ namespace game
       if (mRotation > glm::radians(60.0f) || mRotation < glm::radians(-60.0f))
         rotationDirection *= -1.0f;
       
-      for (auto &e : enemies) e.transform.rotation.y = mRotation;
+      for (auto &e : enemies) e.transform.rotation.y = -mRotation;
       
       player.transform.rotation.y = mRotation;
    

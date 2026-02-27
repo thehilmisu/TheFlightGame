@@ -81,7 +81,7 @@ namespace game {
   // Exit the Game
   void exitGame();
 
-}
+} // namespace game
 
 namespace gameobjects {
 	struct Player {
@@ -210,7 +210,7 @@ namespace gameobjects {
 	};
 
 	Props spawnBarrel(const glm::vec3 &position, const infworld::worldseed &permutations);
-}
+} // namespace gameobjects
 
 namespace game {
 	//Spawns barrels around the player
@@ -317,7 +317,7 @@ namespace game {
 	);
 
 	void updateRockets(std::vector<gameobjects::Rocket> &rockets, float dt);
-}
+} // namespace game
 
 namespace gfx {
 	void displaySkybox(const std::string &skybox);
@@ -348,4 +348,4 @@ namespace gfx {
 	void displayHUDBackGrounds();
 	void displayHangar(float angle = 0.0f);
 	void displayFog();
-}
+} // namespace gfx

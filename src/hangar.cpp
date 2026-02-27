@@ -78,9 +78,8 @@ namespace game {
         if (window.getKeyState(SDLK_e) == HELD) cam.position.y -= 1.0f;
 
         cam.rotateCamera(window.getMouseDX(), window.getMouseDY(), 0.5f);
-        // TRACE("x : %f, y : %f, dx : %f, dy : %f", window.getMouseX(), window.getMouseY(), window.getMouseDX(), window.getMouseDY());
-        TRACE("x : %f, y : %f, z : %f", cam.position.x, cam.position.y, cam.position.z);
-        TRACE("pitch : %f, yaw : %f", cam.pitch, cam.yaw);
+        // TRACE("x : %f, y : %f, z : %f", cam.position.x, cam.position.y, cam.position.z);
+        // TRACE("pitch : %f, yaw : %f", cam.pitch, cam.yaw);
         if (window.getKeyState(SDLK_w) == HELD) player.transform.position.z -= 1.0f;
         if (window.getKeyState(SDLK_a) == HELD) player.transform.position.x -= 1.0f;
         if (window.getKeyState(SDLK_s) == HELD) player.transform.position.z += 1.0f;
@@ -88,7 +87,7 @@ namespace game {
         if (window.getKeyState(SDLK_q) == HELD) player.transform.position.y += 1.0f;
         if (window.getKeyState(SDLK_e) == HELD) player.transform.position.y -= 1.0f;
 
-        TRACE("x : %f, y : %f, z : %f", player.transform.position.x, player.transform.position.y, player.transform.position.z);
+        // TRACE("x : %f, y : %f, z : %f", player.transform.position.x, player.transform.position.y, player.transform.position.z);
 #endif
         gui.render();
 

@@ -161,6 +161,7 @@ namespace game
                 game::updateBullets(enemyBullets, dt);
                 game::checkForBulletTerrainCollision(enemyBullets, permutations);
                 game::checkForHit(enemyBullets, player, 10.0f);
+                game::checkForCollision(player, planes, explosions, 2.0f, glm::vec3(26.0f, 26.0f, 72.0f));
 
                 // Spawn Balloons
                 if (timers.getTimer("spawn_balloon")){
@@ -217,7 +218,7 @@ namespace game
             }
             else if (gameState == game::DEAD) {
                 // Death should not be handled instantly, otherwise the player won't see the explosion
-                // TRACE("Player Deathtimer: %.2f", player.deathtimer);
+                TRACE("Player Deathtimer: %.2f", player.deathtimer);
                 if (player.deathtimer > 2.0f) {
                     switch (gui.drawDeathMenu())
                     {

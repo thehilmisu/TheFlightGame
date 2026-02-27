@@ -36,14 +36,6 @@ Gui::Gui()
 
   ImGui_ImplSDL2_InitForOpenGL(window.getSDLWindow(), window.getGLContext());
   ImGui_ImplOpenGL3_Init(glsl_version);
-  // ImGui_ImplOpenGL3_Init(nullptr);
-
-  // AssetLoader &aLoader = AssetLoader::getInstance();
-  // std::vector<uint8_t> fontData = aLoader.getAssetData("jetbrainsmono_bold");
-  // TRACE("Font size : %d ", fontData.size());
-
-  // jetBrainsMonoBold = io.Fonts->AddFontFromMemoryTTF(fontData.data(), fontData.size(), 18.0f);
-  // jetBrainsMonoBold = io.Fonts->AddFontFromFileTTF("assets/fonts/JetBrainsMono-Bold.ttf", 18.0f);
 
   dItems.playerPosition = glm::vec3(0.0f);
   dItems.cameraPosition = glm::vec3(0.0f);
@@ -146,7 +138,6 @@ game::DeathMenuActions Gui::drawDeathMenu()
                           ImVec2(0.5f, 0.5f));
   ImGui::SetNextWindowSize(ImVec2(300, 400));
 
-  // Use flags to remove the typical window frame for a cleaner "Game Menu" look
   ImGuiWindowFlags window_flags =
       ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoResize |
       ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoBackground;
@@ -241,6 +232,7 @@ game::PauseMenuActions Gui::drawPauseMenu()
 
   return action;
 }
+
 game::MainMenuActions Gui::drawMainMenu()
 {
   game::MainMenuActions action = game::NONE_SELECTED;
@@ -376,6 +368,7 @@ game::MainMenuActions Gui::drawPlaneSelectionUI(const gameobjects::Player::Playe
 
  return action;
 }
+
 void Gui::drawHUD()
 {
 
