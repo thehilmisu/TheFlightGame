@@ -45,10 +45,10 @@ int main(int argc, char* argv[]) {
 
     switch (action) {
     case game::OPTIONS:
-      if (game::devModeGameLoop() == game::EXIT_TO_MAINMENU) {
-        gui.render();
-        action = game::mainMenu();
-      }
+      // if (game::devModeGameLoop() == game::EXIT_TO_MAINMENU) {
+      //   gui.render();
+      //   action = game::mainMenu();
+      // }
       break;
     case game::HANGAR:
       if (game::hangarGameLoop() == game::EXIT_TO_MAINMENU) {

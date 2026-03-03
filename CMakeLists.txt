@@ -40,7 +40,7 @@ set(COMMON_SOURCES
     src/enemies.cpp
     src/props.cpp
     src/barrel.cpp
-    src/dev_mode.cpp
+    # src/dev_mode.cpp
     src/display.cpp
     src/player.cpp
     src/update.cpp

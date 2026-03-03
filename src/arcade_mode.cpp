@@ -204,6 +204,7 @@ namespace game
                 gui.dItems.shipCount = ships.size();
                 gui.dItems.balloonCount = balloons.size();
                 gui.dItems.planeCount = planes.size();
+                skybox = skyboxes.at(gui.dItems.selectedSkybox);
 
                 // Update HUD data
                 gui.hudItems.health = player.health;
@@ -268,8 +269,11 @@ namespace game
                     break;
                 }
             }
-            if (window.getKeyState(SDLK_m) == JUST_PRESSED) window.getCamera().shakeCamera(2.0f, 0.5f);
+            if (gui.dItems.isShakeButtonPressed || window.getKeyState(SDLK_m) == JUST_PRESSED) {
+                window.getCamera().shakeCamera(gui.dItems.shakeIntensity, gui.dItems.shakeDuration);
+            }
             if (window.getKeyState(SDLK_r) == JUST_PRESSED) draw_rain = !draw_rain;
+            draw_rain = gui.dItems.drawRain;
 
             if (window.getKeyState(SDLK_TAB) == JUST_PRESSED)
                 draw_debug_gui = !draw_debug_gui;
@@ -282,10 +286,10 @@ namespace game
 
             if (window.getKeyState(SDLK_p) == JUST_PRESSED)
             {
-                static int i = 0;
-                skybox = skyboxes.at(i);
+                static unsigned int i = 0;
                 i = (i + 1) % skyboxes.size();
-                // TRACE("selected skybox index = %d", i);
+                gui.dItems.selectedSkybox = i;
+                INFO("selected skybox index = %d", i);
             }
 
             if (draw_debug_gui)

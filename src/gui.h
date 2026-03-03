@@ -16,6 +16,7 @@ struct DebugItems{
   float shakeIntensity;
   float shakeDuration;
   bool drawRain;
+  bool isShakeButtonPressed;
   int selectedSkybox;
 };
 

@@ -44,6 +44,7 @@ Gui::Gui()
   dItems.planeCount = 0;
   dItems.shakeIntensity = 0.0f;
   dItems.shakeDuration = 0.0f;
+  dItems.isShakeButtonPressed = false;
 
   hudItems.fuel = 100.0f;
 }
@@ -71,6 +72,7 @@ void Gui::render()
 void Gui::drawUI()
 {
   const ImGuiViewport *viewport = ImGui::GetMainViewport();
+
 
   float sidebarwidth = 350.0f;
   ImGui::SetNextWindowPos(viewport->WorkPos);
@@ -109,9 +111,11 @@ void Gui::drawUI()
     ImGui::Separator();
     ImGui::SliderFloat("Shake Duration", &dItems.shakeDuration, 0.0f, 10.0f);
     ImGui::Separator();
+    dItems.isShakeButtonPressed = ImGui::Button("Shake The Camera", ImVec2(-1.0f, 50.0f));
+
     ImGui::Checkbox("Rain ", &dItems.drawRain);
     ImGui::Separator();
-    const char* items[] = { "Cloudy Sky", "Open Sky", "Night Sky"};
+    const char* items[] = { "Cloudy Sky", "Night Sky", "Open Sky"};
     ImGui::Combo("Skybox ", &dItems.selectedSkybox, items, IM_ARRAYSIZE(items));
     ImGui::Separator();
     if (ImGui::Button("Spawn Ship", ImVec2(-1.0f, 50.0f))) {
