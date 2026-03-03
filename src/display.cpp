@@ -33,7 +33,7 @@ namespace gfx {
         // Uniforms
         skyboxShader.uniformInt("skybox", 0);
         skyboxShader.uniformMat4x4("persp", window.getPerspective());
-        glm::mat4 skyboxView = glm::mat4(glm::mat3(cam.viewMatrix()));
+        const auto skyboxView = glm::mat4(glm::mat3(cam.viewMatrix()));
         skyboxShader.uniformMat4x4("view", skyboxView);
 
         VAOS->bind("cube");
@@ -47,9 +47,9 @@ namespace gfx {
         Camera &cam = window.getCamera();
 
         VAOS->bind("quad");
-        const int waterrange = 4;
-        const int count = (waterrange * 2 + 1) * (waterrange * 2 + 1);
-        const float quadscale = CHUNK_SZ * 32.0f * SCALE;
+        constexpr int waterrange = 4;
+        constexpr int count = (waterrange * 2 + 1) * (waterrange * 2 + 1);
+        constexpr float quadscale = CHUNK_SZ * 32.0f * SCALE;
         // Draw water
         ShaderProgram &waterShader = SHADERS->getShader("water");
         waterShader.use();
@@ -63,7 +63,7 @@ namespace gfx {
         waterShader.uniformVec3("lightdir", glm::normalize(glm::vec3(-1.0f)));
         waterShader.uniformVec3("camerapos", cam.position);
         waterShader.uniformFloat("time", totalTime);
-        glm::mat4 transform = glm::mat4(1.0f);
+        auto transform = glm::mat4(1.0f);
         transform = glm::translate(transform,
                                    glm::vec3(cam.position.x, 0.0f, cam.position.z));
         transform = glm::scale(transform, glm::vec3(quadscale));
@@ -138,8 +138,8 @@ namespace gfx {
                                    window.getAspect(), window.getFovy());
 
         infworld::ChunkPos center = chunktables[0].getCenter();
-        glm::vec2 centerpos = glm::vec2(float(center.z), float(center.x));
-        centerpos *= float(PREC) / float(PREC + 1);
+        auto centerpos = glm::vec2(static_cast<float>(center.z), static_cast<float>(center.x));
+        centerpos *= static_cast<float>(PREC) / static_cast<float>(PREC + 1);
         centerpos *= chunktables[0].scale() * SCALE * 2.0f;
         terrainShader.uniformVec2("center", centerpos);
 
@@ -150,12 +150,12 @@ namespace gfx {
 
             if (i < maxlod - 1) {
                 float chunkscale =
-                        chunktables[i].scale() * 2.0f * float(PREC) / float(PREC + 1);
+                        chunktables[i].scale() * 2.0f * static_cast<float>(PREC) / static_cast<float>(PREC + 1);
                 float range = float(chunktables[i].range()) - 0.5f;
                 // Slight amount of overlap to mitigate cracks in terrain
                 // We increase this amount due to the terrain becoming less precise
                 // and more likely to have cracks
-                float d = 8.0f * float(i) + 4.0f;
+                float d = 8.0f * static_cast<float>(i) + 4.0f;
                 float maxrange = chunkscale * range * SCALE + d;
 
                 terrainShader.uniformFloat("minrange", mindist);
@@ -170,7 +170,7 @@ namespace gfx {
             if (i == 0)
                 drawCount += chunktables[i].draw(terrainShader, viewfrustum);
             else {
-                int minrange = chunktables[i - 1].range() / int(lodscale);
+                int minrange = chunktables[i - 1].range() / static_cast<int>(lodscale);
                 drawCount +=
                         chunktables[i].draw(terrainShader, minrange - 1, viewfrustum);
             }
@@ -179,7 +179,7 @@ namespace gfx {
         return drawCount;
     }
 
-    void displayPlayerPlane(float totalTime, const game::Transform &transform,
+    void displayPlayerPlane(const float totalTime, const game::Transform &transform,
                             const gameobjects::Player::PlayerModel &plane_model) {
         Window &window = Window::getInstance();
         Camera &cam = window.getCamera();
@@ -192,7 +192,7 @@ namespace gfx {
         shader.uniformVec3("camerapos", cam.position);
 
         // Display plane body
-        glm::mat4 transformMat = transform.getTransformMat();
+        const glm::mat4 transformMat = transform.getTransformMat();
         glm::mat4 normal = glm::mat3(glm::transpose(glm::inverse(transformMat)));
         TEXTURES->bindTexture(plane_model.name, GL_TEXTURE0);
         shader.uniformFloat("specularfactor", 0.5f);
@@ -203,12 +203,12 @@ namespace gfx {
 
         // Display propeller
         TEXTURES->bindTexture("propeller", GL_TEXTURE0);
-        glm::mat4 propellerTransform = glm::mat4(1.0f);
+        auto propellerTransform = glm::mat4(1.0f);
         propellerTransform =
                 glm::translate(glm::mat4(1.0f), glm::vec3(0.0f, 0.0f, 4.0f));
         propellerTransform =
                 glm::scale(propellerTransform, glm::vec3(0.5f, 0.5f, 0.5f));
-        float rotation = totalTime * 16.0f;
+        const float rotation = totalTime * 16.0f;
         propellerTransform =
                 glm::rotate(propellerTransform, rotation, glm::vec3(0.0f, 0.0f, 1.0f));
         propellerTransform = transformMat * propellerTransform;
@@ -333,7 +333,7 @@ namespace gfx {
         shader.uniformVec3("camerapos", cam.position);
         for (const auto &barrel: barrels) {
             glm::mat4 transform = barrel.transform.getTransformMat();
-            glm::mat3 normal = glm::mat3(glm::transpose(glm::inverse(transform)));
+            auto normal = glm::mat3(glm::transpose(glm::inverse(transform)));
             shader.uniformMat4x4("transform", transform);
             shader.uniformMat3x3("normalmat", normal);
             VAOS->draw();
@@ -412,7 +412,7 @@ namespace gfx {
         shader.uniformVec3("camerapos", cam.position);
         for (const auto &ufo: ufos) {
             glm::mat4 transform = ufo.transform.getTransformMat();
-            glm::mat3 normal = glm::mat3(glm::transpose(glm::inverse(transform)));
+            auto normal = glm::mat3(glm::transpose(glm::inverse(transform)));
             shader.uniformMat4x4("transform", transform);
             shader.uniformMat3x3("normalmat", normal);
             VAOS->draw();
@@ -448,14 +448,14 @@ namespace gfx {
         VAOS->bind("propeller");
         TEXTURES->bindTexture("propeller", GL_TEXTURE0);
         for (const auto &plane: planes) {
-            glm::mat4 propellerTransform = glm::mat4(1.0f);
+            auto propellerTransform = glm::mat4(1.0f);
             propellerTransform =
                     glm::translate(glm::mat4(1.0f), glm::vec3(0.0f, 0.0f, 13.888f));
-            float rotation = totalTime * 16.0f;
+            const float rotation = totalTime * 16.0f;
             propellerTransform =
                     glm::rotate(propellerTransform, rotation, glm::vec3(0.0f, 0.0f, 1.0f));
             propellerTransform = plane.transform.getTransformMat() * propellerTransform;
-            glm::mat3 normal =
+            auto normal =
                     glm::mat3(glm::transpose(glm::inverse(propellerTransform)));
             shader.uniformMat4x4("transform", propellerTransform);
             shader.uniformMat3x3("normalmat", normal);
@@ -481,7 +481,7 @@ namespace gfx {
         trailshader.uniformVec3("camerapos", cam.position);
         for (const auto &bullet: bullets) {
             glm::mat4 transform = bullet.transform.getTransformMat();
-            glm::mat3 normal = glm::mat3(glm::transpose(glm::inverse(transform)));
+            auto normal = glm::mat3(glm::transpose(glm::inverse(transform)));
             glm::vec3 velocity = bullet.transform.direction() * BULLET_SPEED;
             trailshader.uniformFloat("time", bullet.time);
             trailshader.uniformVec3("velocity", velocity);
@@ -520,13 +520,12 @@ namespace gfx {
     }
 
     void displaySpeed(float speed) {
-        Window &window = Window::getInstance();
+        const Window &window = Window::getInstance();
 
-        int w, h;
-        w = window.getWidth();
-        h = window.getHeight();
-        glm::mat4 screenMat = glm::scale(
-            glm::mat4(1.0f), glm::vec3(2.0f / float(w), 2.0f / float(h), 0.0f));
+        const int w = window.getWidth();
+        const int h = window.getHeight();
+        const glm::mat4 screenMat = glm::scale(
+            glm::mat4(1.0f), glm::vec3(2.0f / static_cast<float>(w), 2.0f / static_cast<float>(h), 0.0f));
 
         glEnable(GL_BLEND);
         glDisable(GL_DEPTH_TEST);
@@ -541,7 +540,7 @@ namespace gfx {
         glm::mat4 transform(1.0f);
         transform = glm::translate(transform, glm::vec3((w - 90.0f), 130.0f, 0.0f));
         transform = glm::translate(
-            transform, glm::vec3(-float(w) / 2.0f, -float(h) / 2.0f, 0.0f));
+            transform, glm::vec3(-static_cast<float>(w) / 2.0f, -static_cast<float>(h) / 2.0f, 0.0f));
         transform =
                 glm::scale(transform, glm::vec3(ATTITUDE_SIZE, ATTITUDE_SIZE, 0.0f));
         transform =
@@ -556,11 +555,10 @@ namespace gfx {
     void displayFuel(float fuel, float totalTime) {
         Window &window = Window::getInstance();
 
-        int w, h;
-        w = window.getWidth();
-        h = window.getHeight();
+        const int w = window.getWidth();
+        const int h = window.getHeight();
         glm::mat4 screenMat = glm::scale(
-            glm::mat4(1.0f), glm::vec3(2.0f / float(w), 2.0f / float(h), 0.0f));
+            glm::mat4(1.0f), glm::vec3(2.0f / static_cast<float>(w), 2.0f / static_cast<float>(h), 0.0f));
 
         glEnable(GL_BLEND);
         glDisable(GL_DEPTH_TEST);
@@ -576,7 +574,7 @@ namespace gfx {
         glm::mat4 transform(1.0f);
         transform = glm::translate(transform, glm::vec3(w - 300.0f, 130.0f, 0.0f));
         transform = glm::translate(
-            transform, glm::vec3(-float(w) / 2.0f, -float(h) / 2.0f, 0.0f));
+            transform, glm::vec3(-static_cast<float>(w) / 2.0f, -static_cast<float>(h) / 2.0f, 0.0f));
         transform =
                 glm::scale(transform, glm::vec3(ATTITUDE_SIZE, ATTITUDE_SIZE, 0.0f));
         transform =
@@ -588,14 +586,13 @@ namespace gfx {
         glEnable(GL_DEPTH_TEST);
     }
 
-    void displayAttitude(float pitch, float roll) {
-        Window &window = Window::getInstance();
+    void displayAttitude(const float pitch, const float roll) {
+        const Window &window = Window::getInstance();
 
-        int w, h;
-        w = window.getWidth();
-        h = window.getHeight();
-        glm::mat4 screenMat = glm::scale(
-            glm::mat4(1.0f), glm::vec3(2.0f / float(w), 2.0f / float(h), 0.0f));
+        const int w = window.getWidth();
+        const int h = window.getHeight();
+        const glm::mat4 screenMat = glm::scale(
+            glm::mat4(1.0f), glm::vec3(2.0f / static_cast<float>(w), 2.0f / static_cast<float>(h), 0.0f));
 
         glEnable(GL_BLEND);
         glDisable(GL_DEPTH_TEST);
@@ -611,7 +608,7 @@ namespace gfx {
 
         transform = glm::translate(transform, glm::vec3(130.0f, 130.0f, 0.0f));
         transform = glm::translate(
-            transform, glm::vec3(-float(w) / 2.0f, -float(h) / 2.0f, 0.0f));
+            transform, glm::vec3(-static_cast<float>(w) / 2.0f, -static_cast<float>(h) / 2.0f, 0.0f));
         transform =
                 glm::scale(transform, glm::vec3(ATTITUDE_SIZE, ATTITUDE_SIZE, 0.0f));
         transform =
@@ -626,11 +623,10 @@ namespace gfx {
     void displayDanger(float totalTime) {
         Window &window = Window::getInstance();
 
-        int w, h;
-        w = window.getWidth();
-        h = window.getHeight();
-        glm::mat4 screenMat = glm::scale(
-            glm::mat4(1.0f), glm::vec3(2.0f / float(w), 2.0f / float(h), 0.0f));
+        const int w = window.getWidth();
+        const int h = window.getHeight();
+        const glm::mat4 screenMat = glm::scale(
+            glm::mat4(1.0f), glm::vec3(2.0f / static_cast<float>(w), 2.0f / static_cast<float>(h), 0.0f));
 
         glEnable(GL_BLEND);
         glDisable(GL_DEPTH_TEST);
@@ -643,7 +639,7 @@ namespace gfx {
         dangershader.uniformMat4x4("screen", screenMat);
         dangershader.uniformFloat("time", totalTime);
         glm::mat4 transform = glm::scale(
-            glm::mat4(1.0f), glm::vec3(float(w) / 2.0f, float(h) / 2.0f, 1.0f));
+            glm::mat4(1.0f), glm::vec3(static_cast<float>(w) / 2.0f, static_cast<float>(h) / 2.0f, 1.0f));
         transform = glm::rotate(transform, glm::radians(90.0f), glm::vec3(1.0f, 0.0f, 0.0f));
         dangershader.uniformMat4x4("transform", transform);
 
@@ -654,13 +650,12 @@ namespace gfx {
     }
 
     void displayRain(float totalTime) {
-        Window &window = Window::getInstance();
+        const Window &window = Window::getInstance();
 
-        int w, h;
-        w = window.getWidth();
-        h = window.getHeight();
-        glm::mat4 screenMat = glm::scale(
-            glm::mat4(1.0f), glm::vec3(2.0f / float(w), 2.0f / float(h), 0.0f));
+        const int w = window.getWidth();
+        const int h = window.getHeight();
+        const glm::mat4 screenMat = glm::scale(
+            glm::mat4(1.0f), glm::vec3(2.0f / static_cast<float>(w), 2.0f / static_cast<float>(h), 0.0f));
 
         glEnable(GL_BLEND);
         glDisable(GL_DEPTH_TEST);
@@ -673,7 +668,7 @@ namespace gfx {
         rainshader.uniformMat4x4("screen", screenMat);
         rainshader.uniformFloat("time", totalTime);
         glm::mat4 transform = glm::scale(
-            glm::mat4(1.0f), glm::vec3(float(w) / 2.0f, float(h) / 2.0f, 1.0f));
+            glm::mat4(1.0f), glm::vec3(static_cast<float>(w) / 2.0f, static_cast<float>(h) / 2.0f, 1.0f));
         transform = glm::rotate(transform, glm::radians(90.0f), glm::vec3(1.0f, 0.0f, 0.0f));
         rainshader.uniformMat4x4("transform", transform);
 
@@ -684,13 +679,12 @@ namespace gfx {
     }
     
     void displayPlaneHealth(float health, float totalTime) {
-        Window &window = Window::getInstance();
+        const Window &window = Window::getInstance();
 
-        int w, h;
-        w = window.getWidth();
-        h = window.getHeight();
-        glm::mat4 screenMat = glm::scale(
-            glm::mat4(1.0f), glm::vec3(2.0f / float(w), 2.0f / float(h), 0.0f));
+        const int w = window.getWidth();
+        const int h = window.getHeight();
+        const glm::mat4 screenMat = glm::scale(
+            glm::mat4(1.0f), glm::vec3(2.0f / static_cast<float>(w), 2.0f / static_cast<float>(h), 0.0f));
 
         glEnable(GL_BLEND);
         glDisable(GL_DEPTH_TEST);
@@ -703,9 +697,9 @@ namespace gfx {
         shader.uniformFloat("u_health", health / 100.0f);
         shader.uniformFloat("u_time", totalTime);
         glm::mat4 transform(1.0f);
-        transform = glm::translate(transform, glm::vec3(float(w) - 90.0f, float(h) - 80.0f, 0.0f));
+        transform = glm::translate(transform, glm::vec3(static_cast<float>(w) - 90.0f, static_cast<float>(h) - 80.0f, 0.0f));
         transform = glm::translate(
-            transform, glm::vec3(-float(w) / 2.0f, -float(h) / 2.0f, 0.0f));
+            transform, glm::vec3(-static_cast<float>(w) / 2.0f, -static_cast<float>(h) / 2.0f, 0.0f));
         transform =
                 glm::scale(transform, glm::vec3(ATTITUDE_SIZE, ATTITUDE_SIZE, 0.0f));
         transform =
@@ -718,13 +712,12 @@ namespace gfx {
     }
 
     void displayDashboardBackground() {
-        Window &window = Window::getInstance();
+        const Window &window = Window::getInstance();
 
-        int w, h;
-        w = window.getWidth();
-        h = window.getHeight();
+        const int w = window.getWidth();
+        const int h = window.getHeight();
         glm::mat4 screenMat = glm::scale(
-            glm::mat4(1.0f), glm::vec3(2.0f / float(w), 2.0f / float(h), 0.0f));
+            glm::mat4(1.0f), glm::vec3(2.0f / static_cast<float>(w), 2.0f / static_cast<float>(h), 0.0f));
 
         glEnable(GL_BLEND);
         glDisable(GL_DEPTH_TEST);
@@ -737,10 +730,10 @@ namespace gfx {
 
         glm::mat4 transform(1.0f);
 
-        float dashWidth = float(w) * 0.25f;  // 45% of screen width
-        float dashHeight = dashWidth * 0.75f; // Wide dashboard aspect ratio
+        const float dashWidth = static_cast<float>(w) * 0.25f;  // 45% of screen width
+        const float dashHeight = dashWidth * 0.75f; // Wide dashboard aspect ratio
         // Position at bottom center of screen
-        transform = glm::translate(transform, glm::vec3(0.0f, (-float(h) / 2.0f) + (dashHeight / 2.0f) - 30.0f, 0.0f));
+        transform = glm::translate(transform, glm::vec3(0.0f, (-static_cast<float>(h) / 2.0f) + (dashHeight / 2.0f) - 30.0f, 0.0f));
         transform =
                 glm::scale(transform, glm::vec3(dashWidth, dashHeight, 0.0f));
         transform =
@@ -753,13 +746,12 @@ namespace gfx {
     }
 
     void displayMiniMapBackground(float totalTime) {
-        Window &window = Window::getInstance();
+        const Window &window = Window::getInstance();
 
-        int w, h;
-        w = window.getWidth();
-        h = window.getHeight();
-        glm::mat4 screenMat = glm::scale(
-            glm::mat4(1.0f), glm::vec3(2.0f / float(w), 2.0f / float(h), 0.0f));
+        const int w = window.getWidth();
+        const int h = window.getHeight();
+        const glm::mat4 screenMat = glm::scale(
+            glm::mat4(1.0f), glm::vec3(2.0f / static_cast<float>(w), 2.0f / static_cast<float>(h), 0.0f));
 
         glEnable(GL_BLEND);
         glDisable(GL_DEPTH_TEST);
@@ -774,7 +766,7 @@ namespace gfx {
         glm::mat4 transform(1.0f);
         transform = glm::translate(transform, glm::vec3(110.0f, -110.0f, 0.0f));
         transform = glm::translate(
-            transform, glm::vec3(-float(w) / 2.0f, float(h) / 2.0f, 0.0f));
+            transform, glm::vec3(-static_cast<float>(w) / 2.0f, static_cast<float>(h) / 2.0f, 0.0f));
         transform =
                 glm::scale(transform, glm::vec3(MINIMAP_SIZE, MINIMAP_SIZE, 0.0f));
         transform =
@@ -790,7 +782,7 @@ namespace gfx {
         transform = glm::mat4(1.0f);
         transform = glm::translate(transform, glm::vec3(110.0f, -110.0f, 0.0f));
         transform = glm::translate(
-            transform, glm::vec3(-float(w) / 2.0f, float(h) / 2.0f, 0.0f));
+            transform, glm::vec3(-static_cast<float>(w) / 2.0f, static_cast<float>(h) / 2.0f, 0.0f));
         transform = glm::scale(transform, glm::vec3(8.0f, 8.0f, 0.0f));
         transform =
                 glm::rotate(transform, glm::radians(90.0f), glm::vec3(1.0f, 0.0f, 0.0f));
@@ -809,9 +801,9 @@ namespace gfx {
         w = window.getWidth();
         h = window.getHeight();
         glm::mat4 screenMat = glm::scale(
-            glm::mat4(1.0f), glm::vec3(2.0f / float(w), 2.0f / float(h), 0.0f));
+            glm::mat4(1.0f), glm::vec3(2.0f / static_cast<float>(w), 2.0f / static_cast<float>(h), 0.0f));
 
-        const float MAX_DIST = CHUNK_SZ * 16.0f;
+        constexpr float MAX_DIST = CHUNK_SZ * 16.0f;
 
         glEnable(GL_BLEND);
         glDisable(GL_DEPTH_TEST);
@@ -835,20 +827,20 @@ namespace gfx {
 
             // Caclulate angle with enemy
             glm::vec3 direction = playertransform.direction();
-            float dirAngle = compressNormal(glm::normalize(direction)).x;
+            const float dirAngle = compressNormal(glm::normalize(direction)).x;
             diff = glm::normalize(diff);
-            float enemyAngle = compressNormal(glm::vec3(diff.x, 0.0f, diff.y)).x;
-            float angle = dirAngle - enemyAngle + glm::radians(90.0f);
+            const float enemyAngle = compressNormal(glm::vec3(diff.x, 0.0f, diff.y)).x;
+            const float angle = dirAngle - enemyAngle + glm::radians(90.0f);
             dist /= MAX_DIST;
 
             // Display icon
-            glm::mat4 transform = glm::mat4(1.0f);
-            float x = MINIMAP_SIZE * cosf(angle) * dist;
-            float y = MINIMAP_SIZE * sinf(angle) * dist;
+            auto transform = glm::mat4(1.0f);
+            const float x = MINIMAP_SIZE * cosf(angle) * dist;
+            const float y = MINIMAP_SIZE * sinf(angle) * dist;
             transform = glm::translate(transform, glm::vec3(x, y, 0.0f));
             transform = glm::translate(transform, glm::vec3(100.0f, -100.0f, 0.0f));
             transform = glm::translate(
-                transform, glm::vec3(-float(w) / 2.0f, float(h) / 2.0f, 0.0f));
+                transform, glm::vec3(-static_cast<float>(w) / 2.0f, static_cast<float>(h) / 2.0f, 0.0f));
             transform = glm::scale(transform, glm::vec3(8.0f, 8.0f, 0.0f));
             transform = glm::rotate(transform, glm::radians(90.0f),
                                     glm::vec3(1.0f, 0.0f, 0.0f));
@@ -862,12 +854,11 @@ namespace gfx {
     void displayCrosshair(const game::Transform &playertransform) {
         Window &window = Window::getInstance();
 
-        int w, h;
-        w = window.getWidth();
-        h = window.getHeight();
+        const int w = window.getWidth();
+        const int h = window.getHeight();
 
         glm::mat4 screenMat = glm::scale(
-            glm::mat4(1.0f), glm::vec3(2.0f / float(w), 2.0f / float(h), 0.0f));
+            glm::mat4(1.0f), glm::vec3(2.0f / static_cast<float>(w), 2.0f / static_cast<float>(h), 0.0f));
 
         glEnable(GL_BLEND);
         glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
@@ -880,13 +871,12 @@ namespace gfx {
 
         // Calculate the screen position of the crosshair based on where the
         // player is facing
-        glm::vec3 worldpos = playertransform.position + playertransform.direction();
-        glm::mat4 view = window.getCamera().viewMatrix();
-        glm::vec4 screenpos =
-                window.getPerspective() * view * glm::vec4(worldpos, 1.0f);
+        const glm::vec3 worldpos = playertransform.position + playertransform.direction();
+        const glm::mat4 view = window.getCamera().viewMatrix();
+        const glm::vec4 screenpos = window.getPerspective() * view * glm::vec4(worldpos, 1.0f);
 
         // Display
-        glm::mat4 transform = glm::mat4(1.0f);
+        auto transform = glm::mat4(1.0f);
         transform =
                 glm::translate(transform, glm::vec3(screenpos.x, screenpos.y, 0.0f));
         transform = glm::scale(transform, glm::vec3(8.0f, 8.0f, 0.0f));
@@ -899,14 +889,13 @@ namespace gfx {
     }
 
     void displayHUDBackGrounds() {
-        Window &window = Window::getInstance();
+        const Window &window = Window::getInstance();
 
-        int w, h;
-        w = window.getWidth();
-        h = window.getHeight();
+        const int w = window.getWidth();
+        const int h = window.getHeight();
 
         glm::mat4 screenMat = glm::scale(
-            glm::mat4(1.0f), glm::vec3(2.0f / float(w), 2.0f / float(h), 0.0f));
+            glm::mat4(1.0f), glm::vec3(2.0f / static_cast<float>(w), 2.0f / static_cast<float>(h), 0.0f));
 
         glEnable(GL_BLEND);
         glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
@@ -918,10 +907,10 @@ namespace gfx {
         ShaderProgram &texture2dshader = SHADERS->getShader("textured2d");
         texture2dshader.uniformMat4x4("screen", screenMat);
 
-        glm::mat4 transform = glm::mat4(1.0f);
+        auto transform = glm::mat4(1.0f);
         transform = glm::translate(transform, glm::vec3(90.0f, 40.0f, 0.0f));
         transform = glm::translate(
-            transform, glm::vec3(-float(w) / 2.0f, -float(h) / 2.0f, 0.0f));
+            transform, glm::vec3(-static_cast<float>(w) / 2.0f, -static_cast<float>(h) / 2.0f, 0.0f));
         transform = glm::scale(transform, glm::vec3(80.0f, 20.0f, 0.0f));
         transform =
                 glm::rotate(transform, glm::radians(90.0f), glm::vec3(1.0f, 0.0f, 0.0f));
@@ -935,11 +924,11 @@ namespace gfx {
         ShaderProgram &texture2dshader_ = SHADERS->getShader("textured2d");
         texture2dshader_.uniformMat4x4("screen", screenMat);
 
-        glm::mat4 transform_ = glm::mat4(1.0f);
+        auto transform_ = glm::mat4(1.0f);
         transform_ =
-                glm::translate(transform_, glm::vec3(125.0f, float(h) - 65.0f, 0.0f));
+                glm::translate(transform_, glm::vec3(125.0f, static_cast<float>(h) - 65.0f, 0.0f));
         transform_ = glm::translate(
-            transform_, glm::vec3(-float(w) / 2.0f, -float(h) / 2.0f, 0.0f));
+            transform_, glm::vec3(-static_cast<float>(w) / 2.0f, -static_cast<float>(h) / 2.0f, 0.0f));
         transform_ = glm::scale(transform_, glm::vec3(125.0f, 45.0f, 0.0f));
         transform_ =
                 glm::rotate(transform_, glm::radians(90.0f), glm::vec3(1.0f, 0.0f, 0.0f));
@@ -972,12 +961,12 @@ namespace gfx {
         fogshader.uniformFloat("fogStart", 500.0f);
         fogshader.uniformFloat("fogEnd", 1000.0f);
 
-        const float fogHeight = 500.0f;
-        const float fogScale = 50000.0f;
+        constexpr float fogHeight = 500.0f;
+        constexpr float fogScale = 50000.0f;
 
-        glm::vec3 fogPosition = glm::vec3(cam.position.x, fogHeight, cam.position.z);
+        const auto fogPosition = glm::vec3(cam.position.x, fogHeight, cam.position.z);
 
-        glm::mat4 transform = glm::mat4(1.0f);
+        auto transform = glm::mat4(1.0f);
         transform = glm::translate(transform, fogPosition);
         transform = glm::rotate(transform, glm::radians(90.0f), glm::vec3(1.0f, 0.0f, 0.0f));
         transform = glm::scale(transform, glm::vec3(fogScale, fogScale, 1.0f)); // Scale last

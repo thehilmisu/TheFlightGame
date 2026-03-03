@@ -74,11 +74,11 @@ void Gui::drawUI()
   const ImGuiViewport *viewport = ImGui::GetMainViewport();
 
 
-  float sidebarwidth = 350.0f;
+  constexpr float sidebarwidth = 350.0f;
   ImGui::SetNextWindowPos(viewport->WorkPos);
   ImGui::SetNextWindowSize(ImVec2(sidebarwidth, viewport->WorkSize.y));
 
-  ImGuiWindowFlags sidebarflags =
+  constexpr ImGuiWindowFlags sidebarflags =
       ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_AlwaysAutoResize |
       ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoSavedSettings;
 
@@ -142,7 +142,7 @@ game::DeathMenuActions Gui::drawDeathMenu()
                           ImVec2(0.5f, 0.5f));
   ImGui::SetNextWindowSize(ImVec2(300, 400));
 
-  ImGuiWindowFlags window_flags =
+  constexpr ImGuiWindowFlags window_flags =
       ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoResize |
       ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoBackground;
 
@@ -152,7 +152,7 @@ game::DeathMenuActions Gui::drawDeathMenu()
 
     // Title Text
     ImGui::SetWindowFontScale(2.0f);
-    float text_width = ImGui::CalcTextSize("River Raid 3D").x;
+    const float text_width = ImGui::CalcTextSize("River Raid 3D").x;
     ImGui::SetCursorPosX((ImGui::GetWindowSize().x - text_width) * 0.5f);
     ImGui::Text("River Raid 3D");
     ImGui::SetWindowFontScale(1.0f);
@@ -194,7 +194,7 @@ game::PauseMenuActions Gui::drawPauseMenu()
   ImGui::SetNextWindowSize(ImVec2(300, 400));
 
   // Use flags to remove the typical window frame for a cleaner "Game Menu" look
-  ImGuiWindowFlags window_flags =
+  constexpr ImGuiWindowFlags window_flags =
       ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoResize |
       ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoBackground;
 
@@ -240,19 +240,19 @@ game::PauseMenuActions Gui::drawPauseMenu()
 game::MainMenuActions Gui::drawMainMenu()
 {
   game::MainMenuActions action = game::NONE_SELECTED;
-  Window &window = Window::getInstance();
+  const Window &window = Window::getInstance();
   int w = window.getWidth();
   int h = window.getHeight();
 
   float pos_x = (w * 0.3f) + 100.0f;
-  float pos_y = float(h + 75.0f);
+  const auto pos_y = h + 75.0f;
 
   ImGui::SetNextWindowPos(ImVec2(pos_x, pos_y), ImGuiCond_Always,
                           ImVec2(1.0f, 1.0f));
   ImGui::SetNextWindowSize(ImVec2((w * 0.30f), (h * 0.7f)));
 
   // Use flags to remove the typical window frame for a cleaner "Game Menu" look
-  ImGuiWindowFlags window_flags =
+  constexpr ImGuiWindowFlags window_flags =
       ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoResize |
       ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoBackground;
 
@@ -262,7 +262,7 @@ game::MainMenuActions Gui::drawMainMenu()
 
     // Title Text
     ImGui::SetWindowFontScale(2.5f);
-    float text_width = ImGui::CalcTextSize("River Raid 3D").x;
+    const float text_width = ImGui::CalcTextSize("River Raid 3D").x;
     ImGui::SetCursorPosX((ImGui::GetWindowSize().x - text_width) * 0.5f);
     ImGui::Text("River Raid 3D");
     ImGui::SetWindowFontScale(2.0f);
@@ -305,12 +305,12 @@ game::MainMenuActions Gui::drawMainMenu()
 game::MainMenuActions Gui::drawPlaneSelectionUI(const gameobjects::Player::PlayerModel& pModel) {
 
   game::MainMenuActions action = game::NONE_SELECTED;
-  Window &window = Window::getInstance();
-  int w = window.getWidth();
-  int h = window.getHeight();
+  const Window &window = Window::getInstance();
+  const int w = window.getWidth();
+  const int h = window.getHeight();
 
   float pos_x = (w / 2.0f);
-  float pos_y = float(h - 50.0f);
+  auto pos_y = h - 50.0f;
   ImGui::SetNextWindowPos(ImVec2(pos_x, pos_y), ImGuiCond_Always,
                          ImVec2(0.5f, 1.0f));
   ImGui::SetNextWindowSize(ImVec2(900, 75));
@@ -377,16 +377,17 @@ void Gui::drawHUD()
 {
 
   ImGuiViewport *viewport = ImGui::GetMainViewport();
-  const float padding = 10.0f;
 
-  ImGuiWindowFlags hudWindowFlags = ImGuiWindowFlags_NoDecoration |
+
+  constexpr ImGuiWindowFlags hudWindowFlags = ImGuiWindowFlags_NoDecoration |
                                     ImGuiWindowFlags_NoInputs |
                                     // ImGuiWindowFlags_NoBackground |
                                     ImGuiWindowFlags_NoSavedSettings;
 
   // TOP-CENTER: Elapsed Time
   {
-    float textWidth = ImGui::CalcTextSize("00:00").x;
+    constexpr float padding = 10.0f;
+    const float textWidth = ImGui::CalcTextSize("00:00").x;
 
     ImGui::SetNextWindowPos(ImVec2(viewport->GetCenter().x - textWidth / 2.0f,
                                    viewport->WorkPos.y + padding));
@@ -394,11 +395,11 @@ void Gui::drawHUD()
     if (ImGui::Begin("HUD_TopCenter", nullptr, hudWindowFlags)) {
       ImGui::SetWindowFontScale(1.6f);
 
-      double time = hudItems.elapsedTime;
-      int totalSeconds = static_cast<int>(time);
+      const double time = hudItems.elapsedTime;
+      const int totalSeconds = static_cast<int>(time);
 
-      int minutes = totalSeconds / 60;
-      int seconds = totalSeconds % 60;
+      const int minutes = totalSeconds / 60;
+      const int seconds = totalSeconds % 60;
       ImGui::Text("%02d:%02d", minutes, seconds);
       ImGui::SameLine();
 
@@ -420,68 +421,4 @@ void Gui::drawHUD()
       ImGui::End();
     }
   }
-
-  // // TOP-RIGHT: Score + Ammo
-  // {
-  //   float textWidth = ImGui::CalcTextSize("Score : 0000").x;
-  //   ImGui::SetNextWindowPos(ImVec2(viewport->WorkSize.x - (padding + textWidth), viewport->WorkPos.y + padding));
-
-  //   if (ImGui::Begin("HUD_TopRight", nullptr, hudWindowFlags)) {
-  //     ImGui::SetWindowFontScale(1.2f);
-
-  //     ImGui::Text("Score: %u", hudItems.score);
-
-  //     ImGui::End();
-  //   }
-  // }
-
-  // // BOTTOM-RIGHT: Altitude
-  // {
-  //   ImGui::SetNextWindowPos(
-  //       ImVec2(viewport->WorkSize.x - 300.0f + padding,
-  //              viewport->WorkPos.y + viewport->WorkSize.y - 120));
-
-  //   if (ImGui::Begin("HUD_BottomLeft", nullptr, hudFlags)) {
-  //     ImGui::SetWindowFontScale(1.2f);
-
-  //     ImGui::Text("Altitude: %.1f", hudItems.altitude);
-  //     ImGui::Text("Speed: %.1f", hudItems.speed);
-
-  //     // health bar with color coding
-  //     float healthPercent = hudItems.health / 100.0f;
-  //     ImVec4 healthBarColor;
-  //     if (healthPercent > 0.6f)
-  //       healthBarColor = COLOR_GREEN; // Green
-  //     else if (healthPercent > 0.3f)
-  //       healthBarColor = COLOR_YELLOW; // Yellow
-  //     else
-  //       healthBarColor = COLOR_RED; // Red
-
-  //     ImGui::Text("Health : ");
-  //     ImGui::SameLine();
-  //     ImGui::PushStyleColor(ImGuiCol_PlotHistogram, healthBarColor);
-  //     ImGui::ProgressBar(healthPercent, ImVec2(150, 20));
-  //     ImGui::PopStyleColor();
-  //     ImGui::End();
-  //   }
-  // }
-
-  // // Optional: Crash indicator
-  // if (hudItems.crashed) {
-  //   ImGui::SetNextWindowPos(
-  //       ImVec2(viewport->WorkPos.x + viewport->WorkSize.x / 2 - 100,
-  //              viewport->WorkPos.y + viewport->WorkSize.y / 2 - 50));
-
-  //   ImGuiWindowFlags crashFlags = ImGuiWindowFlags_NoDecoration |
-  //                                 ImGuiWindowFlags_NoInputs |
-  //                                 ImGuiWindowFlags_NoSavedSettings;
-
-  //   if (ImGui::Begin("HUD_Crash", nullptr, crashFlags)) {
-  //     ImGui::PushStyleColor(ImGuiCol_WindowBg, ImVec4(0.5f, 0.0f, 0.0f, 0.7f));
-  //     ImGui::SetWindowFontScale(2.0f);
-  //     ImGui::TextColored(ImVec4(1.0f, 0.0f, 0.0f, 1.0f), "CRASHED!");
-  //     ImGui::PopStyleColor();
-  //     ImGui::End();
-  //   }
-  // }
 }

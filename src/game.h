@@ -52,9 +52,9 @@ namespace game {
 	};
 
 	struct Transform {
-		glm::vec3 position;
-		glm::vec3 scale;
-		glm::vec3 rotation; //in radians
+		glm::vec3 position{};
+		glm::vec3 scale{};
+		glm::vec3 rotation{}; //in radians
 		Transform();
 		glm::mat4 getTransformMat() const;
 		glm::vec3 direction() const; //Forward vector
@@ -325,7 +325,7 @@ namespace gfx {
 	void displayDecorations(infworld::DecorationTable &decorations, float totalTime);
 	unsigned int displayTerrain(infworld::ChunkTable *chunktables, int maxlod, float lodscale);	
 	void generateDecorationOffsets(infworld::DecorationTable &decorations);
-	void displayPlayerPlane(float totalTime, const game::Transform &transform, const gameobjects::Player::PlayerModel &plane_model);
+	void displayPlayerPlane(const float totalTime, const game::Transform &transform, const gameobjects::Player::PlayerModel &plane_model);
 	void displayExplosions(const std::vector<gameobjects::Explosion> &explosions);
 	void displayBalloons(const std::vector<gameobjects::Enemy> &balloons);
 	void displayBarrels(const std::vector<gameobjects::Props> &barrels);

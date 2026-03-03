@@ -17,18 +17,18 @@ namespace gameobjects {
 
     Enemy spawnBalloon(const glm::vec3 &position,
                        const infworld::worldseed &permutations) {
-        float h =
-                infworld::getHeight(position.z / SCALE * float(PREC + 1) / float(PREC),
-                                    position.x / SCALE * float(PREC + 1) / float(PREC),
+        const float h =
+                infworld::getHeight(position.z / SCALE * static_cast<float>(PREC + 1) / static_cast<float>(PREC),
+                                    position.x / SCALE * static_cast<float>(PREC + 1) / static_cast<float>(PREC),
                                     permutations) *
                 HEIGHT * SCALE;
         float y = std::max(h, 0.0f) + HEIGHT;
-        glm::vec3 pos(position.x, y, position.z);
-        Enemy balloon = Enemy(pos, 5, 10);
+        const glm::vec3 pos(position.x, y, position.z);
+        auto balloon = Enemy(pos, 5, 10);
 
-        float miny = y;
-        float maxy = y + HEIGHT;
-        float direction = 1.0f;
+        const float miny = y;
+        const float maxy = y + HEIGHT;
+        constexpr float direction = 1.0f;
         balloon.setVal("miny", miny);
         balloon.setVal("maxy", maxy);
         balloon.setVal("direction", direction);
@@ -43,14 +43,13 @@ namespace game {
         if (balloons.size() >= 4)
             return;
 
-        int randval = lcg() % 2;
-        if (randval > 0 && balloons.size() > 1)
+        if (const int randval = lcg() % 2; randval > 0 && balloons.size() > 1)
             return;
 
         glm::vec3 center = player.transform.position;
-        float dist = float(lcg() % 256) / 256.0f * CHUNK_SZ * 12.0f + CHUNK_SZ * 6.0f;
-        float angle = float(lcg() % 256) / 256.0f * glm::radians(360.0f);
-        glm::vec3 position =
+        const float dist = static_cast<float>(lcg() % 256) / 256.0f * CHUNK_SZ * 12.0f + CHUNK_SZ * 6.0f;
+        const float angle = static_cast<float>(lcg() % 256) / 256.0f * glm::radians(360.0f);
+        const glm::vec3 position =
                 center + dist * glm::vec3(cosf(angle), 0.0f, sinf(angle));
         balloons.push_back(gobjs::spawnBalloon(position, permutations));
     }
