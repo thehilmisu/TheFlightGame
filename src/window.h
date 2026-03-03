@@ -32,7 +32,7 @@ class Window {
   Camera cam;
   double mousex, mousey; //Mouse position
   double mousedx = 0.0, mousedy = 0.0;
-  glm::mat4 persp; //Global perspective matrix
+  glm::mat4 persp{}; //Global perspective matrix
   float currentFovy;
   float currentAspect;
   float currentZnear;

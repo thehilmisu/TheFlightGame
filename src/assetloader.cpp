@@ -8,7 +8,7 @@ bool AssetLoader::loadAssets(const std::string& assetBundlePath) {
         return false;
     }
     std::cout << "Loading asset bundle: " << assetBundlePath << std::endl;
-    AssetBinHeader header;
+    AssetBinHeader header{};
     m_file.read(reinterpret_cast<char*>(&header), sizeof(header));
 
     if (header.magic != 0x41535442) {
@@ -38,9 +38,7 @@ bool AssetLoader::loadAssets(const std::string& assetBundlePath) {
 }
 
 std::vector<uint8_t> AssetLoader::getAssetData(const std::string& name) {
-    // for (auto i : m_index) {
-    //     std::cout << "TEST : " << i.first << std::endl;
-    // }
+
     if (m_index.find(name) == m_index.end()) {
         ERROR("Asset not found: %s", name.c_str());
         return {};

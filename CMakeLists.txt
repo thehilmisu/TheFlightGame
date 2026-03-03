@@ -48,6 +48,8 @@ set(COMMON_SOURCES
     src/plane.cpp
     src/timers.cpp
     src/hangar.cpp
+        src/audio.cpp
+        src/audio.h
 )
 
 # ImGui sources
@@ -115,11 +117,19 @@ else()
         target_include_directories(${PROJECT_NAME} PRIVATE ${SDL2_INCLUDE_DIRS})
         target_link_directories(${PROJECT_NAME} PRIVATE ${SDL2_LIBRARY_DIRS})
         target_link_libraries(${PROJECT_NAME} PRIVATE ${SDL2_LIBRARIES})
+        pkg_check_modules(SDL2_MIXER REQUIRED SDL2_mixer)
+        target_include_directories(${PROJECT_NAME} PRIVATE ${SDL2_MIXER_INCLUDE_DIRS})
+        target_link_directories(${PROJECT_NAME} PRIVATE ${SDL2_MIXER_LIBRARY_DIRS})
+        target_link_libraries(${PROJECT_NAME} PRIVATE ${SDL2_MIXER_LIBRARIES})
+
     else()
         # Windows MinGW/MSVC
         set(SDL2_DIR "${CMAKE_SOURCE_DIR}/thirdparty/SDL2/SDL2-2.32.10/x86_64-w64-mingw32/lib/cmake/SDL2")
         find_package(SDL2 REQUIRED)
         target_link_libraries(${PROJECT_NAME} PRIVATE SDL2::SDL2main SDL2::SDL2)
+        set(SDL2_MIXER_DIR "${CMAKE_SOURCE_DIR}/thirdparty/SDL2_mixer/...")
+        find_package(SDL2_mixer REQUIRED)
+        target_link_libraries(${PROJECT_NAME} PRIVATE SDL2_mixer::SDL2_mixer)
     endif()
 
     # Platform-specific Libraries & Frameworks

@@ -2,7 +2,7 @@
 #include "assets.h"
 #include "plants.h"
 #include "window.h"
-//#include "audio.hpp"
+#include "audio.h"
 #include <glm/gtc/matrix_transform.hpp>
 #include "assetloader.h"
 #include "logger.h"
@@ -76,7 +76,7 @@ namespace game {
         //Fonts
         FONTS->importFromFile("fonts.impfile");
         //Audio
-        //SFX->importFromFile("assets/sfx.impfile");
+        SFX->importFromFile("sfx.impfile");
     }
 
     void generateChunks(

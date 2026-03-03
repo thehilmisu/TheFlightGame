@@ -1,7 +1,7 @@
 #include "game.h"
 #include "window.h"
 #include <SDL.h>
-// #include "audio.hpp"
+#include "audio.h"
 
 constexpr unsigned int DEFAULT_HEALTH = 100;
 constexpr float DEFAULT_FUEL = 100.0f;
@@ -94,8 +94,8 @@ void Player::damage(unsigned int amount) {
   else
     health -= amount;
 
-  // if(health > 0)
-  //  SNDSRC->playid("hit", transform.position);
+  if(health > 0)
+    SNDSRC->playid("hit", transform.position);
 
   damagecooldown = DAMAGE_COOLDOWN;
   damagetimer = DAMAGE_TIMER;

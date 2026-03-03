@@ -8,8 +8,8 @@
 Window::Window(){
 
   // SDL2 initialization
-  if (SDL_Init(SDL_INIT_VIDEO | SDL_INIT_EVENTS) != 0) {
-    std::cerr << "Failed to initialize SDL2: " << SDL_GetError() << std::endl;
+  if (SDL_Init(SDL_INIT_VIDEO | SDL_INIT_EVENTS | SDL_INIT_AUDIO) != 0) {
+    ERROR("Failed to initialize SDL2: %s", SDL_GetError());
     return;
   }
 

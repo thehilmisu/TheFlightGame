@@ -5,14 +5,13 @@
 #include "timing.h"
 #include "timers.h"
 #include "logger.h"
+#include "audio.h"
 
 #define BALLOON_EXPLOSION_SCALE 2.5f
 #define SHIP_EXPLOSION_SCALE 3.5f
 
-namespace game
-{
-    game::PauseMenuActions arcadeModeGameLoop()
-    {
+namespace game {
+    game::PauseMenuActions arcadeModeGameLoop() {
         Window &window = Window::getInstance();
         Gui &gui = Gui::getInstance();
 
@@ -59,8 +58,7 @@ namespace game
         std::vector<std::string> skyboxes = {"rainskybox", "nightskybox", "skybox"};
         std::string skybox = skyboxes.at(0);
 
-        while (!window.shouldClose() && window.isRunnning())
-        {
+        while (!window.shouldClose() && window.isRunnning()) {
             double startTime = getTime();
             window.pollEvents();
 
@@ -96,7 +94,7 @@ namespace game
             gfx::displaySkybox(skybox);
             // Fog
             gfx::displayFog();
-         
+
             if (gameState == game::RUNNING) {
                 timers.update(dt);
                 static float temp_health = 100.0f;
@@ -122,7 +120,7 @@ namespace game
                 // Update explosions
                 if (justcrashed) {
                     explosions.push_back(gameobjects::Explosion(player.transform.position));
-                    // SNDSRC->playid("explosion", player.transform.position);
+                    SNDSRC->playid("explosion", player.transform.position);
                     WARN("Plane Crashed");
                     gameState = game::DEAD;
                 }
@@ -136,8 +134,9 @@ namespace game
                 // Shoot bullets
                 // KeyState leftbutton = window.getButtonState(SDL_BUTTON_LEFT);
                 KeyState spacebar = window.getKeyState(SDLK_SPACE);
-                if (player.shoottimer <= 0.0f && (window.keyIsHeld(spacebar) /*|| window.keyIsHeld(leftbutton)*/) && !player.crashed){
-                    // SNDSRC->playid("shoot", player.transform.position);
+                if (player.shoottimer <= 0.0f && (window.keyIsHeld(spacebar) /*|| window.keyIsHeld(leftbutton)*/) && !
+                    player.crashed) {
+                    SNDSRC->playid("shoot", player.transform.position);
                     player.resetShootTimer();
                     bullets.push_back(gameobjects::Bullet(player, glm::vec3(-8.5f, -0.75f, 8.5f)));
                     bullets.push_back(gameobjects::Bullet(player, glm::vec3(8.5f, -0.75f, 8.5f)));
@@ -164,12 +163,12 @@ namespace game
                 game::checkForCollision(player, planes, explosions, 2.0f, glm::vec3(26.0f, 26.0f, 72.0f));
 
                 // Spawn Balloons
-                if (timers.getTimer("spawn_balloon")){
+                if (timers.getTimer("spawn_balloon")) {
                     INFO("BALLOONN");
                     spawnBalloons(player, balloons, lcg, permutations);
                 }
                 // Update Balloons
-                for (auto &balloon : balloons)
+                for (auto &balloon: balloons)
                     balloon.updateBalloon(dt);
                 // Destroy any enemies that are too far away or have run out of health
                 destroyEnemies(player, balloons, explosions, BALLOON_EXPLOSION_SCALE, 24.0f, score);
@@ -178,7 +177,7 @@ namespace game
                 if (timers.getTimer("spawn_ship"))
                     spawnShips(player, ships, lcg, permutations);
                 // Update Ships
-                for (auto &ship : ships)
+                for (auto &ship: ships)
                     ship.updateShip(dt, player, enemyBullets);
                 // Destroy any enemies that are too far away or have run out of health
                 destroyEnemies(player, ships, explosions, SHIP_EXPLOSION_SCALE, 50.0f, score);
@@ -187,7 +186,7 @@ namespace game
                 if (timers.getTimer("spawn_plane"))
                     spawnPlanes(player, planes, lcg, permutations, totalTime);
                 // Update Planes
-                for (auto &plane : planes)
+                for (auto &plane: planes)
                     plane.updatePlane(dt, player, enemyBullets, permutations);
                 // Destroy any enemies that are too far away or have run out of health
                 destroyEnemies(player, planes, explosions, SHIP_EXPLOSION_SCALE, 50.0f, score);
@@ -215,58 +214,54 @@ namespace game
                 gui.hudItems.crashed = player.crashed;
                 gui.hudItems.fuel = player.fuel;
                 gui.hudItems.elapsedTime = getTime();
-
-            }
-            else if (gameState == game::DEAD) {
+            } else if (gameState == game::DEAD) {
                 // Death should not be handled instantly, otherwise the player won't see the explosion
                 TRACE("Player Deathtimer: %.2f", player.deathtimer);
                 if (player.deathtimer > 2.0f) {
-                    switch (gui.drawDeathMenu())
-                    {
-                    case DEATH_EXIT:
-                        window.setIsRunning(false);
-                        break;
-                    case DEATH_EXIT_TO_MAINMENU:
-                        return game::EXIT_TO_MAINMENU;
-                        break;
-                    case TRY_AGAIN:
-                        // Reset player
-                        player = gameobjects::Player(glm::vec3(0.0f, HEIGHT * SCALE * 0.5f, 0.0f));
-                        // Clear bullets and enemies
-                        bullets.clear();
-                        enemyBullets.clear();
-                        balloons.clear();
-                        ships.clear();
-                        planes.clear();
-                        explosions.clear();
-                        barrels.clear();
-                        gameState = game::RUNNING;
-                        break;
-                    default:
-                        break;
+                    switch (gui.drawDeathMenu()) {
+                        case DEATH_EXIT:
+                            window.setIsRunning(false);
+                            break;
+                        case DEATH_EXIT_TO_MAINMENU:
+                            return game::EXIT_TO_MAINMENU;
+                            break;
+                        case TRY_AGAIN:
+                            // Reset player
+                            player = gameobjects::Player(glm::vec3(0.0f, HEIGHT * SCALE * 0.5f, 0.0f));
+                            // Clear bullets and enemies
+                            bullets.clear();
+                            enemyBullets.clear();
+                            balloons.clear();
+                            ships.clear();
+                            planes.clear();
+                            explosions.clear();
+                            barrels.clear();
+                            gameState = game::RUNNING;
+                            break;
+                        default:
+                            break;
                     }
-                }else {
+                } else {
                     player.update(dt);
                     updateExplosions(explosions, player.transform.position, dt);
                     gfx::displayExplosions(explosions);
                 }
-            }
-            else if (gameState == game::PAUSED) {
+            } else if (gameState == game::PAUSED) {
                 // Pause should be handled instantly
                 switch (game::PauseMenuActions action = gui.drawPauseMenu()) {
-                case EXIT:
-                    window.setIsRunning(false);
-                    break;
-                case EXIT_TO_MAINMENU:
-                    return action;
-                    break;
-                case RESUME:
-                    gameState = game::RUNNING;
-                    break;
-                case NONE:
-                    break;
-                default:
-                    break;
+                    case EXIT:
+                        window.setIsRunning(false);
+                        break;
+                    case EXIT_TO_MAINMENU:
+                        return action;
+                        break;
+                    case RESUME:
+                        gameState = game::RUNNING;
+                        break;
+                    case NONE:
+                        break;
+                    default:
+                        break;
                 }
             }
             if (gui.dItems.isShakeButtonPressed || window.getKeyState(SDLK_m) == JUST_PRESSED) {
@@ -277,23 +272,21 @@ namespace game
 
             if (window.getKeyState(SDLK_TAB) == JUST_PRESSED)
                 draw_debug_gui = !draw_debug_gui;
-            if (window.getKeyState(SDLK_ESCAPE) == JUST_PRESSED){
+            if (window.getKeyState(SDLK_ESCAPE) == JUST_PRESSED) {
                 if (gameState == game::RUNNING)
                     gameState = game::PAUSED;
                 else if (gameState == game::PAUSED)
                     gameState = game::RUNNING;
             }
 
-            if (window.getKeyState(SDLK_p) == JUST_PRESSED)
-            {
+            if (window.getKeyState(SDLK_p) == JUST_PRESSED) {
                 static unsigned int i = 0;
                 i = (i + 1) % skyboxes.size();
                 gui.dItems.selectedSkybox = i;
                 INFO("selected skybox index = %d", i);
             }
 
-            if (draw_debug_gui)
-            {
+            if (draw_debug_gui) {
                 gui.drawUI();
             }
 
