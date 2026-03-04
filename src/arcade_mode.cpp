@@ -97,8 +97,6 @@ namespace game {
 
             if (gameState == game::RUNNING) {
                 timers.update(dt);
-                static float temp_health = 100.0f;
-                temp_health -= dt * 10.0f;
 
                 // Draw HUD Backgorunds
                 gfx::displayCrosshair(player.transform);
@@ -106,7 +104,7 @@ namespace game {
                 gfx::displayAttitude(player.transform.rotation.x, player.transform.rotation.z);
                 gfx::displaySpeed(player.speed);
                 gfx::displayFuel(player.fuel, totalTime);
-                gfx::displayPlaneHealth(temp_health, totalTime);
+                gfx::displayPlaneHealth(static_cast<float>(player.health), totalTime);
                 // gfx::displayEnemyMarkers(static_cast<gameobjects::DamageableEntity>(balloons), player.transform);
                 // gfx::displayEnemyMarkers(ships, player.transform);
                 // gfx::displayEnemyMarkers(planes, player.transform);
@@ -173,26 +171,19 @@ namespace game {
                 // Update Balloons
                 for (auto &balloon: balloons)
                     balloon.update(dt, ctx);
-                // Destroy any enemies that are too far away or have run out of health
-                //destroyEnemies(player, balloons, explosions, BALLOON_EXPLOSION_SCALE, 24.0f, score);
-
                 // Spawn Ships
                 if (timers.getTimer("spawn_ship"))
                     spawnShips(player, ships, lcg, permutations);
                 // Update Ships
                 for (auto &ship: ships)
                     ship.update(dt, ctx);
-                // Destroy any enemies that are too far away or have run out of health
-                //destroyEnemies(player, ships, explosions, SHIP_EXPLOSION_SCALE, 50.0f, score);
-
                 // Spawn Planes
                 if (timers.getTimer("spawn_plane"))
                     spawnPlanes(player, planes, lcg, permutations, totalTime);
                 // Update Planes
                 for (auto &plane: planes)
                     plane.update(dt, ctx);
-                // Destroy any enemies that are too far away or have run out of health
-                //destroyEnemies(player, planes, explosions, SHIP_EXPLOSION_SCALE, 50.0f, score);
+
 
                 // destroy all destructible entity types
                 game::destroyDestructibles(player, balloons, explosions, 1.0f, 48.0f, score);
@@ -204,6 +195,7 @@ namespace game {
                 game::checkForHit(bullets, balloons, 24.0f);
                 game::checkForHit(bullets, ships,    32.0f);
                 game::checkForHit(bullets, planes,   12.0f);
+                game::checkHitForPlayer(enemyBullets, player,  12.0f);
 
                 // AABB collision (planes only, as currently)
                 game::checkForCollision(player, planes, explosions, 1.0f, glm::vec3(26.f, 26.f, 72.f));

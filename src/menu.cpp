@@ -39,9 +39,9 @@ namespace game
     std::string skybox = "nightskybox";
     float mRotation = enemy.transform.rotation.y;
     float rotationDirection = 1.0f;
-    while (!window.shouldClose())
-    {
-      float start = getTime();
+    while (!window.shouldClose()) {
+
+      auto start = static_cast<float>(getTime());
 
       gui.newFrame();
 
@@ -65,9 +65,10 @@ namespace game
       if (mRotation > glm::radians(60.0f) || mRotation < glm::radians(-60.0f))
         rotationDirection *= -1.0f;
       
-      for (auto &e : enemies) e.transform.rotation.y = -mRotation;
-      
-      player.transform.rotation.y = mRotation;
+      for (auto &e : enemies) {
+        e.transform.rotation.y = -mRotation;
+        //e.update(0.0f, {});
+      }
    
       gui.render();
 
@@ -111,7 +112,7 @@ namespace game
         break;
       }
 
-      dt = getTime() - start;
+      dt = static_cast<float>(getTime()) - start;
     }
 
     return NONE_SELECTED;

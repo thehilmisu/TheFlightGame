@@ -329,7 +329,7 @@ namespace game {
                       "T must derive from DamageableEntity");
         for (size_t i = 0; i < entities.size(); i++) {
             for (size_t j = i + 1; j < entities.size(); j++) {
-                float dist = glm::length(
+                const float dist = glm::length(
                     entities[i].transform.position - entities[j].transform.position);
                 if (dist < hitdist) {
                     entities[i].hitpoints  = 0;  entities[i].scorevalue = 0;
@@ -352,13 +352,29 @@ namespace game {
                       "T must derive from DamageableEntity");
         for (auto& bullet : bullets) {
             for (auto& enemy : enemies) {
-                float dist = glm::length(
+                const float dist = glm::length(
                     bullet.transform.position - enemy.transform.position);
                 if (dist < hitdist) {
                     bullet.destroyed = true;
                     enemy.hitpoints--;
                     TRACE("You have hit the enemy with bullets!");
                 }
+            }
+        }
+    }
+
+    inline void checkHitForPlayer(
+        std::vector<gameobjects::Bullet>& bullets,
+        gameobjects::Player& player,
+        float hitdist)
+    {
+        for (auto& bullet : bullets) {
+            float dist = glm::length(
+                   bullet.transform.position - player.transform.position);
+            if (dist < hitdist) {
+                bullet.destroyed = true;
+                player.damage(5);
+                TRACE("You have been hit! Healtgh: %zu", player.health);
             }
         }
     }
