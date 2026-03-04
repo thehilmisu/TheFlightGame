@@ -3,7 +3,9 @@
 namespace gobjs = gameobjects;
 
 namespace gameobjects {
-    void Enemy::updateBalloon(float dt) {
+    void Balloon::update(float dt, const UpdateContext& ctx) {
+        (void)ctx;
+
         if (transform.position.y > values.at("maxy")) {
             transform.position.y = values.at("maxy");
             values.at("direction") *= -1.0f;
@@ -15,7 +17,7 @@ namespace gameobjects {
         transform.position.y += 16.0f * dt * values.at("direction");
     }
 
-    Enemy spawnBalloon(const glm::vec3 &position,
+    Balloon spawnBalloon(const glm::vec3 &position,
                        const infworld::worldseed &permutations) {
         const float h =
                 infworld::getHeight(position.z / SCALE * static_cast<float>(PREC + 1) / static_cast<float>(PREC),
@@ -24,7 +26,7 @@ namespace gameobjects {
                 HEIGHT * SCALE;
         float y = std::max(h, 0.0f) + HEIGHT;
         const glm::vec3 pos(position.x, y, position.z);
-        auto balloon = Enemy(pos, 5, 10);
+        auto balloon = Balloon(pos);
 
         const float miny = y;
         const float maxy = y + HEIGHT;
@@ -37,7 +39,7 @@ namespace gameobjects {
 } // namespace gameobjects
 
 namespace game {
-    void spawnBalloons(gobjs::Player &player, std::vector<gobjs::Enemy> &balloons,
+    void spawnBalloons(gobjs::Player &player, std::vector<gobjs::Balloon> &balloons,
                        std::minstd_rand0 &lcg,
                        const infworld::worldseed &permutations) {
         if (balloons.size() >= 4)

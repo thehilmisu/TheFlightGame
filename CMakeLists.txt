@@ -37,8 +37,6 @@ set(COMMON_SOURCES
     src/menu.cpp
     src/balloon.cpp
     src/ship.cpp
-    src/enemies.cpp
-    src/props.cpp
     src/barrel.cpp
     # src/dev_mode.cpp
     src/display.cpp
@@ -50,6 +48,9 @@ set(COMMON_SOURCES
     src/hangar.cpp
     src/audio.cpp
     src/audio.h
+    src/transform.h
+    src/entity.h
+        src/entity.cpp
 )
 
 # ImGui sources

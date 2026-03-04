@@ -251,7 +251,7 @@ namespace gfx {
         glEnable(GL_DEPTH_TEST);
     }
 
-    void displayBalloons(const std::vector<gameobjects::Enemy> &balloons) {
+    void displayBalloons(const std::vector<gameobjects::Balloon> &balloons) {
         if (balloons.empty())
             return;
         Window &window = Window::getInstance();
@@ -315,7 +315,7 @@ namespace gfx {
         glEnable(GL_CULL_FACE);
     }
 
-    void displayBarrels(const std::vector<gameobjects::Props> &barrels) {
+    void displayBarrels(const std::vector<gameobjects::Barrel> &barrels) {
         if (barrels.empty())
             return;
         Window &window = Window::getInstance();
@@ -341,7 +341,7 @@ namespace gfx {
         glEnable(GL_CULL_FACE);
     }
 
-    void displayShips(const std::vector<gameobjects::Enemy> &ships) {
+    void displayShips(const std::vector<gameobjects::Ship> &ships) {
         if (ships.empty())
             return;
         Window &window = Window::getInstance();
@@ -369,7 +369,7 @@ namespace gfx {
         glEnable(GL_CULL_FACE);
     }
 
-    void displayBlimps(const std::vector<gameobjects::Enemy> &blimps) {
+    void displayBlimps(const std::vector<gameobjects::Blimp> &blimps) {
         if (blimps.empty())
             return;
 
@@ -394,7 +394,7 @@ namespace gfx {
         }
     }
 
-    void displayUfos(const std::vector<gameobjects::Enemy> &ufos) {
+    void displayUfos(const std::vector<gameobjects::Ufo> &ufos) {
         if (ufos.empty())
             return;
 
@@ -420,7 +420,7 @@ namespace gfx {
     }
 
     void displayPlanes(float totalTime,
-                       const std::vector<gameobjects::Enemy> &planes) {
+                       const std::vector<gameobjects::Plane> &planes) {
         if (planes.empty())
             return;
 
@@ -793,7 +793,7 @@ namespace gfx {
         glEnable(GL_DEPTH_TEST);
     }
 
-    void displayEnemyMarkers(const std::vector<gameobjects::Enemy> &enemies,
+    void displayEnemyMarkers(const std::vector<gameobjects::DamageableEntity> &enemies,
                              const game::Transform &playertransform) {
         Window &window = Window::getInstance();
 

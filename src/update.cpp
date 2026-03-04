@@ -165,7 +165,7 @@ namespace game {
 
     void checkForHit(
         std::vector<gobjs::Bullet> &bullets,
-        std::vector<gobjs::Enemy> &enemies,
+        std::vector<gobjs::Plane> &enemies,
         float hitdist
     ) {
         for (auto &bullet: bullets) {

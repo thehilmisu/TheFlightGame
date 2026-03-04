@@ -3,7 +3,9 @@
 namespace gobjs = gameobjects;
 
 namespace gameobjects {
-    void Enemy::updateShip(float dt, const Player &player, std::vector<Bullet> &bullets) {
+    void Ship::update(float dt, const UpdateContext &ctx) {
+        const Player &player = *ctx.player;
+
         // Ships bob up and down on the water
         if (transform.position.y > values.at("maxy")) {
             transform.position.y = values.at("maxy");
@@ -34,11 +36,11 @@ namespace gameobjects {
             transform.rotation.x = -atan2f(toPlayer.y, horizontalDist);
 
             // Spawn rocket
-            bullets.emplace_back(transform, 0.3f, glm::vec3(0.0f, 5.0f, 0.0f));
+            ctx.bullets->emplace_back(transform, 0.3f, glm::vec3(0.0f, 5.0f, 0.0f));
         }
     }
 
-    Enemy spawnShip(const glm::vec3 &position,
+    Ship spawnShip(const glm::vec3 &position,
                     const infworld::worldseed &permutations) {
         float h =
                 infworld::getHeight(position.z / SCALE * static_cast<float>(PREC + 1) / static_cast<float>(PREC),
@@ -54,7 +56,7 @@ namespace gameobjects {
 
         float y = 10.0f; // Slightly above water level so ship is visible
         glm::vec3 pos(position.x, y, position.z);
-        auto ship = Enemy(pos, 10, 50);
+        auto ship = Ship(pos);
 
         const float miny = y - 8.0f;
         const float maxy = y + 8.0f;
@@ -68,7 +70,7 @@ namespace gameobjects {
 } // namespace gameobjects
 
 namespace game {
-    void spawnShips(gobjs::Player &player, std::vector<gobjs::Enemy> &ships,
+    void spawnShips(gobjs::Player &player, std::vector<gobjs::Ship> &ships,
                     std::minstd_rand0 &lcg,
                     const infworld::worldseed &permutations) {
         if (ships.size() >= 3)

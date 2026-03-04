@@ -32,11 +32,11 @@ namespace game {
         std::vector<gameobjects::Bullet> bullets;
         std::vector<gameobjects::Rocket> rockets;
         std::vector<gameobjects::Bullet> enemyBullets;
-        std::vector<gameobjects::Enemy> balloons;
-        std::vector<gameobjects::Enemy> ships;
-        std::vector<gameobjects::Enemy> planes;
+        std::vector<gameobjects::Balloon> balloons;
+        std::vector<gameobjects::Ship> ships;
+        std::vector<gameobjects::Plane> planes;
         std::vector<gameobjects::Explosion> explosions;
-        std::vector<gameobjects::Props> barrels;
+        std::vector<gameobjects::Barrel> barrels;
 
 
         float totalTime = 0.0f;
@@ -107,10 +107,9 @@ namespace game {
                 gfx::displaySpeed(player.speed);
                 gfx::displayFuel(player.fuel, totalTime);
                 gfx::displayPlaneHealth(temp_health, totalTime);
-                gfx::displayEnemyMarkers(balloons, player.transform);
-                gfx::displayEnemyMarkers(ships, player.transform);
-                gfx::displayEnemyMarkers(planes, player.transform);
-                // gfx::displayPropMarkers(barrels, player.transform);
+                // gfx::displayEnemyMarkers(static_cast<gameobjects::DamageableEntity>(balloons), player.transform);
+                // gfx::displayEnemyMarkers(ships, player.transform);
+                // gfx::displayEnemyMarkers(planes, player.transform);
                 gfx::displayExplosions(explosions);
 
                 totalTime += dt;
@@ -119,7 +118,7 @@ namespace game {
                 justcrashed = player.crashed ^ justcrashed;
                 // Update explosions
                 if (justcrashed) {
-                    explosions.push_back(gameobjects::Explosion(player.transform.position));
+                    explosions.emplace_back(player.transform.position);
                     SNDSRC->playid("explosion", player.transform.position);
                     WARN("Plane Crashed");
                     gameState = game::DEAD;
@@ -138,29 +137,33 @@ namespace game {
                     player.crashed) {
                     SNDSRC->playid("shoot", player.transform.position);
                     player.resetShootTimer();
-                    bullets.push_back(gameobjects::Bullet(player, glm::vec3(-8.5f, -0.75f, 8.5f)));
-                    bullets.push_back(gameobjects::Bullet(player, glm::vec3(8.5f, -0.75f, 8.5f)));
+                    bullets.emplace_back(player, glm::vec3(-8.5f, -0.75f, 8.5f));
+                    bullets.emplace_back(player, glm::vec3(8.5f, -0.75f, 8.5f));
                 }
                 // Rockets
                 if (window.getKeyState(SDLK_g)) {
                     player.resetShootTimer();
-                    rockets.push_back(gameobjects::Rocket(player, glm::vec3(-8.5f, -0.75f, 8.5f)));
+                    rockets.emplace_back(player, glm::vec3(-8.5f, -0.75f, 8.5f));
                 }
                 game::updateRockets(rockets, dt);
                 // Update bullets
                 game::checkBulletDist(bullets, player);
                 game::updateBullets(bullets, dt);
                 game::checkForBulletTerrainCollision(bullets, permutations);
-                checkForHit(bullets, balloons, 24.0f);
-                checkForHit(bullets, ships, 32.0f);
-                checkForHit(bullets, planes, 12.0f);
+
                 // checkForHit(bullets, ufos, 14.0f);
                 // Update Enemy Bullets
                 game::checkBulletDist(enemyBullets, player);
                 game::updateBullets(enemyBullets, dt);
                 game::checkForBulletTerrainCollision(enemyBullets, permutations);
-                game::checkForHit(enemyBullets, player, 10.0f);
-                game::checkForCollision(player, planes, explosions, 2.0f, glm::vec3(26.0f, 26.0f, 72.0f));
+
+
+                UpdateContext ctx = {
+                    .player = &player,
+                    .bullets = &enemyBullets,
+                    .worldseed = &permutations,
+                    .totalTime = totalTime
+                };
 
                 // Spawn Balloons
                 if (timers.getTimer("spawn_balloon")) {
@@ -169,27 +172,44 @@ namespace game {
                 }
                 // Update Balloons
                 for (auto &balloon: balloons)
-                    balloon.updateBalloon(dt);
+                    balloon.update(dt, ctx);
                 // Destroy any enemies that are too far away or have run out of health
-                destroyEnemies(player, balloons, explosions, BALLOON_EXPLOSION_SCALE, 24.0f, score);
+                //destroyEnemies(player, balloons, explosions, BALLOON_EXPLOSION_SCALE, 24.0f, score);
 
                 // Spawn Ships
                 if (timers.getTimer("spawn_ship"))
                     spawnShips(player, ships, lcg, permutations);
                 // Update Ships
                 for (auto &ship: ships)
-                    ship.updateShip(dt, player, enemyBullets);
+                    ship.update(dt, ctx);
                 // Destroy any enemies that are too far away or have run out of health
-                destroyEnemies(player, ships, explosions, SHIP_EXPLOSION_SCALE, 50.0f, score);
+                //destroyEnemies(player, ships, explosions, SHIP_EXPLOSION_SCALE, 50.0f, score);
 
                 // Spawn Planes
                 if (timers.getTimer("spawn_plane"))
                     spawnPlanes(player, planes, lcg, permutations, totalTime);
                 // Update Planes
                 for (auto &plane: planes)
-                    plane.updatePlane(dt, player, enemyBullets, permutations);
+                    plane.update(dt, ctx);
                 // Destroy any enemies that are too far away or have run out of health
-                destroyEnemies(player, planes, explosions, SHIP_EXPLOSION_SCALE, 50.0f, score);
+                //destroyEnemies(player, planes, explosions, SHIP_EXPLOSION_SCALE, 50.0f, score);
+
+                // destroy all destructible entity types
+                game::destroyDestructibles(player, balloons, explosions, 1.0f, 48.0f, score);
+                game::destroyDestructibles(player, ships,    explosions, 2.0f, 48.0f, score);
+                game::destroyDestructibles(player, planes,   explosions, 1.0f, 48.0f, score);
+                game::destroyDestructibles(player, barrels,  explosions, 1.0f, 32.0f, score);
+
+                // bullet hits
+                game::checkForHit(bullets, balloons, 24.0f);
+                game::checkForHit(bullets, ships,    32.0f);
+                game::checkForHit(bullets, planes,   12.0f);
+
+                // AABB collision (planes only, as currently)
+                game::checkForCollision(player, planes, explosions, 1.0f, glm::vec3(26.f, 26.f, 72.f));
+
+                // pairwise self-collision
+                game::checkForCollision(balloons, 24.0f);
 
                 gui.drawHUD();
 
@@ -214,6 +234,7 @@ namespace game {
                 gui.hudItems.crashed = player.crashed;
                 gui.hudItems.fuel = player.fuel;
                 gui.hudItems.elapsedTime = getTime();
+
             } else if (gameState == game::DEAD) {
                 // Death should not be handled instantly, otherwise the player won't see the explosion
                 TRACE("Player Deathtimer: %.2f", player.deathtimer);
@@ -273,10 +294,8 @@ namespace game {
             if (window.getKeyState(SDLK_TAB) == JUST_PRESSED)
                 draw_debug_gui = !draw_debug_gui;
             if (window.getKeyState(SDLK_ESCAPE) == JUST_PRESSED) {
-                if (gameState == game::RUNNING)
-                    gameState = game::PAUSED;
-                else if (gameState == game::PAUSED)
-                    gameState = game::RUNNING;
+                if (gameState == game::RUNNING) gameState = game::PAUSED;
+                else if (gameState == game::PAUSED) gameState = game::RUNNING;
             }
 
             if (window.getKeyState(SDLK_p) == JUST_PRESSED) {

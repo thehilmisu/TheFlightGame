@@ -3,7 +3,8 @@
 namespace gobjs = gameobjects;
 
 namespace gameobjects {
-void Props::updateBarrel(float dt) {
+void gobjs::Barrel::update(float dt, const UpdateContext &ctx) {
+  (void)ctx;
   if (transform.position.y > values.at("maxy")) {
     transform.position.y = values.at("maxy");
     values.at("direction") *= -1.0f;
@@ -15,7 +16,7 @@ void Props::updateBarrel(float dt) {
   transform.position.y += 16.0f * dt * values.at("direction");
 }
 
-Props spawnBarrel(const glm::vec3 &position,
+Barrel spawnBarrel(const glm::vec3 &position,
                    const infworld::worldseed &permutations) {
   float h =
       infworld::getHeight(position.z / SCALE * float(PREC + 1) / float(PREC),
@@ -24,11 +25,11 @@ Props spawnBarrel(const glm::vec3 &position,
       HEIGHT * SCALE;
   float y = std::max(h, 0.0f) + HEIGHT;
   glm::vec3 pos(position.x, y, position.z);
-  Props barrel = Props(pos, 5, 10);
+  auto barrel = Barrel(pos);
 
-  float miny = y;
-  float maxy = y + HEIGHT;
-  float direction = 1.0f;
+  const float miny = y;
+  const float maxy = y + HEIGHT;
+  constexpr  float direction = 1.0f;
   barrel.setVal("miny", miny);
   barrel.setVal("maxy", maxy);
   barrel.setVal("direction", direction);
@@ -37,7 +38,7 @@ Props spawnBarrel(const glm::vec3 &position,
 } // namespace gameobjects
 
 namespace game {
-void spawnBarrels(gobjs::Player &player, std::vector<gobjs::Props> &barrels,
+void spawnBarrels(gobjs::Player &player, std::vector<gobjs::Barrel> &barrels,
                    std::minstd_rand0 &lcg,
                    const infworld::worldseed &permutations) {
   if (barrels.size() >= 4)
