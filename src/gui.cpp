@@ -301,6 +301,56 @@ game::MainMenuActions Gui::drawMainMenu()
   return action;
 }
 
+game::MainMenuActions Gui::drawOptionsMenu() {
+  game::MainMenuActions action = game::NONE_SELECTED;
+  const Window &window = Window::getInstance();
+  int w = window.getWidth();
+  int h = window.getHeight();
+
+  float pos_x = (w * 0.3f) + 100.0f;
+  const auto pos_y = h + 25.0f;
+
+  ImGui::SetNextWindowPos(ImVec2(pos_x, pos_y), ImGuiCond_Always,
+                          ImVec2(1.0f, 1.0f));
+  ImGui::SetNextWindowSize(ImVec2((w * 0.30f), (h * 0.7f)));
+
+  // Use flags to remove the typical window frame for a cleaner "Game Menu" look
+  constexpr ImGuiWindowFlags window_flags =
+      ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoResize |
+      ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoBackground;
+
+  if (ImGui::Begin("GameOptionsMenu", nullptr, window_flags)) {
+    ImGui::PushStyleVar(ImGuiStyleVar_FrameRounding, 5.0f);
+    // ImGui::PushFont(FONTS->getFontData("jetbrainsmono_bold"));
+
+    // Title Text
+    ImGui::SetWindowFontScale(2.5f);
+    const float text_width = ImGui::CalcTextSize("Options").x;
+    ImGui::SetCursorPosX((ImGui::GetWindowSize().x - text_width) * 0.5f);
+    ImGui::Text("Options");
+    ImGui::SetWindowFontScale(2.0f);
+
+    // Options content goes here
+    static bool soundEnabled = true;
+    static int volume = 50;
+    ImGui::Checkbox("Sound", &soundEnabled);
+    if (soundEnabled) {
+      ImGui::SliderInt("Volume", &volume, 0, 100);
+    }
+    ImGui::Separator();
+    if (ImGui::Button("BACK TO MAIN MENU", ImVec2(-1.0f, 50.0f))) {
+      action = game::BACK_TO_MAINMENU;
+    }
+
+    ImGui::Spacing();
+    // ImGui::PopFont();
+    ImGui::PopStyleVar();
+    ImGui::End();
+  }
+
+
+  return action;
+}
 
 game::MainMenuActions Gui::drawPlaneSelectionUI(const gameobjects::Player::PlayerModel& pModel) {
 

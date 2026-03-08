@@ -40,6 +40,7 @@ namespace game {
         CHANGE_PLANE_MINUS,
         CHANGE_PLANE_PLUS,
         PLANE_SELECTED,
+        BACK_TO_MAINMENU,
         EXIT_GAME,
     };
 
@@ -75,6 +76,9 @@ namespace game {
 
     //Hangar Loop
     game::PauseMenuActions hangarGameLoop();
+
+    // Options Loop
+    game::MainMenuActions optionsGameLoop();
 
     //Main menu
     //Returns the game mode selected

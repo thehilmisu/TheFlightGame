@@ -39,17 +39,13 @@ int main(int argc, char* argv[]) {
   game::initUniforms();
 
   while (!window.shouldClose() && window.isRunnning()) {
-
-    game::MainMenuActions action = game::mainMenu();
-    INFO("Action selected from main menu : %d ", action);
-
-    switch (action) {
-    case game::OPTIONS:
-      // if (game::devModeGameLoop() == game::EXIT_TO_MAINMENU) {
-      //   gui.render();
-      //   action = game::mainMenu();
-      // }
-      break;
+    switch (game::MainMenuActions action = game::mainMenu()) {
+      case game::OPTIONS:
+        if (game::optionsGameLoop() == game::BACK_TO_MAINMENU) {
+          gui.render();
+          action = game::mainMenu();
+        }
+        break;
     case game::HANGAR:
       if (game::hangarGameLoop() == game::EXIT_TO_MAINMENU) {
         gui.render();

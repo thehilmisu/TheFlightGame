@@ -11,10 +11,7 @@ constexpr float MAX_ROTATION_Z = glm::radians(15.0f);
 constexpr float SHOOT_COOLDOWN = 0.5f;
 
 namespace gameobjects {
-    void gobjs::Plane::update(
-        float dt,
-        const UpdateContext &ctx
-    ) {
+    void gobjs::Plane::update(float dt,const UpdateContext &ctx) {
         float h = infworld::getHeight(
                       transform.position.z / SCALE * float(PREC + 1) / float(PREC),
                       transform.position.x / SCALE * float(PREC + 1) / float(PREC),

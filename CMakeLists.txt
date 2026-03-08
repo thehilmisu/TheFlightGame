@@ -51,6 +51,7 @@ set(COMMON_SOURCES
     src/transform.h
     src/entity.h
         src/entity.cpp
+        src/options.cpp
 )
 
 # ImGui sources

@@ -11,7 +11,7 @@
 #define SHIP_EXPLOSION_SCALE 3.5f
 
 namespace game {
-    game::PauseMenuActions arcadeModeGameLoop() {
+    PauseMenuActions arcadeModeGameLoop() {
         Window &window = Window::getInstance();
         Gui &gui = Gui::getInstance();
 
@@ -20,7 +20,7 @@ namespace game {
         unsigned int randSeed = rd();
         infworld::worldseed permutations = infworld::makePermutations(randSeed, 8);
         infworld::ChunkTable chunktables[MAX_LOD];
-        game::generateChunks(permutations, chunktables, RANGE);
+        generateChunks(permutations, chunktables, RANGE);
         infworld::DecorationTable decorations = infworld::DecorationTable(14, CHUNK_SZ);
         decorations.genDecorations(permutations);
         gfx::generateDecorationOffsets(decorations);
@@ -105,6 +105,7 @@ namespace game {
                 gfx::displaySpeed(player.speed);
                 gfx::displayFuel(player.fuel, totalTime);
                 gfx::displayPlaneHealth(static_cast<float>(player.health), totalTime);
+                // TODO: implement the display markers with the new entity system
                 // gfx::displayEnemyMarkers(static_cast<gameobjects::DamageableEntity>(balloons), player.transform);
                 // gfx::displayEnemyMarkers(ships, player.transform);
                 // gfx::displayEnemyMarkers(planes, player.transform);

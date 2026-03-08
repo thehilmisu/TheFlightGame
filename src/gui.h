@@ -48,7 +48,8 @@ public:
   void drawUI();
   void drawHUD();
   game::MainMenuActions drawMainMenu();
-  game::MainMenuActions drawPlaneSelectionUI(const gameobjects::Player::PlayerModel& pModel); 
+  game::MainMenuActions drawPlaneSelectionUI(const gameobjects::Player::PlayerModel& pModel);
+  game::MainMenuActions drawOptionsMenu();
   game::PauseMenuActions drawPauseMenu();
   game::DeathMenuActions drawDeathMenu();
   DebugItems dItems;
