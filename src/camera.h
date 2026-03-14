@@ -30,6 +30,10 @@ struct Camera {
 	float shakeIntensity;
 	float shakeDuration;
 	glm::vec3 shakeOffset;
+	bool  freeLook    = false;
+	float orbitYaw    = 0.0f;
+	float orbitPitch  = 0.0f;
+	float orbitRadius = 66.2f;
 
 	MovementDirection 
 		movementDirection = NONE,
@@ -53,6 +57,8 @@ struct Camera {
 	//Have the camera follow the player	
 	void updateCamera(gameobjects::Player &player);
 	void updateCamera(gameobjects::Player &player, float dt);
+	void initFreeLookFromPlayer(const gameobjects::Player &player);
+	void updateCameraFreeLook(gameobjects::Player &player, float dmousex, float dmousey, float sensitivity);
 	geo::Frustum getViewFrustum(float znear, float zfar, float aspect, float fovy);
 };
 

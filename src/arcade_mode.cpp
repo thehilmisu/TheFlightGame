@@ -44,6 +44,7 @@ namespace game {
         unsigned int score = 0; // Player score
         bool draw_debug_gui = false;
         bool draw_rain = true;
+        bool free_look = false;
         game::GameState gameState = game::RUNNING;
 
         TimerManager &timers = TimerManager::getInstance();
@@ -53,7 +54,6 @@ namespace game {
         // timers.addTimer("spawn_barrel", 0.0f, 70.0f);
 
         window.getCamera().updateCamera(player);
-
 
         std::vector<std::string> skyboxes = {"rainskybox", "nightskybox", "skybox"};
         std::string skybox = skyboxes.at(0);
@@ -206,7 +206,11 @@ namespace game {
 
                 gui.drawHUD();
 
-                window.getCamera().updateCamera(player, dt);
+                if (free_look) {
+                    window.getCamera().updateCameraFreeLook(player, static_cast<float>(Window::getMouseDX()), static_cast<float>(Window::getMouseDY()), 0.5f);
+                }else {
+                    window.getCamera().updateCamera(player, dt);
+                }
 
                 // to make the terrain infinite
                 game::generateNewChunks(permutations, chunktables, decorations);
@@ -296,6 +300,15 @@ namespace game {
                 i = (i + 1) % skyboxes.size();
                 gui.dItems.selectedSkybox = i;
                 INFO("selected skybox index = %d", i);
+            }
+
+            if (window.getKeyState(SDLK_c) == JUST_PRESSED) {
+                free_look = !free_look;
+                if (free_look) {
+                    window.getCamera().initFreeLookFromPlayer(player);
+                }else {
+                    window.getCamera().freeLook = false;
+                }
             }
 
             if (draw_debug_gui) {

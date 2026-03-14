@@ -30,6 +30,53 @@ Camera::Camera(glm::vec3 pos)
 	shakeOffset = glm::vec3(0.0f);
 }
 
+void Camera::initFreeLookFromPlayer(const gameobjects::Player &player)
+{
+	glm::vec3 offset = position - player.transform.position;
+	orbitRadius = glm::length(offset);
+	if (orbitRadius < 0.001f)
+		orbitRadius = 66.2f;
+	orbitPitch = asinf(glm::clamp(offset.y / orbitRadius, -1.0f, 1.0f));
+	orbitYaw   = atan2f(offset.x, -offset.z);
+	freeLook   = true;
+}
+
+void Camera::updateCameraFreeLook(gameobjects::Player &player,
+								   float dmousex, float dmousey,
+								   float sensitivity)
+{
+	// Shake passthrough
+	if (shakeDuration > 0.0f) {
+		float scale = shakeIntensity * (shakeDuration > 0 ? 0.01f : 0.0f);
+		shakeOffset = glm::vec3(
+			((float)rand()/RAND_MAX * 2.0f - 1.0f) * scale,
+			((float)rand()/RAND_MAX * 2.0f - 1.0f) * scale,
+			0.0f);
+	} else {
+		shakeOffset = glm::vec3(0.0f);
+	}
+
+	// Rotate orbit with mouse (same sensitivity scale as rotateCamera)
+	orbitYaw   += 0.05f * sensitivity * dmousex;
+	orbitPitch -= 0.05f * sensitivity * dmousey;   // invert Y: mouse up = camera rises
+
+	constexpr float PITCH_MAX = glm::radians(85.0f);
+	orbitPitch = glm::clamp(orbitPitch, -PITCH_MAX, PITCH_MAX);
+
+	// Spherical coordinate → world position offset
+	float offsetX =  orbitRadius * cosf(orbitPitch) * sinf(orbitYaw);
+	float offsetY =  orbitRadius * sinf(orbitPitch);
+	float offsetZ = -orbitRadius * cosf(orbitPitch) * cosf(orbitYaw);
+
+	position = player.transform.position + glm::vec3(offsetX, offsetY, offsetZ);
+
+	// Point camera at player:
+	// Camera::forward() = (cos(p)*sin(y), sin(-p), cos(p)*-cos(y))
+	// We need forward() == normalize(-offset), so:
+	yaw   =  atan2f(offsetX, offsetZ);
+	pitch =  asinf(glm::clamp(offsetY / orbitRadius, -1.0f, 1.0f));
+}
+
 glm::vec3 Camera::velocity()
 {
 	glm::vec3 velocity = glm::vec3(0.0f);

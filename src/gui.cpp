@@ -307,12 +307,12 @@ game::MainMenuActions Gui::drawOptionsMenu() {
   int w = window.getWidth();
   int h = window.getHeight();
 
-  float pos_x = (w * 0.3f) + 100.0f;
+  float pos_x = (w * 0.5f) + 100.0f;
   const auto pos_y = h + 25.0f;
 
   ImGui::SetNextWindowPos(ImVec2(pos_x, pos_y), ImGuiCond_Always,
                           ImVec2(1.0f, 1.0f));
-  ImGui::SetNextWindowSize(ImVec2((w * 0.30f), (h * 0.7f)));
+  ImGui::SetNextWindowSize(ImVec2((w * 0.50f), (h * 0.7f)));
 
   // Use flags to remove the typical window frame for a cleaner "Game Menu" look
   constexpr ImGuiWindowFlags window_flags =
@@ -325,22 +325,28 @@ game::MainMenuActions Gui::drawOptionsMenu() {
 
     // Title Text
     ImGui::SetWindowFontScale(2.5f);
-    const float text_width = ImGui::CalcTextSize("Options").x;
+    const float text_width = ImGui::CalcTextSize("OPTIONS").x;
     ImGui::SetCursorPosX((ImGui::GetWindowSize().x - text_width) * 0.5f);
-    ImGui::Text("Options");
+    ImGui::Text("OPTIONS");
     ImGui::SetWindowFontScale(2.0f);
 
-    // Options content goes here
+    // Options content
     static bool soundEnabled = true;
     static int volume = 50;
     ImGui::Checkbox("Sound", &soundEnabled);
     if (soundEnabled) {
+      ImGui::SameLine();
       ImGui::SliderInt("Volume", &volume, 0, 100);
+    }
+    ImGui::Separator();
+    if (ImGui::Button("Credits", ImVec2(-1.0f, 50.0f))) {
+      action = game::BACK_TO_MAINMENU;
     }
     ImGui::Separator();
     if (ImGui::Button("BACK TO MAIN MENU", ImVec2(-1.0f, 50.0f))) {
       action = game::BACK_TO_MAINMENU;
     }
+
 
     ImGui::Spacing();
     // ImGui::PopFont();
