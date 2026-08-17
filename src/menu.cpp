@@ -44,7 +44,7 @@ namespace game
 
     while (!window.shouldClose()) {
 
-      auto start = static_cast<float>(getTime());
+      const double start = getTime();
 
       gui.newFrame();
 
@@ -102,7 +102,7 @@ namespace game
           break;
         }
 
-      dt = static_cast<float>(getTime()) - start;
+      dt = clampDt(getTime() - start);
     }
 
     return NONE_SELECTED;

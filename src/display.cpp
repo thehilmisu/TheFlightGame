@@ -201,23 +201,24 @@ namespace gfx {
         VAOS->bind(plane_model.name);
         VAOS->draw();
 
-        // Display propeller
-        TEXTURES->bindTexture("propeller", GL_TEXTURE0);
-        auto propellerTransform = glm::mat4(1.0f);
-        propellerTransform =
-                glm::translate(glm::mat4(1.0f), glm::vec3(0.0f, 0.0f, 4.0f));
-        propellerTransform =
-                glm::scale(propellerTransform, glm::vec3(0.5f, 0.5f, 0.5f));
-        const float rotation = totalTime * 16.0f;
-        propellerTransform =
-                glm::rotate(propellerTransform, rotation, glm::vec3(0.0f, 0.0f, 1.0f));
-        propellerTransform = transformMat * propellerTransform;
-        normal = glm::mat3(glm::transpose(glm::inverse(propellerTransform)));
-        shader.uniformFloat("specularfactor", 0.0f);
-        shader.uniformMat4x4("transform", propellerTransform);
-        shader.uniformMat3x3("normalmat", normal);
-        VAOS->bind("propeller");
-        VAOS->draw();
+        // Display propellers at whatever mounts this model declares
+        if (!plane_model.propellers.empty()) {
+            TEXTURES->bindTexture("propeller", GL_TEXTURE0);
+            shader.uniformFloat("specularfactor", 0.0f);
+            VAOS->bind("propeller");
+            const float rotation = totalTime * 16.0f;
+            for (const auto &mount: plane_model.propellers) {
+                auto propellerTransform = glm::translate(glm::mat4(1.0f), mount.position);
+                propellerTransform = glm::scale(propellerTransform, glm::vec3(mount.scale));
+                propellerTransform =
+                        glm::rotate(propellerTransform, rotation, glm::vec3(0.0f, 0.0f, 1.0f));
+                propellerTransform = transformMat * propellerTransform;
+                normal = glm::mat3(glm::transpose(glm::inverse(propellerTransform)));
+                shader.uniformMat4x4("transform", propellerTransform);
+                shader.uniformMat3x3("normalmat", normal);
+                VAOS->draw();
+            }
+        }
     }
 
     void displayExplosions(const std::vector<gobjs::Explosion> &explosions) {
@@ -348,8 +349,9 @@ namespace gfx {
         Camera &cam = window.getCamera();
 
         glDisable(GL_CULL_FACE);
-        VAOS->bind("warship2");
         SHADERS->use("textured");
+        // Both hull models are UV mapped into the same atlas, so the texture is
+        // bound once and only the vao changes between the two variants
         TEXTURES->bindTexture("warship2", GL_TEXTURE0);
         ShaderProgram &shader = SHADERS->getShader("textured");
         shader.uniformMat4x4("persp", window.getPerspective());
@@ -358,13 +360,20 @@ namespace gfx {
         shader.uniformVec3("lightdir", LIGHT);
         shader.uniformVec3("camerapos", cam.position);
 
-        for (const auto &ship: ships) {
-            glm::mat4 transform = ship.transform.getTransformMat();
-            transform = glm::scale(transform, glm::vec3(2.5f, 2.5f, 2.5f));
-            glm::mat3 normal = glm::mat3(glm::transpose(glm::inverse(transform)));
-            shader.uniformMat4x4("transform", transform);
-            shader.uniformMat3x3("normalmat", normal);
-            VAOS->draw();
+        // Drawn one variant at a time to keep the vao binds down to one each
+        static const char *SHIP_MODELS[] = {"warship_destroyer", "warship_cruiser"};
+        for (int variant = 0; variant < 2; variant++) {
+            VAOS->bind(SHIP_MODELS[variant]);
+            for (const auto &ship: ships) {
+                if (static_cast<int>(ship.getVal("variant")) != variant)
+                    continue;
+                glm::mat4 transform = ship.transform.getTransformMat();
+                transform = glm::scale(transform, glm::vec3(2.5f, 2.5f, 2.5f));
+                glm::mat3 normal = glm::mat3(glm::transpose(glm::inverse(transform)));
+                shader.uniformMat4x4("transform", transform);
+                shader.uniformMat3x3("normalmat", normal);
+                VAOS->draw();
+            }
         }
         glEnable(GL_CULL_FACE);
     }
@@ -793,8 +802,15 @@ namespace gfx {
         glEnable(GL_DEPTH_TEST);
     }
 
-    void displayEnemyMarkers(const std::vector<gameobjects::DamageableEntity> &enemies,
-                             const game::Transform &playertransform) {
+    template<typename T>
+    void displayEnemyMarkers(const std::vector<T> &enemies,
+                             const game::Transform &playertransform,
+                             const glm::vec3 &color) {
+        static_assert(std::is_base_of_v<gameobjects::DamageableEntity, T>,
+                      "T must derive from DamageableEntity");
+        if (enemies.empty())
+            return;
+
         Window &window = Window::getInstance();
 
         int w, h;
@@ -813,7 +829,7 @@ namespace gfx {
         SHADERS->use("marker");
         ShaderProgram &markershader = SHADERS->getShader("marker");
         markershader.uniformMat4x4("screen", screenMat);
-        markershader.uniformVec3("u_color", glm::vec3(1.0f, 0.15f, 0.05f));
+        markershader.uniformVec3("u_color", color);
         glm::vec2 center(playertransform.position.x, playertransform.position.z);
         for (const auto &enemy: enemies) {
             // Calculate distance to player
@@ -838,7 +854,9 @@ namespace gfx {
             const float x = MINIMAP_SIZE * cosf(angle) * dist;
             const float y = MINIMAP_SIZE * sinf(angle) * dist;
             transform = glm::translate(transform, glm::vec3(x, y, 0.0f));
-            transform = glm::translate(transform, glm::vec3(100.0f, -100.0f, 0.0f));
+            //Must match the centre used by displayMiniMapBackground and the
+            //player icon, otherwise the contacts sit offset from the minimap
+            transform = glm::translate(transform, glm::vec3(110.0f, -110.0f, 0.0f));
             transform = glm::translate(
                 transform, glm::vec3(-static_cast<float>(w) / 2.0f, static_cast<float>(h) / 2.0f, 0.0f));
             transform = glm::scale(transform, glm::vec3(8.0f, 8.0f, 0.0f));
@@ -850,6 +868,14 @@ namespace gfx {
         glDisable(GL_BLEND);
         glEnable(GL_DEPTH_TEST);
     }
+
+    //The three enemy types the arcade mode tracks
+    template void displayEnemyMarkers<gameobjects::Balloon>(
+        const std::vector<gameobjects::Balloon> &, const game::Transform &, const glm::vec3 &);
+    template void displayEnemyMarkers<gameobjects::Ship>(
+        const std::vector<gameobjects::Ship> &, const game::Transform &, const glm::vec3 &);
+    template void displayEnemyMarkers<gameobjects::Plane>(
+        const std::vector<gameobjects::Plane> &, const game::Transform &, const glm::vec3 &);
 
     void displayCrosshair(const game::Transform &playertransform) {
         Window &window = Window::getInstance();

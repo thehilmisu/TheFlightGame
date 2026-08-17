@@ -14,6 +14,8 @@
 #include "window.h"
 #include "logger.h"
 #include "assetloader.h"
+#include "settings.h"
+#include "audio.h"
 
 int main(int argc, char* argv[]) {
   (void)argc;
@@ -35,8 +37,13 @@ int main(int argc, char* argv[]) {
   glViewport(0, 0, fbWidth, fbHeight);
   window.updatePerspectiveMat(FOVY, ZNEAR, ZFAR, fbWidth, fbHeight);
 
+  //Load the saved profile before the assets so that the selected plane and
+  //volume are already in place by the time the first menu is drawn
+  SETTINGS.load();
+
   game::loadAssets();
   game::initUniforms();
+  SFX->applySettings();
 
   while (!window.shouldClose() && window.isRunnning()) {
     switch (game::MainMenuActions action = game::mainMenu()) {

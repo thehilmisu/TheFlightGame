@@ -107,6 +107,7 @@ namespace gameobjects {
 
         float deathtimer = 0.0f; //Keeps track of how long the player has been dead
         float shoottimer = 0.0f;
+        float rockettimer = 0.0f;
         float speed = 0.0f;
         float currentRollRate = 0.0f;
         float currentPitchRate = 0.0f;
@@ -122,18 +123,36 @@ namespace gameobjects {
 
         explicit Player(glm::vec3 position);
 
+        //Where a spinning propeller sits in the plane's own model space. The
+        //placement used to be hardcoded to the Douglas's nose, which put the
+        //propeller halfway down the fuselage on any other model, and gave
+        //twin-engine aircraft a single propeller in the wrong place.
+        struct PropellerMount {
+            glm::vec3 position;
+            float scale;
+        };
+
         struct PlayerModel {
             std::string name;
             std::string plane_name;
             std::string description;
             //TODO: maybe attributes?
             float scale;
+            //Empty for a model that draws its own propellers or has none
+            std::vector<PropellerMount> propellers;
         };
 
         std::vector<PlayerModel> player_models;
         int current_model;
 
         void damage(unsigned int amount);
+
+        //Adds fuel, never past a full tank
+        void refuel(float amount);
+
+        //True once the tank is empty - the engine is dead and the plane is
+        //gliding down whether the player likes it or not
+        [[nodiscard]] bool engineIsOut() const { return fuel <= 0.0f; }
 
         //Returns the percentage of health left, rounded down
         unsigned int hpPercent();
@@ -147,12 +166,16 @@ namespace gameobjects {
 
         void resetShootTimer();
 
+        void resetRocketTimer();
+
         void checkIfCrashed(float dt, const infworld::worldseed &permutations);
 
+        //Out of range indices fall back to the first plane
         void setPlayerObj(int current);
 
         PlayerModel getPlayerObj() { return player_models[current_model]; }
         [[nodiscard]] int getCurrentIndex() const { return current_model; }
+        [[nodiscard]] int getModelCount() const { return static_cast<int>(player_models.size()); }
     };
 
     struct Explosion {
@@ -383,6 +406,15 @@ namespace game {
         }
     }
 
+    //Barrels are fuel pickups rather than obstacles: flying into one tops the
+    //tank up instead of destroying the player, so they deliberately do not go
+    //through destroyDestructibles like the other entity types
+    void collectBarrels(
+        gameobjects::Player &player,
+        std::vector<gameobjects::Barrel> &barrels,
+        unsigned int &score
+    );
+
     //Update explosions
     void updateExplosions(
         std::vector<gameobjects::Explosion> &explosions,
@@ -456,7 +488,17 @@ namespace gfx {
 
     void displayDashboardBackground();
 
-    void displayEnemyMarkers(const std::vector<gameobjects::DamageableEntity> &enemies, const game::Transform &playertransform);
+    //Draws a dot on the minimap for each enemy within range.
+    //This takes the concrete entity type rather than DamageableEntity: a
+    //vector<Balloon> is not a vector<DamageableEntity>, which is why the call
+    //sites were commented out after the entity refactor. Instantiated for
+    //Balloon, Ship and Plane in display.cpp.
+    template<typename T>
+    void displayEnemyMarkers(
+        const std::vector<T> &enemies,
+        const game::Transform &playertransform,
+        const glm::vec3 &color
+    );
 
     void displayCrosshair(const game::Transform &playertransform);
 

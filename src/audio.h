@@ -11,6 +11,10 @@ namespace audio {
     class AudioManager {
         std::map<std::string, Mix_Chunk *> sounds;
         bool initialized = false;
+        //Master volume as a multiplier in [0, 1] and the mute flag, both driven
+        //by the options menu via applySettings()
+        float master = 1.0f;
+        bool muted = false;
         AudioManager();
 
     public:
@@ -26,6 +30,15 @@ namespace audio {
         void playid(const std::string &name,
                     const glm::vec3 &position = glm::vec3(0.0f),
                     float volumeScale = 1.0f);
+
+        // Master volume as a percentage in [0, 100]
+        void setMasterVolume(int percent);
+
+        // Silences playback and stops anything currently sounding
+        void setMuted(bool mute);
+
+        // Pulls volume and mute straight from the saved settings
+        void applySettings();
 
         ~AudioManager();
     };

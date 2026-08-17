@@ -52,6 +52,7 @@ set(COMMON_SOURCES
     src/entity.h
         src/entity.cpp
         src/options.cpp
+        src/settings.cpp
 )
 
 # ImGui sources
@@ -175,20 +176,30 @@ endif()
 add_subdirectory(tools/assetpacker)
 
 # build and run asset packer and generate assets.bin
+# Every file under assets/ is a dependency, otherwise the bundle is packed once
+# and then never refreshed: editing a model, texture or impfile would silently
+# have no effect on the running game.
+file(GLOB_RECURSE ASSET_FILES CONFIGURE_DEPENDS "${CMAKE_SOURCE_DIR}/assets/*")
+
 add_custom_command(
         OUTPUT ${CMAKE_BINARY_DIR}/assets.bin
         COMMAND AssetPacker ${CMAKE_SOURCE_DIR}/assets ${CMAKE_BINARY_DIR}/assets.bin
-        DEPENDS AssetPacker
+        DEPENDS AssetPacker ${ASSET_FILES}
         WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}
         COMMENT "Packing assets into assets.bin..."
         VERBATIM
 )
 
-# Copy assets.bin to output directory after build
+# Copy assets.bin next to the executable after build.
+# This must copy the freshly packed bundle from the build directory. It used to
+# copy ${CMAKE_SOURCE_DIR}/assets.bin, a stale leftover in the repo root, which
+# overwrote the new bundle every single build - so asset changes never reached
+# the game. copy_if_different is a no-op when the two paths already agree, as
+# they do for single-config generators.
 add_custom_command(
     TARGET ${PROJECT_NAME} POST_BUILD
-    COMMAND ${CMAKE_COMMAND} -E copy
-            "${CMAKE_SOURCE_DIR}/assets.bin"
+    COMMAND ${CMAKE_COMMAND} -E copy_if_different
+            "${CMAKE_BINARY_DIR}/assets.bin"
             "$<TARGET_FILE_DIR:${PROJECT_NAME}>/assets.bin"
     COMMENT "Copying assets.bin to output directory..."
 )

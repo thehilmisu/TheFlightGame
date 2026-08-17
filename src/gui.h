@@ -4,7 +4,6 @@
 #include "game.h"
 #include "glm/ext/vector_float3.hpp"
 #include "imgui.h"
-#include "imgui_impl_glfw.h"
 #include "imgui_impl_opengl3.h"
 
 struct DebugItems{
@@ -27,6 +26,10 @@ struct HUDItems {
   unsigned int bulletCount;
   float altitude;
   unsigned int score;
+  unsigned int highScore;
+  //Set when the run that just ended beat the stored best
+  bool newHighScore;
+  //Seconds survived in the current run
   double elapsedTime;
   bool crashed;
 };

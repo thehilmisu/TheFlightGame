@@ -9,6 +9,8 @@
 #include "assetloader.h"
 #include "assets.h"
 #include "logger.h"
+#include "settings.h"
+#include "audio.h"
 
 Gui::Gui()
 {
@@ -161,6 +163,18 @@ game::DeathMenuActions Gui::drawDeathMenu()
     ImGui::Separator();
     ImGui::Spacing();
 
+    // Result of the run that just ended
+    ImGui::SetWindowFontScale(1.4f);
+    ImGui::Text("SCORE %u", hudItems.score);
+    ImGui::Text("BEST  %u", hudItems.highScore);
+    if (hudItems.newHighScore)
+      ImGui::TextColored(ImVec4(1.0f, 0.85f, 0.2f, 1.0f), "NEW BEST!");
+    ImGui::SetWindowFontScale(1.0f);
+
+    ImGui::Spacing();
+    ImGui::Separator();
+    ImGui::Spacing();
+
     if (ImGui::Button("TRY AGAIN", ImVec2(-1.0f, 50.0f))) {
       action = game::TRY_AGAIN;
     }
@@ -265,6 +279,13 @@ game::MainMenuActions Gui::drawMainMenu()
     const float text_width = ImGui::CalcTextSize("River Raid 3D").x;
     ImGui::SetCursorPosX((ImGui::GetWindowSize().x - text_width) * 0.5f);
     ImGui::Text("River Raid 3D");
+
+    // Something to beat, shown only once the player has actually set a score
+    if (SETTINGS.getHighScore() > 0) {
+      ImGui::SetWindowFontScale(1.5f);
+      ImGui::Text("BEST %u", SETTINGS.getHighScore());
+    }
+
     ImGui::SetWindowFontScale(2.0f);
 
     ImGui::Spacing();
@@ -330,20 +351,35 @@ game::MainMenuActions Gui::drawOptionsMenu() {
     ImGui::Text("OPTIONS");
     ImGui::SetWindowFontScale(2.0f);
 
-    // Options content
-    static bool soundEnabled = true;
-    static int volume = 50;
-    ImGui::Checkbox("Sound", &soundEnabled);
+    // Options content. These are bound to the saved settings and applied to
+    // the audio system as soon as they change, so the controls are audible
+    // immediately rather than only after a restart.
+    bool soundEnabled = SETTINGS.soundIsEnabled();
+    int volume = SETTINGS.getVolume();
+
+    if (ImGui::Checkbox("Sound", &soundEnabled)) {
+      SETTINGS.setSoundEnabled(soundEnabled);
+      SFX->applySettings();
+    }
     if (soundEnabled) {
       ImGui::SameLine();
-      ImGui::SliderInt("Volume", &volume, 0, 100);
+      if (ImGui::SliderInt("Volume", &volume, 0, 100)) {
+        SETTINGS.setVolume(volume);
+        SFX->applySettings();
+      }
+      // Give the player something to judge the new volume against
+      if (ImGui::IsItemDeactivatedAfterEdit())
+        SFX->playid("click");
     }
     ImGui::Separator();
     if (ImGui::Button("Credits", ImVec2(-1.0f, 50.0f))) {
-      action = game::BACK_TO_MAINMENU;
+      // Not wired up yet - see the credits/licensing note. It deliberately no
+      // longer returns BACK_TO_MAINMENU, which used to throw the player out of
+      // the options screen when they clicked it.
     }
     ImGui::Separator();
     if (ImGui::Button("BACK TO MAIN MENU", ImVec2(-1.0f, 50.0f))) {
+      SETTINGS.save();
       action = game::BACK_TO_MAINMENU;
     }
 
@@ -413,13 +449,13 @@ game::MainMenuActions Gui::drawPlaneSelectionUI(const gameobjects::Player::Playe
        ImGui::PushStyleVar(ImGuiStyleVar_FrameRounding, 5.0f);
        ImGui::SetWindowFontScale(2.5f);
 
-       //TODO: fix this potential issue
-       ImGui::Text(pModel.plane_name.c_str());
+       //TextUnformatted, not Text: these strings are data, and passing them as
+       //a format string would interpret any '%' inside them
+       ImGui::TextUnformatted(pModel.plane_name.c_str());
        ImGui::Separator();
 
        ImGui::SetWindowFontScale(1.5f);
-       //TODO: fix this potential issue
-       ImGui::Text(pModel.description.c_str());
+       ImGui::TextUnformatted(pModel.description.c_str());
        
      }
      ImGui::PopStyleVar();
@@ -440,10 +476,12 @@ void Gui::drawHUD()
                                     // ImGuiWindowFlags_NoBackground |
                                     ImGuiWindowFlags_NoSavedSettings;
 
-  // TOP-CENTER: Elapsed Time
+  // TOP-CENTER: run time, score and best
   {
     constexpr float padding = 10.0f;
-    const float textWidth = ImGui::CalcTextSize("00:00").x;
+    // Size the window off the widest line it will hold, not the clock, so the
+    // block stays centred once the score is added underneath
+    const float textWidth = ImGui::CalcTextSize("SCORE 0000000").x * 1.4f;
 
     ImGui::SetNextWindowPos(ImVec2(viewport->GetCenter().x - textWidth / 2.0f,
                                    viewport->WorkPos.y + padding));
@@ -457,7 +495,10 @@ void Gui::drawHUD()
       const int minutes = totalSeconds / 60;
       const int seconds = totalSeconds % 60;
       ImGui::Text("%02d:%02d", minutes, seconds);
-      ImGui::SameLine();
+
+      ImGui::SetWindowFontScale(1.4f);
+      ImGui::Text("SCORE %u", hudItems.score);
+      ImGui::Text("BEST  %u", hudItems.highScore);
 
       ImGui::End();
     }

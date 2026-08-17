@@ -6,6 +6,7 @@
 #include "timers.h"
 #include "logger.h"
 #include "audio.h"
+#include "settings.h"
 
 #define BALLOON_EXPLOSION_SCALE 2.5f
 #define SHIP_EXPLOSION_SCALE 3.5f
@@ -25,6 +26,7 @@ namespace game {
         decorations.genDecorations(permutations);
         gfx::generateDecorationOffsets(decorations);
 
+
         std::minstd_rand0 lcg(randSeed);
 
         // Gameobjects
@@ -39,9 +41,13 @@ namespace game {
         std::vector<gameobjects::Barrel> barrels;
 
 
+        //Time survived in the current run. It drives the HUD clock, the shader
+        //animations and the difficulty ramp, so a restart has to put it back to
+        //zero along with everything else.
         float totalTime = 0.0f;
         float dt = 0.0f;
         unsigned int score = 0; // Player score
+        bool newHighScore = false;
         bool draw_debug_gui = false;
         bool draw_rain = true;
         bool free_look = false;
@@ -49,9 +55,14 @@ namespace game {
 
         TimerManager &timers = TimerManager::getInstance();
         timers.addTimer("spawn_balloon", 0.0f, 50.0f);
-        timers.addTimer("spawn_ship", 0.0f, 150.0f);
+        //Ships are capped at 3 and only spawn at sea, so a 150s interval left
+        //most runs without a single one
+        timers.addTimer("spawn_ship", 0.0f, 60.0f);
         timers.addTimer("spawn_plane", 0.0f, 100.0f);
-        // timers.addTimer("spawn_barrel", 0.0f, 70.0f);
+        timers.addTimer("spawn_barrel", 0.0f, 70.0f);
+        //addTimer only inserts when the name is new, so a second run through
+        //this loop would inherit the previous run's countdowns without this
+        timers.resetAll();
 
         window.getCamera().updateCamera(player);
 
@@ -105,10 +116,10 @@ namespace game {
                 gfx::displaySpeed(player.speed);
                 gfx::displayFuel(player.fuel, totalTime);
                 gfx::displayPlaneHealth(static_cast<float>(player.health), totalTime);
-                // TODO: implement the display markers with the new entity system
-                // gfx::displayEnemyMarkers(static_cast<gameobjects::DamageableEntity>(balloons), player.transform);
-                // gfx::displayEnemyMarkers(ships, player.transform);
-                // gfx::displayEnemyMarkers(planes, player.transform);
+                // Minimap contacts, colour coded by threat
+                gfx::displayEnemyMarkers(planes, player.transform, glm::vec3(1.0f, 0.15f, 0.05f));
+                gfx::displayEnemyMarkers(ships, player.transform, glm::vec3(1.0f, 0.55f, 0.05f));
+                gfx::displayEnemyMarkers(balloons, player.transform, glm::vec3(0.95f, 0.9f, 0.2f));
                 gfx::displayExplosions(explosions);
 
                 totalTime += dt;
@@ -121,6 +132,9 @@ namespace game {
                     SNDSRC->playid("explosion", player.transform.position);
                     WARN("Plane Crashed");
                     gameState = game::DEAD;
+                    //Record the run straight away - submitScore writes the file
+                    //itself so an unclean exit cannot lose the result
+                    newHighScore = SETTINGS.submitScore(score);
                 }
                 player.update(dt);
                 if (player.fuel <= 20.0f) {
@@ -139,9 +153,13 @@ namespace game {
                     bullets.emplace_back(player, glm::vec3(-8.5f, -0.75f, 8.5f));
                     bullets.emplace_back(player, glm::vec3(8.5f, -0.75f, 8.5f));
                 }
-                // Rockets
-                if (window.getKeyState(SDLK_g)) {
-                    player.resetShootTimer();
+                // Rockets. getKeyState is truthy for HELD as well as
+                // JUST_PRESSED, so this has to test the transition explicitly
+                // or holding the key launches a rocket every single frame.
+                if (player.rockettimer <= 0.0f &&
+                    window.getKeyState(SDLK_g) == JUST_PRESSED &&
+                    !player.crashed) {
+                    player.resetRocketTimer();
                     rockets.emplace_back(player, glm::vec3(-8.5f, -0.75f, 8.5f));
                 }
                 game::updateRockets(rockets, dt);
@@ -184,13 +202,20 @@ namespace game {
                 // Update Planes
                 for (auto &plane: planes)
                     plane.update(dt, ctx);
+                // Spawn Barrels
+                if (timers.getTimer("spawn_barrel"))
+                    spawnBarrels(player, barrels, lcg, permutations);
+                // Update Barrels
+                for (auto &barrel: barrels)
+                    barrel.update(dt, ctx);
 
 
                 // destroy all destructible entity types
                 game::destroyDestructibles(player, balloons, explosions, 1.0f, 48.0f, score);
                 game::destroyDestructibles(player, ships,    explosions, 2.0f, 48.0f, score);
                 game::destroyDestructibles(player, planes,   explosions, 1.0f, 48.0f, score);
-                game::destroyDestructibles(player, barrels,  explosions, 1.0f, 32.0f, score);
+                // Barrels are pickups, not obstacles - handled separately
+                game::collectBarrels(player, barrels, score);
 
                 // bullet hits
                 game::checkForHit(bullets, balloons, 24.0f);
@@ -228,13 +253,16 @@ namespace game {
                 gui.hudItems.bulletCount = bullets.size();
                 gui.hudItems.altitude = player.transform.position.y;
                 gui.hudItems.score = score;
+                gui.hudItems.highScore = SETTINGS.getHighScore();
+                gui.hudItems.newHighScore = newHighScore;
                 gui.hudItems.crashed = player.crashed;
                 gui.hudItems.fuel = player.fuel;
-                gui.hudItems.elapsedTime = getTime();
+                //Time survived in this run, not time since the process started
+                gui.hudItems.elapsedTime = totalTime;
 
             } else if (gameState == game::DEAD) {
                 // Death should not be handled instantly, otherwise the player won't see the explosion
-                TRACE("Player Deathtimer: %.2f", player.deathtimer);
+                // TRACE("Player Deathtimer: %.2f", player.deathtimer);
                 if (player.deathtimer > 2.0f) {
                     switch (gui.drawDeathMenu()) {
                         case DEATH_EXIT:
@@ -249,11 +277,22 @@ namespace game {
                             // Clear bullets and enemies
                             bullets.clear();
                             enemyBullets.clear();
+                            rockets.clear();
                             balloons.clear();
                             ships.clear();
                             planes.clear();
                             explosions.clear();
                             barrels.clear();
+                            // Reset the run itself, not just the entities: the
+                            // score, the clock that drives the difficulty ramp
+                            // and the spawn countdowns all start over
+                            score = 0;
+                            totalTime = 0.0f;
+                            newHighScore = false;
+                            timers.resetAll();
+                            // Put the camera back behind the new plane so the
+                            // first frame does not lerp in from the crash site
+                            window.getCamera().updateCamera(player);
                             gameState = game::RUNNING;
                             break;
                         default:
@@ -319,7 +358,7 @@ namespace game {
 
             window.swapBuffers();
             window.updateKeyStates();
-            dt = getTime() - startTime;
+            dt = clampDt(getTime() - startTime);
             timers.reset();
         }
 

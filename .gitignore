@@ -18,6 +18,10 @@ RiverRaid3D
 # Object files
 *.o
 *.obj
+# ...but *.obj also matches Wavefront 3D models, which are source assets and
+# must be version controlled. Without this the model files are silently
+# untracked and exist only on whichever machine created them.
+!assets/models/*.obj
 *.so
 *.dylib
 *.dll
@@ -51,7 +55,6 @@ android/local.properties
 ANDROID_BUILD.md
 SDL2_MIGRATION_COMPLETE.md
 
-thirdparty/glm
 /android/app/build.gradle
 /android/settings.gradle
 /android/build.gradle

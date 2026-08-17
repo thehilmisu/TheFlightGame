@@ -76,24 +76,42 @@ namespace game {
         if (ships.size() >= 3)
             return;
 
+        //Randomly skip some spawn opportunities once ships are already about,
+        //matching how balloons and planes are throttled. This used to test
+        //ships.empty(), which threw away two thirds of the chances to spawn the
+        //*first* ship and then let every later one through unconditionally.
         unsigned int randval = lcg() % 3;
-        if (randval > 0 && ships.empty())
+        if (randval > 0 && !ships.empty())
             return;
 
+        //Ships can only sit on water, and only about a third of the world is
+        //water. Sampling a single point per attempt meant a ship appeared
+        //roughly once every seven minutes of flight, so most runs never saw
+        //one. Try several points and take the first that is actually at sea.
+        constexpr int MAX_ATTEMPTS = 8;
         const glm::vec3 center = player.transform.position;
-        const float dist = static_cast<float>(lcg() % 256) / 256.0f * CHUNK_SZ * 12.0f + CHUNK_SZ * 6.0f;
-        const float angle = static_cast<float>(lcg() % 256) / 256.0f * glm::radians(360.0f);
-        glm::vec3 position =
-                center + dist * glm::vec3(cosf(angle), 0.0f, sinf(angle));
 
-        // Check if position is actually over water
-        const float h = infworld::getHeight(position.z / SCALE * static_cast<float>(PREC + 1) / static_cast<float>(PREC),
-                                      position.x / SCALE * static_cast<float>(PREC + 1) / static_cast<float>(PREC),
-                                        permutations) * HEIGHT * SCALE;
+        for (int attempt = 0; attempt < MAX_ATTEMPTS; attempt++) {
+            const float dist =
+                    static_cast<float>(lcg() % 256) / 256.0f * CHUNK_SZ * 12.0f + CHUNK_SZ * 6.0f;
+            const float angle = static_cast<float>(lcg() % 256) / 256.0f * glm::radians(360.0f);
+            glm::vec3 position =
+                    center + dist * glm::vec3(cosf(angle), 0.0f, sinf(angle));
 
-        // Only spawn if terrain is below water level
-        if (h < 0.0f) {
-            ships.push_back(gobjs::spawnShip(position, permutations));
+            // Check if position is actually over water
+            const float h = infworld::getHeight(
+                                position.z / SCALE * static_cast<float>(PREC + 1) / static_cast<float>(PREC),
+                                position.x / SCALE * static_cast<float>(PREC + 1) / static_cast<float>(PREC),
+                                permutations) * HEIGHT * SCALE;
+
+            // Only spawn if terrain is below water level
+            if (h < 0.0f) {
+                auto ship = gobjs::spawnShip(position, permutations);
+                //Pick which hull model this one draws with (see displayShips)
+                ship.setVal("variant", static_cast<float>(lcg() % 2));
+                ships.push_back(ship);
+                return;
+            }
         }
     }
 } // namespace game

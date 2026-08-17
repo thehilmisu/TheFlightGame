@@ -1,10 +1,16 @@
 #include "game.h"
 #include "logger.h"
 #include "window.h"
+#include "audio.h"
 #include <glm/gtc/matrix_transform.hpp>
 #include <algorithm>
 
 namespace gobjs = gameobjects;
+
+//How close the player has to get to a barrel to pick it up, and how much fuel
+//it gives back. A full tank is 100, so a barrel is roughly a quarter tank.
+constexpr float BARREL_PICKUP_DIST = 32.0f;
+constexpr float BARREL_FUEL = 25.0f;
 
 namespace gameobjects {
     Explosion::Explosion(glm::vec3 position) {
@@ -163,37 +169,33 @@ namespace game {
         }
     }
 
-    void checkForHit(
-        std::vector<gobjs::Bullet> &bullets,
-        std::vector<gobjs::Plane> &enemies,
-        float hitdist
-    ) {
-        for (auto &bullet: bullets) {
-            for (auto &enemy: enemies) {
-                glm::vec3 diff = bullet.transform.position - enemy.transform.position;
-                float dist = glm::length(diff);
-                if (dist < hitdist) {
-                    bullet.destroyed = true;
-                    enemy.hitpoints--;
-                    TRACE("You have hit the enemy with bullets!");
-                }
-            }
-        }
-    }
-
-    void checkForHit(
-        std::vector<gobjs::Bullet> &bullets,
+    void collectBarrels(
         gobjs::Player &player,
-        float hitdist
+        std::vector<gobjs::Barrel> &barrels,
+        unsigned int &score
     ) {
-        for (auto &bullet: bullets) {
-            glm::vec3 diff = bullet.transform.position - player.transform.position;
-            float dist = glm::length(diff);
-            if (dist < hitdist) {
-                bullet.destroyed = true;
-                player.damage(1);
-            }
-        }
+        if (barrels.empty())
+            return;
+
+        barrels.erase(std::remove_if(
+                          barrels.begin(),
+                          barrels.end(),
+                          [&](const gobjs::Barrel &barrel) {
+                              const glm::vec3 diff =
+                                      barrel.transform.position - player.transform.position;
+                              const float dist = glm::length(diff);
+
+                              if (dist < BARREL_PICKUP_DIST && !player.crashed) {
+                                  player.refuel(BARREL_FUEL);
+                                  score += barrel.scorevalue;
+                                  SNDSRC->playid("hit", barrel.transform.position);
+                                  return true;
+                              }
+
+                              //Drop the ones the player has long since flown past
+                              return dist > CHUNK_SZ * 32.0f;
+                          }
+                      ), barrels.end());
     }
 
     void checkForBulletTerrainCollision(

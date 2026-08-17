@@ -5,6 +5,8 @@
 #include <SDL.h>
 #include "timing.h"
 #include "logger.h"
+#include "settings.h"
+#include "audio.h"
 
 namespace game {
 
@@ -29,11 +31,12 @@ namespace game {
     cam.pitch = 0.07f; 
 
     
-    unsigned int current_selected = player.getCurrentIndex();
+    int current_selected = player.getCurrentIndex();
+    const int model_count = player.getModelCount();
     game::PauseMenuActions action = NONE;
 
     while (!window.shouldClose() && window.isRunnning()) {
-        float startTime = getTime();
+        const double startTime = getTime();
         window.pollEvents();
 
         gui.newFrame();
@@ -44,15 +47,21 @@ namespace game {
         gfx::displayPlayerPlane(totalTime, player.transform, player.getPlayerObj());
         game::MainMenuActions ac = gui.drawPlaneSelectionUI(player.getPlayerObj());
         if (ac == CHANGE_PLANE_MINUS) {
-          current_selected = (current_selected - 1) % 5;
-          player.setPlayerObj(current_selected);          
+          //Adding model_count before the modulo keeps the wrap correct at index 0
+          current_selected = (current_selected - 1 + model_count) % model_count;
+          player.setPlayerObj(current_selected);
         }
         else if (ac == CHANGE_PLANE_PLUS) {
-          current_selected = (current_selected + 1) % 5;
+          current_selected = (current_selected + 1) % model_count;
           player.setPlayerObj(current_selected);
         }
         else if (ac == PLANE_SELECTED) {
           player.setPlayerObj(current_selected);
+          //This Player is local to the hangar, so the choice only reaches the
+          //game through the saved settings
+          SETTINGS.setSelectedPlane(current_selected);
+          SETTINGS.save();
+          SNDSRC->playid("click");
           return EXIT_TO_MAINMENU;
         }
         
@@ -93,7 +102,7 @@ namespace game {
 
         window.swapBuffers();
         window.updateKeyStates();
-        dt = getTime() - startTime;
+        dt = clampDt(getTime() - startTime);
     }
 
     return NONE;

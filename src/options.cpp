@@ -30,7 +30,7 @@ namespace game {
     game::MainMenuActions action = NONE_SELECTED;
 
     while (!window.shouldClose() && window.isRunnning()) {
-        float startTime = getTime();
+        const double startTime = getTime();
         window.pollEvents();
 
         gui.newFrame();
@@ -52,7 +52,7 @@ namespace game {
 
         window.swapBuffers();
         window.updateKeyStates();
-        dt = getTime() - startTime;
+        dt = clampDt(getTime() - startTime);
     }
 
     return action;

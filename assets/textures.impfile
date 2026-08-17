@@ -44,6 +44,33 @@
 	"flip" = "true";
 }
 
+# Generated player planes. displayPlayerPlane binds the texture by the model's
+# name, so each one needs an entry here even though they share an atlas - a
+# missing name makes bindTexture silently keep whatever was bound last.
+"plane_falcon" {
+	"target" = "texture2d";
+	"path" = "planetexture.png";
+	"flip" = "true";
+}
+
+"plane_marauder" {
+	"target" = "texture2d";
+	"path" = "planetexture.png";
+	"flip" = "true";
+}
+
+"plane_lancet" {
+	"target" = "texture2d";
+	"path" = "planetexture.png";
+	"flip" = "true";
+}
+
+"plane_warhog" {
+	"target" = "texture2d";
+	"path" = "planetexture.png";
+	"flip" = "true";
+}
+
 # texture for second  plane (a26)
 "plane_douglas" {
 	"target" = "texture2d";
@@ -135,14 +162,8 @@
 	"flip" = "false";
 }
 
-# Warship texture
-"warship" {
-	"target" = "texture2d";
-	"path" = "warship.png";
-	"flip" = "true";
-}
-
-# Warship2 texture
+# Warship texture (shared by both generated ship models, which are UV mapped
+# into regions of this atlas)
 "warship2" {
 	"target" = "texture2d";
 	"path" = "warship2.jpg";
