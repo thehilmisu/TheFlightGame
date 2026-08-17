@@ -48,6 +48,7 @@ namespace game {
         float dt = 0.0f;
         unsigned int score = 0; // Player score
         bool newHighScore = false;
+        game::TargetLock targetLock; // Missile lock, rebuilt every frame
         bool draw_debug_gui = false;
         bool draw_rain = true;
         bool free_look = false;
@@ -116,6 +117,8 @@ namespace game {
                 gfx::displaySpeed(player.speed);
                 gfx::displayFuel(player.fuel, totalTime);
                 gfx::displayPlaneHealth(static_cast<float>(player.health), totalTime);
+                gfx::displayRocketAmmo(player.rockets, MAX_ROCKETS);
+                gfx::displayTargetLock(targetLock);
                 // Minimap contacts, colour coded by threat
                 gfx::displayEnemyMarkers(planes, player.transform, glm::vec3(1.0f, 0.15f, 0.05f));
                 gfx::displayEnemyMarkers(ships, player.transform, glm::vec3(1.0f, 0.55f, 0.05f));
@@ -153,16 +156,32 @@ namespace game {
                     bullets.emplace_back(player, glm::vec3(-8.5f, -0.75f, 8.5f));
                     bullets.emplace_back(player, glm::vec3(8.5f, -0.75f, 8.5f));
                 }
+                // Everything that needs to follow a specific enemy across
+                // frames resolves it through here
+                const game::TargetDirectory targets = {
+                    .planes = &planes,
+                    .ships = &ships,
+                    .balloons = &balloons
+                };
+                game::updateTargetLock(targetLock, player, targets, dt);
+
                 // Rockets. getKeyState is truthy for HELD as well as
                 // JUST_PRESSED, so this has to test the transition explicitly
                 // or holding the key launches a rocket every single frame.
-                if (player.rockettimer <= 0.0f &&
+                if (player.rockets > 0 &&
+                    player.rockettimer <= 0.0f &&
                     window.getKeyState(SDLK_g) == JUST_PRESSED &&
                     !player.crashed) {
                     player.resetRocketTimer();
-                    rockets.emplace_back(player, glm::vec3(-8.5f, -0.75f, 8.5f));
+                    player.rockets--;
+                    // A solid lock guides the rocket; firing without one is a
+                    // dumb shot that flies wherever the nose was pointing
+                    const unsigned int target = targetLock.locked ? targetLock.targetId : 0;
+                    rockets.emplace_back(player, glm::vec3(-8.5f, -0.75f, 8.5f), target);
+                    SNDSRC->playid("shoot", player.transform.position);
                 }
-                game::updateRockets(rockets, dt);
+                game::updateRockets(rockets, dt, targets);
+                game::checkForRocketTerrainCollision(rockets, explosions, permutations);
                 // Update bullets
                 game::checkBulletDist(bullets, player);
                 game::updateBullets(bullets, dt);
@@ -222,6 +241,12 @@ namespace game {
                 game::checkForHit(bullets, ships,    32.0f);
                 game::checkForHit(bullets, planes,   12.0f);
                 game::checkHitForPlayer(enemyBullets, player,  12.0f);
+
+                // rocket hits: one rocket should be decisive against anything
+                // it actually reaches
+                game::checkForRocketHit(rockets, planes,   explosions, 20.0f, 14);
+                game::checkForRocketHit(rockets, ships,    explosions, 40.0f, 10);
+                game::checkForRocketHit(rockets, balloons, explosions, 28.0f, 10);
 
                 // AABB collision (planes only, as currently)
                 game::checkForCollision(player, planes, explosions, 1.0f, glm::vec3(26.f, 26.f, 72.f));
@@ -289,6 +314,7 @@ namespace game {
                             score = 0;
                             totalTime = 0.0f;
                             newHighScore = false;
+                            targetLock.clear();
                             timers.resetAll();
                             // Put the camera back behind the new plane so the
                             // first frame does not lerp in from the crash site

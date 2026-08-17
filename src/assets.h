@@ -97,7 +97,9 @@ namespace assets {
 	public:
 		void importFromFile(const char *path);
 		static FontManager* get();
-		void pushFont(const std::string &fontname);
+		//sizePixels of 0 keeps the size the font was registered with. ImGui
+		//rasterises on demand, so any size stays crisp.
+		void pushFont(const std::string &fontname, float sizePixels = 0.0f);
 		void popFont();
 		ImFont* getFontData(const std::string &name);
 	};

@@ -35,13 +35,7 @@ TextureMetaData entryToTextureMetaData(const impfile::Entry &entry) {
   // Preferably target is 'texture2d' but it defaults to texture2d
   else {
     texture.path = entry.getVar("path");
-    std::string flip = entry.getVar("flip");
-    if (flip == "true")
-      texture.flipv = true;
-    // Preferably flip is "false" but if it is an unrecognized value,
-    // it will default to false
-    else
-      texture.flipv = false;
+    texture.flipv = entry.getVar("flip") == "true" ? true : false;
   }
 
   return texture;
@@ -293,23 +287,30 @@ void FontManager::importFromFile(const char *path) {
     FontMetaData meta = entryToFontMetaData(entries.at(i));
     INFO("Font name : %s, path : %s", meta.name.c_str(), meta.path.c_str());
 
-    std::vector<uint8_t> fontData = loader.getAssetData(meta.name.c_str());
+    // Assets are keyed in the bundle by their file name, not by the friendly
+    // name the impfile gives them. Looking this up by meta.name meant every
+    // font silently failed to load and the game has been running on ImGui's
+    // built-in bitmap font.
+    std::vector<uint8_t> fontData = loader.getAssetData(meta.path.c_str());
     if (fontData.empty()) {
-      ERROR("Failed to load font data: %s", meta.name.c_str());
+      ERROR("Failed to load font data: %s (%s)", meta.name.c_str(), meta.path.c_str());
       continue;
     }
 
-    // ImGui takes ownership of this buffer, so allocate with IM_ALLOC
-    // void* buf = IM_ALLOC(fontData.size());
-    // memcpy(buf, fontData.data(), fontData.size());
+    // ImGui takes ownership of this buffer and frees it with IM_FREE when the
+    // atlas is destroyed, so it has to come from IM_ALLOC
+    void* buf = IM_ALLOC(fontData.size());
+    memcpy(buf, fontData.data(), fontData.size());
 
-    // ImFont* font = io.Fonts->AddFontFromMemoryTTF(buf, (int)fontData.size(), (float)meta.fontsize);
-    // if (font) {
-    //   add(meta.name, font);
-    // } else {
-    //   ERROR("Failed to register font with ImGui: %s", meta.name.c_str());
-    //   IM_FREE(buf);
-    // }
+    ImFont* font = io.Fonts->AddFontFromMemoryTTF(
+        buf, static_cast<int>(fontData.size()), static_cast<float>(meta.fontsize));
+    if (font) {
+      add(meta.name, font);
+      INFO("Registered font %s at %upx", meta.name.c_str(), meta.fontsize);
+    } else {
+      ERROR("Failed to register font with ImGui: %s", meta.name.c_str());
+      IM_FREE(buf);
+    }
   }
 }
 
@@ -330,12 +331,15 @@ ImFont* FontManager::getFontData(const std::string &name) {
   return fonts.at(name);
 }
 
-void FontManager::pushFont(const std::string &fontname) {
-  (void)fontname;
-
+void FontManager::pushFont(const std::string &fontname, float sizePixels) {
+  // A missing font pushes null, which ImGui reads as "keep the current font"
+  // while still applying the size. That keeps every push paired with a pop, so
+  // a typo in a font name degrades the look instead of corrupting the stack.
+  const auto it = fonts.find(fontname);
+  ImGui::PushFont(it != fonts.end() ? it->second : nullptr, sizePixels);
 }
 
 void FontManager::popFont() {
-  // nk_style_pop_font(State::get()->getNkContext());
+  ImGui::PopFont();
 }
 } // namespace assets

@@ -31,6 +31,12 @@ namespace gameobjects {
         unsigned int scorevalue = 0;
         std::unordered_map<std::string, float> values;
 
+        //Identity that survives the entity vectors being erased and reordered
+        //every frame. A rocket or a target lock stores this rather than an
+        //index or a pointer, both of which go stale immediately.
+        //Ids start at 1 so that 0 can mean "nothing tracked".
+        unsigned int id = 0;
+
         DamageableEntity(glm::vec3 pos, int hp, unsigned int score);
         [[nodiscard]] bool isDead() const override { return hitpoints <= 0; };
         [[nodiscard]] float getVal(const std::string &key) const;

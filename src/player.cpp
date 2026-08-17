@@ -46,6 +46,7 @@ Player::Player(glm::vec3 position) {
   speed = SPEED;
   health = DEFAULT_HEALTH;
   fuel = DEFAULT_FUEL;
+  rockets = MAX_ROCKETS;
 
   PlayerModel model_douglas = {
     .name = "plane_douglas",

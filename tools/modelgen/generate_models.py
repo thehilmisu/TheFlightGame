@@ -262,6 +262,29 @@ def plane_attacker(b):
 
 
 # ---------------------------------------------------------------------------
+# Ordnance
+# ---------------------------------------------------------------------------
+def rocket(b):
+    """
+    Guided rocket, roughly twice the length of a bullet so it reads at speed
+    without dominating the screen. Nose points +Z like everything else.
+    """
+    # Body, tapering to a point at the nose
+    loft(b, [
+        (-3.4, 0.42, 0.42, 0.0), (-2.9, 0.55, 0.55, 0.0), (1.9, 0.55, 0.55, 0.0),
+        (2.7, 0.44, 0.44, 0.0), (3.5, 0.10, 0.10, 0.0),
+    ], GREY_METAL)
+    # Dark band behind the nose, so rotation is readable in flight
+    loft(b, [(1.55, 0.58, 0.58, 0.0), (2.15, 0.58, 0.58, 0.0)], CANOPY_DARK)
+    # Tail fins: one mirrored pair horizontal, one pair vertical
+    box(b, 1.05, 0.0, -2.75, 0.62, 0.06, 0.68, GREEN_DARK, mirror=True)
+    box(b, 0.0, 1.05, -2.75, 0.06, 0.62, 0.68, GREEN_DARK)
+    box(b, 0.0, -1.05, -2.75, 0.06, 0.62, 0.68, GREEN_DARK)
+    # Motor nozzle
+    cylinder(b, 0.0, 0.0, -3.6, 0.34, 0.28, CANOPY_DARK, axis="z", sides=8, taper=1.25)
+
+
+# ---------------------------------------------------------------------------
 # Ships  (bow points +Z so the aim-at-player rotation reads correctly)
 # ---------------------------------------------------------------------------
 def ship_hull(b, length, beam, keel, waterline, deck):
@@ -498,6 +521,7 @@ MODELS = [
     ("plane_marauder", plane_bomber, "planetexture.png", True),
     ("plane_lancet", plane_interceptor, "planetexture.png", True),
     ("plane_warhog", plane_attacker, "planetexture.png", True),
+    ("rocket", rocket, "planetexture.png", True),
     ("warship_destroyer", ship_destroyer, "warship2.jpg", False),
     ("warship_cruiser", ship_cruiser, "warship2.jpg", False),
 ]

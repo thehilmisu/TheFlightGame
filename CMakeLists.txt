@@ -53,6 +53,7 @@ set(COMMON_SOURCES
         src/entity.cpp
         src/options.cpp
         src/settings.cpp
+        src/targeting.cpp
 )
 
 # ImGui sources

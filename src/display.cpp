@@ -507,8 +507,8 @@ namespace gfx {
         Window &window = Window::getInstance();
         Camera &cam = window.getCamera();
 
-        VAOS->bind("bullet");
-        TEXTURES->bindTexture("bullet", GL_TEXTURE0);
+        VAOS->bind("rocket");
+        TEXTURES->bindTexture("rocket", GL_TEXTURE0);
         SHADERS->use("trail");
         ShaderProgram &trailshader = SHADERS->getShader("trail");
         trailshader.uniformMat4x4("persp", window.getPerspective());
@@ -519,7 +519,9 @@ namespace gfx {
         for (const auto &rocket: rockets) {
             glm::mat4 transform = rocket.transform.getTransformMat();
             glm::mat3 normal = glm::mat3(glm::transpose(glm::inverse(transform)));
-            glm::vec3 velocity = rocket.transform.direction() * ROCKET_SPEED;
+            //Use the rocket's live speed: it coasts, then boosts, so a fixed
+            //value would not match the trail to what the rocket is doing
+            glm::vec3 velocity = rocket.transform.direction() * rocket.speed;
             trailshader.uniformFloat("time", rocket.time);
             trailshader.uniformVec3("velocity", velocity);
             trailshader.uniformMat4x4("transform", transform);
@@ -877,6 +879,68 @@ namespace gfx {
     template void displayEnemyMarkers<gameobjects::Plane>(
         const std::vector<gameobjects::Plane> &, const game::Transform &, const glm::vec3 &);
 
+    void displayTargetLock(const game::TargetLock &lock) {
+        if (!lock.tracking())
+            return;
+
+        Window &window = Window::getInstance();
+        Camera &cam = window.getCamera();
+
+        const int w = window.getWidth();
+        const int h = window.getHeight();
+
+        // Project the target. Unlike the crosshair, which sits one unit in
+        // front of the player and can get away without it, this needs the
+        // perspective divide because the target is at an arbitrary depth.
+        const glm::vec4 clip =
+                window.getPerspective() * cam.viewMatrix() * glm::vec4(lock.position, 1.0f);
+        if (clip.w <= 0.0f)
+            return;                                   // behind the camera
+        const glm::vec3 ndc = glm::vec3(clip) / clip.w;
+        if (std::abs(ndc.x) > 1.0f || std::abs(ndc.y) > 1.0f)
+            return;                                   // off screen
+
+        const float sx = ndc.x * static_cast<float>(w) * 0.5f;
+        const float sy = ndc.y * static_cast<float>(h) * 0.5f;
+
+        const glm::mat4 screenMat = glm::scale(
+            glm::mat4(1.0f), glm::vec3(2.0f / static_cast<float>(w), 2.0f / static_cast<float>(h), 0.0f));
+
+        glEnable(GL_BLEND);
+        glDisable(GL_DEPTH_TEST);
+        glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+
+        VAOS->bind("quad");
+        SHADERS->use("marker");
+        ShaderProgram &markershader = SHADERS->getShader("marker");
+        markershader.uniformMat4x4("screen", screenMat);
+        // Amber while it closes, red once it is solid
+        markershader.uniformVec3("u_color", lock.locked
+                                                ? glm::vec3(1.0f, 0.12f, 0.05f)
+                                                : glm::vec3(1.0f, 0.75f, 0.15f));
+
+        // Four corner ticks that converge as the lock builds
+        constexpr float OPEN_RADIUS = 46.0f;
+        constexpr float CLOSED_RADIUS = 17.0f;
+        const float radius = OPEN_RADIUS + (CLOSED_RADIUS - OPEN_RADIUS) * lock.progress;
+        const float tick = lock.locked ? 5.0f : 4.0f;
+
+        for (int corner = 0; corner < 4; corner++) {
+            const float ox = (corner & 1) ? radius : -radius;
+            const float oy = (corner & 2) ? radius : -radius;
+
+            auto transform = glm::mat4(1.0f);
+            transform = glm::translate(transform, glm::vec3(sx + ox, sy + oy, 0.0f));
+            transform = glm::scale(transform, glm::vec3(tick, tick, 0.0f));
+            transform = glm::rotate(transform, glm::radians(90.0f), glm::vec3(1.0f, 0.0f, 0.0f));
+            markershader.uniformMat4x4("transform", transform);
+            VAOS->draw();
+        }
+
+        glDisable(GL_BLEND);
+        glEnable(GL_DEPTH_TEST);
+    }
+
     void displayCrosshair(const game::Transform &playertransform) {
         Window &window = Window::getInstance();
 
@@ -912,6 +976,58 @@ namespace gfx {
         VAOS->draw();
 
         glDisable(GL_BLEND);
+    }
+
+    void displayRocketAmmo(unsigned int remaining, unsigned int capacity) {
+        if (capacity == 0)
+            return;
+
+        const Window &window = Window::getInstance();
+        const int w = window.getWidth();
+        const int h = window.getHeight();
+
+        const glm::mat4 screenMat = glm::scale(
+            glm::mat4(1.0f), glm::vec3(2.0f / static_cast<float>(w), 2.0f / static_cast<float>(h), 0.0f));
+
+        glEnable(GL_BLEND);
+        glDisable(GL_DEPTH_TEST);
+        glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+
+        VAOS->bind("quad");
+        SHADERS->use("marker");
+        ShaderProgram &shader = SHADERS->getShader("marker");
+        shader.uniformMat4x4("screen", screenMat);
+
+        // Sits in the bottom instrument row, inboard of the fuel gauge
+        const float baseX = static_cast<float>(w) - 470.0f;
+        constexpr float baseY = 130.0f;
+        constexpr float SPACING = 30.0f;
+
+        // Each icon is built from three quads: body, nose and fins
+        auto quad = [&](float cx, float cy, float halfw, float halfh) {
+            auto transform = glm::mat4(1.0f);
+            transform = glm::translate(transform, glm::vec3(cx, cy, 0.0f));
+            transform = glm::translate(
+                transform, glm::vec3(-static_cast<float>(w) / 2.0f, -static_cast<float>(h) / 2.0f, 0.0f));
+            transform = glm::scale(transform, glm::vec3(halfw, halfh, 0.0f));
+            transform = glm::rotate(transform, glm::radians(90.0f), glm::vec3(1.0f, 0.0f, 0.0f));
+            shader.uniformMat4x4("transform", transform);
+            VAOS->draw();
+        };
+
+        for (unsigned int i = 0; i < capacity; i++) {
+            const bool loaded = i < remaining;
+            shader.uniformVec3("u_color", loaded
+                                              ? glm::vec3(1.0f, 0.55f, 0.12f)
+                                              : glm::vec3(0.20f, 0.22f, 0.25f));
+            const float cx = baseX + static_cast<float>(i) * SPACING;
+            quad(cx, baseY, 3.5f, 10.0f);           // body
+            quad(cx, baseY + 13.0f, 2.0f, 3.5f);    // nose
+            quad(cx, baseY - 11.5f, 6.5f, 2.0f);    // fins
+        }
+
+        glDisable(GL_BLEND);
+        glEnable(GL_DEPTH_TEST);
     }
 
     void displayHUDBackGrounds() {

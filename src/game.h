@@ -19,6 +19,9 @@ constexpr float ZFAR = 20000.0f;
 
 constexpr int RANGE = 4;
 
+//Rockets carried at the start of a run
+constexpr unsigned int MAX_ROCKETS = 3;
+
 const glm::vec3 LIGHT = glm::normalize(glm::vec3(-1.0f));
 
 namespace game {
@@ -57,6 +60,39 @@ namespace game {
         DEATH_EXIT,
         DEATH_EXIT_TO_MAINMENU,
     };
+
+    //Resolves an entity id to a live position. The enemy vectors are erased and
+    //reordered every frame, so anything that needs to follow one particular
+    //enemy across frames (a rocket, a target lock) stores its id and looks it
+    //up through here rather than keeping an index or a pointer.
+    struct TargetDirectory {
+        const std::vector<gameobjects::Plane> *planes = nullptr;
+        const std::vector<gameobjects::Ship> *ships = nullptr;
+        const std::vector<gameobjects::Balloon> *balloons = nullptr;
+
+        //False when that entity no longer exists, i.e. it has been destroyed
+        [[nodiscard]] bool findPosition(unsigned int id, glm::vec3 &position) const;
+    };
+
+    //State of the player's missile lock
+    struct TargetLock {
+        unsigned int targetId = 0;              //0 means nothing is tracked
+        glm::vec3 position = glm::vec3(0.0f);   //last known target position
+        float progress = 0.0f;                  //0..1, 1 once the lock is solid
+        bool locked = false;
+
+        [[nodiscard]] bool tracking() const { return targetId != 0; }
+        void clear();
+    };
+
+    //Picks the best enemy inside the firing cone and advances or drops the
+    //lock. Call once per frame while the game is running.
+    void updateTargetLock(
+        TargetLock &lock,
+        const gameobjects::Player &player,
+        const TargetDirectory &targets,
+        float dt
+    );
 
     void loadAssets();
 
@@ -120,6 +156,8 @@ namespace gameobjects {
         //This keeps track of how long the player has damage immunity
         float damagecooldown = 0.0f;
         unsigned int health;
+        //Rockets left in the rack. Not replenished during a run.
+        unsigned int rockets = 0;
 
         explicit Player(glm::vec3 position);
 
@@ -211,14 +249,18 @@ namespace gameobjects {
         game::Transform transform;
         float time;
         float speed;
+        //Entity this rocket is chasing. 0 means it was fired without a lock and
+        //flies straight, which is also what happens once a chased target dies.
+        unsigned int targetId = 0;
 
-        Rocket(const Player &player, const glm::vec3 &offset);
+        Rocket(const Player &player, const glm::vec3 &offset, unsigned int target = 0);
 
         Rocket(const game::Transform &t, float addspeed, const glm::vec3 &offset);
 
         Rocket();
 
-        void update(float dt);
+        //Steers toward the tracked target, if it still exists
+        void update(float dt, const game::TargetDirectory &targets);
     };
 
 
@@ -437,7 +479,49 @@ namespace game {
         infworld::worldseed &permutations
     );
 
-    void updateRockets(std::vector<gameobjects::Rocket> &rockets, float dt);
+    void updateRockets(
+        std::vector<gameobjects::Rocket> &rockets,
+        float dt,
+        const TargetDirectory &targets
+    );
+
+    //Rockets that fly into the ground go off there
+    void checkForRocketTerrainCollision(
+        std::vector<gameobjects::Rocket> &rockets,
+        std::vector<gameobjects::Explosion> &explosions,
+        infworld::worldseed &permutations
+    );
+
+    // Rocket-vs-entity hit detection. A rocket is a single heavy hit rather
+    // than the chip damage a bullet does, and it always detonates.
+    template<typename T>
+    void checkForRocketHit(
+        std::vector<gameobjects::Rocket>& rockets,
+        std::vector<T>& enemies,
+        std::vector<gameobjects::Explosion>& explosions,
+        float hitdist,
+        int damage)
+    {
+        static_assert(std::is_base_of_v<gameobjects::DamageableEntity, T>,
+                      "T must derive from DamageableEntity");
+        if (rockets.empty() || enemies.empty()) return;
+
+        for (auto& rocket : rockets) {
+            if (rocket.destroyed) continue;
+            for (auto& enemy : enemies) {
+                if (enemy.hitpoints <= 0) continue;
+                const float dist = glm::length(
+                    rocket.transform.position - enemy.transform.position);
+                if (dist < hitdist) {
+                    rocket.destroyed = true;
+                    enemy.hitpoints -= damage;
+                    explosions.emplace_back(rocket.transform.position, 2.0f);
+                    TRACE("Rocket hit its target!");
+                    break;
+                }
+            }
+        }
+    }
 } // namespace game
 
 namespace gfx {
@@ -502,7 +586,13 @@ namespace gfx {
 
     void displayCrosshair(const game::Transform &playertransform);
 
+    //Corner brackets around the tracked target that tighten as the lock builds
+    void displayTargetLock(const game::TargetLock &lock);
+
     void displayHUDBackGrounds();
+
+    //Rack of rocket icons: filled for loaded, dark for spent
+    void displayRocketAmmo(unsigned int remaining, unsigned int capacity);
 
     void displayHangar(float angle = 0.0f);
 

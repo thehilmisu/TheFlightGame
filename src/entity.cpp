@@ -2,8 +2,14 @@
 #include "glm/glm.hpp"
 
 namespace gameobjects {
+    namespace {
+        //Monotonic source of entity ids. Never reused, so a stale id can never
+        //accidentally resolve to a different entity later in the run.
+        unsigned int nextEntityId = 1;
+    }
+
     DamageableEntity::DamageableEntity(glm::vec3 pos, int hp, unsigned int score)
-    : hitpoints(hp), scorevalue(score)
+    : hitpoints(hp), scorevalue(score), id(nextEntityId++)
     {
         transform.position = pos;
         transform.scale    = glm::vec3(1.0f);
